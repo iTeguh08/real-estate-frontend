@@ -1,0 +1,22 @@
+# ==========================================================================
+# REAL ESTATE LUXURY DESIGN SYSTEM (Taste-Skill & Typography Rules)
+# ==========================================================================
+
+You must strictly follow the premium real-estate design language established in tailwind.config.js:
+
+1. TYPOGRAPHY RULES:
+   - HEADINGS: Every main heading, hero title, and section title MUST use the Serif font 'Cormorant Garamond' (font-display). Use lighter weights (font-light or font-normal) for a high-end fashion/architectural magazine feel.
+   - BODY/UI TEXT: All functional UI elements, price tags, descriptions, card contents, and filter buttons MUST use 'Satoshi' (font-sans) to ensure precision and clean readability.
+
+2. COLOR PALETTE APPLICATION:
+   - Use `bg-luxury-cream` (#F9F8F6) as the primary background for sections to avoid harsh pure white blinding layers.
+   - Use `text-luxury-dark` (#111111) instead of pure black for highly elegant, readable typography.
+   - Use `bg-luxury-crimson` or `text-luxury-crimson` (#A31D1D) strictly as an accent color (e.g., primary buttons, selected states, or luxury badging). Do not over-use it.
+
+3. ICONOGRAPHY DIRECTION:
+   - For structural/property visuals (Beds, Baths, Square Feet, Garage, Villa/Apartment icons), prioritize "Phosphor Icons" or equivalent fine-line linear icons with a thin weight (e.g., `stroke-[1.2]` or `stroke-[1.5]`).
+   - Use "Lucide React" ONLY for system utilities (arrows, close buttons, dropdown chevrons). Avoid generic thick icons on property cards to prevent an AI-slop look.
+
+4. LAYOUT & WHITE-SPACE (UIUXPROMAX & Impeccable integration):
+   - Maintain generous padding-y (e.g., `py-24` or `py-32`) between sections to let the premium layout "breathe".
+   - Cards must have soft shadows (`shadow-sm`) and subtle rounded corners (`rounded-xl` or `rounded-2xl`) to match image_d045f8.jpg.
