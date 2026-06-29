@@ -41,22 +41,25 @@ function PropertyTypeCard({ item, isActive = false, onClick }: PropertyTypeCardP
       aria-pressed={isActive}
       aria-label={`${type}: ${count} properties`}
       className={cn(
-        'group flex w-full flex-col items-center justify-center gap-14',
-        'h-[160px] md:h-[200px] rounded-[4px] border-2 px-4 py-4',
+        'group flex w-full flex-col items-center justify-center gap-14 h-[220px]',
+        'rounded-[4px] border-none px-4 py-4',
         'transition-all duration-300 cursor-pointer',
         isActive
-          ? 'bg-hz-primary border-hz-primary text-white shadow-sm'
-          : 'bg-white border-hz-border text-hz-dark hover:border-hz-primary'
+          ? 'bg-hz-primary text-white shadow-sm'
+          : 'bg-[#F8F8F8] text-hz-dark hover:bg-[#F0F0F0]'
       )}
     >
-      <div className="flex h-14 w-full items-center justify-center" aria-hidden="true">
+      <div className="flex h-14 w-full items-center justify-center overflow-visible" aria-hidden="true">
         <Illustration
-          className="h-full w-full"
-          iconClassName={isActive ? 'text-white' : 'text-hz-dark'}
+          className="flex h-[88px] w-[80px] items-center justify-center"
+          iconClassName={cn(
+            '!h-[88px] !w-[80px] !max-w-none !translate-y-7',
+            isActive ? 'text-white' : 'text-hz-dark'
+          )}
         />
       </div>
 
-      <div className="flex w-full flex-col items-center gap-3 text-center">
+      <div className="flex w-full flex-col items-center gap-3 pt-2 text-center">
         <span className="font-poppins text-lg font-medium leading-none">
           {type}
         </span>
@@ -103,7 +106,7 @@ export function PropertyTypeGrid({ activeType, onTypeChange }: PropertyTypeGridP
 
           <a
             href="#listings"
-            className="hidden shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1 md:flex"
+            className="hidden shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1 md:inline-flex"
           >
             See All Types
             <ArrowRight size={14} strokeWidth={1.6} />
@@ -119,9 +122,22 @@ export function PropertyTypeGrid({ activeType, onTypeChange }: PropertyTypeGridP
             <ChevronLeft size={14} strokeWidth={2} />
           </button>
 
-          <div className="flex items-stretch gap-3" role="list" aria-label="Property type filter">
+          <div
+            className={cn(
+              'flex items-stretch gap-3',
+              'max-md:-mx-5 max-md:overflow-x-auto max-md:px-5',
+              'max-md:snap-x max-md:snap-mandatory max-md:scroll-pl-5 max-md:scroll-pr-5',
+              'max-md:[&::-webkit-scrollbar]:hidden max-md:scrollbar-none'
+            )}
+            role="list"
+            aria-label="Property type filter"
+          >
             {PROPERTY_TYPES.map((item) => (
-              <div key={item.type} role="listitem" className="flex-1">
+              <div
+                key={item.type}
+                role="listitem"
+                className="max-md:w-[calc((100%-12px)/2)] max-md:min-w-[172px] max-md:max-w-[190px] max-md:shrink-0 max-md:snap-start md:flex-1"
+              >
                 <PropertyTypeCard
                   item={item}
                   isActive={selectedType === item.type}

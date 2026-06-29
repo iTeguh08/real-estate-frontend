@@ -68,10 +68,10 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
     <article
       className={cn(
         'group flex w-full items-center gap-6',
-        'rounded-[8px] border border-[#EEEEEE] bg-white p-6',
+        'rounded-[8px] bg-white p-6',
         'shadow-[0_4px_20px_rgba(0,0,0,0.02)]',
         'transition-all duration-300',
-        'hover:border-hz-primary/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
+        'hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
       )}
     >
       <div
