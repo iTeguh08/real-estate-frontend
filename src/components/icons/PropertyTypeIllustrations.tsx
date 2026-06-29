@@ -1,10 +1,3 @@
-import {
-  BuildingApartment,
-  BuildingOffice,
-  Buildings,
-  House,
-  Storefront,
-} from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 
 interface IllustrationProps {
