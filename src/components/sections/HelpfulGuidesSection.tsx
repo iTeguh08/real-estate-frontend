@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
 import { ArticleCard } from '@/components/cards/ArticleCard';
 import type { Article } from '@/types';
 
@@ -126,8 +125,7 @@ const STUB_ARTICLES: Article[] = [
   },
 ];
 
-const ARTICLES_PER_PAGE = 3;
-const PAGE_COUNT = 4;
+const PREVIEW_COUNT = 3;
 
 interface HelpfulGuidesSectionProps {
   articles?: Article[];
@@ -136,12 +134,7 @@ interface HelpfulGuidesSectionProps {
 export function HelpfulGuidesSection({
   articles = STUB_ARTICLES,
 }: HelpfulGuidesSectionProps) {
-  const [activePage, setActivePage] = useState(0);
-
-  const visibleArticles = articles.slice(
-    activePage * ARTICLES_PER_PAGE,
-    activePage * ARTICLES_PER_PAGE + ARTICLES_PER_PAGE
-  );
+  const previewArticles = articles.slice(0, PREVIEW_COUNT);
 
   return (
     <section
@@ -150,49 +143,40 @@ export function HelpfulGuidesSection({
       aria-labelledby="guides-heading"
     >
       <div className="section-container">
+        <div className="mb-12 flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <header className="text-center sm:text-left">
+            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+              Latest News
+            </p>
+            <h2
+              id="guides-heading"
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+            >
+              Helpful Homeya Guides
+            </h2>
+          </header>
 
-        <div className="mb-8 flex items-center justify-center gap-2">
-          {Array.from({ length: PAGE_COUNT }).map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              onClick={() => setActivePage(index)}
-              aria-label={`Go to article page ${index + 1}`}
-              aria-current={activePage === index ? 'true' : undefined}
-              className={cn(
-                'h-2 w-2 rounded-full transition-colors duration-200',
-                activePage === index
-                  ? 'bg-hz-primary'
-                  : 'bg-hz-border hover:bg-hz-muted'
-              )}
-            />
-          ))}
-        </div>
-
-        <header className="mb-12 text-center">
-          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
-            Latest News
-          </p>
-          <h2
-            id="guides-heading"
-            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+          <a
+            href="/blog"
+            className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
+            aria-label="See all articles"
           >
-            Helpful Homeya Guides
-          </h2>
-        </header>
+            See All Articles
+            <ArrowRight size={14} strokeWidth={1.6} aria-hidden="true" />
+          </a>
+        </div>
 
         <div
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3"
           role="list"
           aria-label="Helpful guides and articles"
         >
-          {visibleArticles.map((article) => (
+          {previewArticles.map((article) => (
             <div key={article.id} role="listitem">
               <ArticleCard article={article} />
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
