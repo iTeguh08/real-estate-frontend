@@ -20,15 +20,15 @@ export function HeroSection() {
 
   return (
     <section
-      className="bg-[#F7F7F7] font-poppins min-h-[620px]"
+      className="bg-[#F7F7F7] font-poppins min-h-[60dvh] lg:min-h-[80dvh]"
       aria-label="Hero — Find your home"
     >
-      <div className="w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-center lg:gap-0">
+      <div className="w-full h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[80dvh] lg:items-stretch lg:gap-0">
 
           {/* ══ LEFT COLUMN ════════════════════════════════════════ */}
-          <div className="order-2 lg:order-1 relative z-20 px-10 max-md:px-5 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14">
-            <div className="max-w-[620px]">
+          <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center px-10 max-md:px-5 py-12 lg:py-16 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14 3xl:pl-20 3xl:pr-16">
+            <div className="max-w-[620px] 3xl:max-w-[720px]">
             {/* Eyebrow */}
             <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
               Real Estate Agency
@@ -38,8 +38,8 @@ export function HeroSection() {
             <h1
               className={cn(
                 'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px]',
-                'text-[36px] md:text-[42px] lg:text-[48px]',
-                'max-w-[500px] mb-6'
+                'text-[36px] md:text-[42px] lg:text-[48px] 3xl:text-[56px]',
+                'max-w-[500px] 3xl:max-w-[580px]'
               )}
             >
               Find A Home That<br />
@@ -47,13 +47,20 @@ export function HeroSection() {
             </h1>
 
             {/* Subtext */}
-            <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] mb-9">
+            <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] 3xl:max-w-[520px] mb-6">
               We are a real estate agency that will help you find the best
               residence for you at an affordable price.
             </p>
+            </div>
 
-            {/* ── Property Search Bar ──────────────────────────── */}
-            <div className="max-w-[560px] lg:max-w-none lg:w-[calc(100%+280px)]">
+            {/* ── Property Search Bar — extends to mid-point of hero image ── */}
+            <div
+              className={cn(
+                'relative z-30 mt-0 max-w-[560px]',
+                'lg:max-w-none lg:w-[calc(80vw-max(92px,calc((100vw-1280px)/2+92px)))]',
+                '3xl:w-[calc(85vw-max(96px,calc((100vw-1680px)/2+96px)))]'
+              )}
+            >
               {/* Tab Row */}
               <div className="flex">
                 {TABS.map((tab) => (
@@ -222,7 +229,7 @@ export function HeroSection() {
             </div>
 
             {/* ── Property Type Quick Links ──────────────────── */}
-            <div className="flex items-center gap-3 flex-wrap mt-5">
+            <div className="mt-5 max-w-[620px] 3xl:max-w-[720px] flex items-center gap-3 flex-wrap">
               <span className="font-poppins font-normal text-[13px] text-hz-muted">
                 When you are looking for:
               </span>
@@ -247,15 +254,14 @@ export function HeroSection() {
                 </span>
               ))}
             </div>
-            </div>
           </div>
 
           {/* ══ RIGHT COLUMN ═══════════════════════════════════════ */}
-          <div className="relative overflow-hidden order-1 lg:order-2 w-full">
+          <div className="relative order-1 lg:order-2 min-h-[320px] lg:min-h-[80dvh] w-full overflow-hidden">
             <img
               src={heroImage}
               alt="Modern luxury residential home"
-              className="w-full h-full object-cover object-center"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               loading="eager"
             />
           </div>

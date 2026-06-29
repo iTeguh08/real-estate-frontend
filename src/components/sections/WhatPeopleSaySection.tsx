@@ -1,5 +1,5 @@
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { section, sectionEyebrow } from '@/lib/cva';
 import { TestimonialCard } from '@/components/cards/TestimonialCard';
 import type { Testimonial } from '@/types';
 
@@ -34,6 +34,16 @@ const STUB_TESTIMONIALS: Testimonial[] = [
       'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80',
     rating: 5,
   },
+  {
+    id: 't4',
+    quote:
+      'The entire experience felt personal and professional. They guided us through every detail with patience and expertise we have rarely seen elsewhere.',
+    author: 'Leon McKenzie',
+    role: 'CEO, Apple',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop&q=80',
+    rating: 5,
+  },
 ];
 
 interface WhatPeopleSaySectionProps {
@@ -43,34 +53,58 @@ interface WhatPeopleSaySectionProps {
 export function WhatPeopleSaySection({
   testimonials = STUB_TESTIMONIALS,
 }: WhatPeopleSaySectionProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const visibleTestimonials = [
+    testimonials[activeIndex],
+    testimonials[(activeIndex + 1) % testimonials.length],
+  ];
+
   return (
     <section
-      className={cn(section({ spacing: 'md', bg: 'cream' }))}
+      className="w-full bg-white"
       aria-labelledby="testimonials-heading"
     >
-      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <header className="mb-12 text-center md:mb-14">
-          <p className={cn(sectionEyebrow(), 'mb-2')}>
-            Client Stories
-          </p>
-          <h2
-            id="testimonials-heading"
-            className="text-[clamp(1.8rem,3vw,2.8rem)] font-light leading-tight tracking-[-0.02em] text-luxury-dark"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            What People Say
-          </h2>
-        </header>
+      <div className="bg-hz-dark px-5 pb-44 pt-16 text-center md:px-10 md:pb-56 md:pt-20">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-white">
+          Client Stories
+        </p>
+        <h2
+          id="testimonials-heading"
+          className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-white md:text-[36px]"
+        >
+          What People Say
+        </h2>
+      </div>
 
+      <div className="section-container">
         <div
-          className="grid grid-cols-1 gap-8 px-1 pt-2 md:grid-cols-2 md:gap-10 lg:grid-cols-3 lg:gap-12 lg:pt-4"
+          className="-mt-32 grid grid-cols-1 gap-3 sm:grid-cols-2 md:-mt-40"
           role="list"
           aria-label="Client testimonials"
         >
-          {testimonials.map((testimonial, index) => (
-            <div key={testimonial.id} role="listitem" className="h-full pt-3">
-              <TestimonialCard testimonial={testimonial} index={index} />
+          {visibleTestimonials.map((testimonial) => (
+            <div key={testimonial.id} role="listitem" className="h-full">
+              <TestimonialCard testimonial={testimonial} />
             </div>
+          ))}
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-2 pb-16 md:pb-20">
+          {testimonials.map((testimonial, index) => (
+            <button
+              key={testimonial.id}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Go to testimonial ${index + 1}`}
+              aria-current={activeIndex === index ? 'true' : undefined}
+              className={cn(
+                'h-2 w-2 rounded-full transition-colors duration-200',
+                activeIndex === index
+                  ? 'bg-hz-primary'
+                  : 'bg-hz-border hover:bg-hz-muted'
+              )}
+            />
           ))}
         </div>
       </div>

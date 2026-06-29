@@ -116,7 +116,7 @@ export function FeaturedProperties({ properties = STUB_PROPERTIES }: FeaturedPro
       className="w-full bg-white py-16 md:py-20"
       aria-labelledby="featured-properties-heading"
     >
-      <div className="mx-auto max-w-7xl px-5 md:px-10">
+      <div className="section-container">
 
         <div className="mb-12 flex flex-col items-center justify-center text-center">
           <div className="max-w-3xl">

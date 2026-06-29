@@ -9,6 +9,7 @@ import { LocationSection } from '@/components/sections/LocationSection';
 import { BestPropertyValueSection } from '@/components/sections/BestPropertyValueSection';
 import { MeetOurAgentsSection } from '@/components/sections/MeetOurAgentsSection';
 import { WhatPeopleSaySection } from '@/components/sections/WhatPeopleSaySection';
+import { HelpfulGuidesSection } from '@/components/sections/HelpfulGuidesSection';
 import type { PropertyType } from '@/types';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
         <BestPropertyValueSection />
         <MeetOurAgentsSection />
         <WhatPeopleSaySection />
+        <HelpfulGuidesSection />
       </main>
 
       <SiteFooter />

@@ -109,7 +109,7 @@ export function ExpertiseSection() {
       className="w-full bg-[#F8F8F8] py-14 md:py-20"
       aria-labelledby="expertise-heading"
     >
-      <div className="mx-auto max-w-7xl px-5 md:px-10 xl:px-20">
+      <div className="section-container xl:px-16 2xl:px-20">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
 
           {/* ── Left Column ── */}

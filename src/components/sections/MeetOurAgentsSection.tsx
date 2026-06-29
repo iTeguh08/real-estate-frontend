@@ -1,5 +1,3 @@
-import { cn } from '@/lib/utils';
-import { section, sectionEyebrow } from '@/lib/cva';
 import { AgentCard } from '@/components/cards/AgentCard';
 import type { Agent } from '@/types';
 
@@ -44,25 +42,24 @@ export function MeetOurAgentsSection({ agents = STUB_AGENTS }: MeetOurAgentsSect
   return (
     <section
       id="agents"
-      className={cn(section({ spacing: 'md', bg: 'white' }))}
+      className="w-full bg-white py-16 md:py-20"
       aria-labelledby="agents-heading"
     >
-      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-        <header className="mb-12 text-center md:mb-14">
-          <p className={cn(sectionEyebrow(), 'mb-2')}>
+      <div className="section-container">
+        <header className="mb-12 text-center">
+          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             Our Team
           </p>
           <h2
             id="agents-heading"
-            className="text-[clamp(1.8rem,3vw,2.8rem)] font-light leading-tight tracking-[-0.02em] text-luxury-dark"
-            style={{ fontFamily: 'var(--font-display)' }}
+            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
           >
             Meet Our Agents
           </h2>
         </header>
 
         <div
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
           role="list"
           aria-label="Real estate agents"
         >

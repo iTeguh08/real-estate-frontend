@@ -87,7 +87,7 @@ export function PropertyTypeGrid({ activeType, onTypeChange }: PropertyTypeGridP
       className="w-full bg-white py-14 md:py-16"
       aria-labelledby="property-type-heading"
     >
-      <div className="mx-auto max-w-7xl px-5 md:px-10">
+      <div className="section-container">
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

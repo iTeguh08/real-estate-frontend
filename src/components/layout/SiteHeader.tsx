@@ -20,7 +20,7 @@ export function SiteHeader() {
       style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}
     >
       {/* ── Main Bar ────────────────────────────────────── */}
-      <div className="px-6 max-lg:px-10 max-md:px-5 h-[76px] flex items-center justify-between">
+      <div className="px-6 max-lg:px-10 max-md:px-5 3xl:px-16 h-[76px] flex items-center justify-between">
 
         {/* Logo */}
         <a href="/" className="flex items-center gap-1.5 shrink-0 no-underline">

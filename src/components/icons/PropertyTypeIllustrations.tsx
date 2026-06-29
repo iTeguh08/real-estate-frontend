@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { publicAsset } from '@/lib/public-asset';
 
 interface IllustrationProps {
   className?: string;
@@ -13,7 +14,7 @@ export function ApartmentIllustration({ className, iconClassName }: Illustration
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
       <img
-        src="/apartment-icon.webp"
+        src={publicAsset('apartment-icon.webp')}
         alt="Apartment"
         className={cn('h-22 w-20 translate-y-7', iconBase(iconClassName))}
       />
@@ -25,7 +26,7 @@ export function VillaIllustration({ className, iconClassName }: IllustrationProp
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
       <img
-        src="/villa-icon.webp"
+        src={publicAsset('villa-icon.webp')}
         alt="Villa"
         className={cn('h-22 w-20 translate-y-7 brightness-75 contrast-150', iconBase(iconClassName))}
       />
@@ -37,7 +38,7 @@ export function StudioIllustration({ className, iconClassName }: IllustrationPro
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
       <img
-        src="/studio-icon.webp"
+        src={publicAsset('studio-icon.webp')}
         alt="Studio"
         className={cn('h-22 w-20 translate-y-7 brightness-75 contrast-150', iconBase(iconClassName))}
       />
@@ -49,7 +50,7 @@ export function OfficeIllustration({ className, iconClassName }: IllustrationPro
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
       <img
-        src="/office-icon.webp"
+        src={publicAsset('office-icon.webp')}
         alt="Office"
         className={cn('h-22 w-20 translate-y-7 brightness-75 contrast-150', iconBase(iconClassName))}
       />
@@ -61,7 +62,7 @@ export function TownhouseIllustration({ className, iconClassName }: Illustration
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
       <img
-        src="/townhouse-icon.webp"
+        src={publicAsset('townhouse-icon.webp')}
         alt="Townhouse"
         className={cn('h-22 w-20 translate-y-7 brightness-75 contrast-150', iconBase(iconClassName))}
       />
@@ -73,7 +74,7 @@ export function CommercialIllustration({ className, iconClassName }: Illustratio
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
       <img
-        src="/commercial-icon.webp"
+        src={publicAsset('commercial-icon.webp')}
         alt="Commercial"
         className={cn('h-22 w-20 translate-y-7', iconBase(iconClassName))}
       />

@@ -85,3 +85,14 @@ export interface SearchFilters {
   minPrice: string;
   maxPrice: string;
 }
+
+// ─── Article ───────────────────────────────────────────────────────────────
+
+export interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  publishedAt: string;
+  imageUrl: string;
+}

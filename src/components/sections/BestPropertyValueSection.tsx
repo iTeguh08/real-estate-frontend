@@ -88,7 +88,7 @@ export function BestPropertyValueSection({
       className="w-full bg-[#F8F8F8] py-16 md:py-20"
       aria-labelledby="best-value-heading"
     >
-      <div className="mx-auto max-w-7xl px-5 md:px-10">
+      <div className="section-container">
 
         <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>

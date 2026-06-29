@@ -109,7 +109,7 @@ export function LocationSection({
       className="w-full bg-white py-16 md:py-20"
       aria-labelledby="locations-heading"
     >
-      <div className="mx-auto max-w-7xl px-5 md:px-10">
+      <div className="section-container">
 
         <div className="mb-12 flex flex-col items-center text-center">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
