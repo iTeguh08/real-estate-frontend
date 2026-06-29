@@ -1,27 +1,28 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { section, sectionEyebrow } from '@/lib/cva';
 import {
+  ApartmentIllustration,
+  CommercialIllustration,
+  OfficeIllustration,
+  StudioIllustration,
   TownhouseIllustration,
   VillaIllustration,
-  ApartmentIllustration,
-  OfficeIllustration,
-  CommercialIllustration,
 } from '@/components/icons/PropertyTypeIllustrations';
 import type { PropertyType } from '@/types';
 
 interface PropertyTypeItem {
   type: PropertyType;
   count: number;
-  Illustration: React.ComponentType<{ className?: string; strokeClassName?: string }>;
+  Illustration: React.ComponentType<{ className?: string; iconClassName?: string }>;
 }
 
 const PROPERTY_TYPES: PropertyTypeItem[] = [
-  { type: 'Townhouse', count: 204, Illustration: TownhouseIllustration },
-  { type: 'Villa', count: 188, Illustration: VillaIllustration },
-  { type: 'Apartment', count: 643, Illustration: ApartmentIllustration },
-  { type: 'Office', count: 97, Illustration: OfficeIllustration },
-  { type: 'Commercial', count: 73, Illustration: CommercialIllustration },
+  { type: 'Apartment', count: 234, Illustration: ApartmentIllustration },
+  { type: 'Villa', count: 234, Illustration: VillaIllustration },
+  { type: 'Studio', count: 234, Illustration: StudioIllustration },
+  { type: 'Office', count: 234, Illustration: OfficeIllustration },
+  { type: 'Townhouse', count: 234, Illustration: TownhouseIllustration },
+  { type: 'Commercial', count: 234, Illustration: CommercialIllustration },
 ];
 
 interface PropertyTypeCardProps {
@@ -40,37 +41,32 @@ function PropertyTypeCard({ item, isActive = false, onClick }: PropertyTypeCardP
       aria-pressed={isActive}
       aria-label={`${type}: ${count} properties`}
       className={cn(
-        'group flex w-full flex-col items-center justify-between gap-5',
-        'rounded-xl border px-5 py-8 sm:px-6 sm:py-9 lg:px-7 lg:py-10',
-        'min-h-[196px] sm:min-h-[220px] lg:min-h-[248px]',
-        'transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] cursor-pointer',
+        'group flex w-full flex-col items-center justify-center gap-14',
+        'h-[160px] md:h-[200px] rounded-[4px] border-2 px-4 py-4',
+        'transition-all duration-300 cursor-pointer',
         isActive
-          ? 'bg-luxury-crimson border-luxury-crimson text-white shadow-md'
-          : 'bg-white border-luxury-border text-luxury-dark hover:border-luxury-crimson/35 hover:shadow-sm'
+          ? 'bg-hz-primary border-hz-primary text-white shadow-sm'
+          : 'bg-white border-hz-border text-hz-dark hover:border-hz-primary'
       )}
     >
-      {/* Illustration — dominant visual, ~45% of card height */}
-      <div
-        className="flex h-24 w-full items-center justify-center sm:h-28 lg:h-32"
-        aria-hidden="true"
-      >
+      <div className="flex h-14 w-full items-center justify-center" aria-hidden="true">
         <Illustration
-          className="h-full w-auto max-w-[108px] sm:max-w-[120px] lg:max-w-[132px]"
-          strokeClassName={isActive ? 'stroke-white' : undefined}
+          className="h-full w-full"
+          iconClassName={isActive ? 'text-white' : 'text-hz-dark'}
         />
       </div>
 
-      <div className="flex w-full flex-col items-center gap-1.5 text-center">
-        <span className="font-sans text-[15px] font-semibold tracking-[-0.01em] sm:text-base">
+      <div className="flex w-full flex-col items-center gap-3 text-center">
+        <span className="font-poppins text-lg font-medium leading-none">
           {type}
         </span>
         <span
           className={cn(
-            'font-sans text-[11px] uppercase tracking-[0.14em]',
-            isActive ? 'text-white/75' : 'text-luxury-muted'
+            'font-poppins text-[12px] leading-none',
+            isActive ? 'text-white/80' : 'text-[#9A9A9A]'
           )}
         >
-          {count.toLocaleString()} Properties
+          {count.toLocaleString()} Property
         </span>
       </div>
     </button>
@@ -83,24 +79,23 @@ interface PropertyTypeGridProps {
 }
 
 export function PropertyTypeGrid({ activeType, onTypeChange }: PropertyTypeGridProps) {
+  const selectedType = activeType ?? 'Studio';
+
   return (
     <section
       id="properties"
-      className={cn(section({ spacing: 'md', bg: 'cream' }))}
+      className="w-full bg-white py-14 md:py-16"
       aria-labelledby="property-type-heading"
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-
-        {/* Header row */}
-        <div className="mb-10 flex items-end justify-between gap-6">
+      <div className="mx-auto max-w-7xl px-5 md:px-10">
+        <div className="flex items-end justify-between gap-6">
           <div>
-            <p className={cn(sectionEyebrow(), 'mb-2')}>
+            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               Property Type
             </p>
             <h2
               id="property-type-heading"
-              className="text-[clamp(1.75rem,2.8vw,2.5rem)] font-light leading-tight tracking-[-0.02em] text-luxury-dark"
-              style={{ fontFamily: 'var(--font-display)' }}
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
             >
               Try Searching For
             </h2>
@@ -108,38 +103,42 @@ export function PropertyTypeGrid({ activeType, onTypeChange }: PropertyTypeGridP
 
           <a
             href="#listings"
-            className="hidden shrink-0 items-center gap-1.5 font-sans text-sm text-luxury-dark/60 transition-colors duration-200 hover:text-luxury-crimson md:flex"
+            className="hidden shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1 md:flex"
           >
             See All Types
-            <ArrowRight size={14} strokeWidth={1.5} />
+            <ArrowRight size={14} strokeWidth={1.6} />
           </a>
         </div>
 
-        {/* Desktop: full-width fitted grid · Mobile: horizontal scroll */}
-        <div
-          className={cn(
-            'gap-4 lg:gap-5',
-            'flex overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory',
-            'lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0'
-          )}
-          role="list"
-          aria-label="Property type filter"
-        >
-          {PROPERTY_TYPES.map((item) => (
-            <div
-              key={item.type}
-              role="listitem"
-              className="w-[min(72vw,220px)] shrink-0 snap-start lg:w-full lg:shrink"
-            >
-              <PropertyTypeCard
-                item={item}
-                isActive={activeType === item.type}
-                onClick={onTypeChange}
-              />
-            </div>
-          ))}
-        </div>
+        <div className="relative mt-7">
+          <button
+            type="button"
+            aria-label="Previous property type"
+            className="absolute -left-11 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-[3px] border border-hz-primary bg-hz-primary text-white transition-colors duration-200 hover:bg-hz-primary/90 md:flex"
+          >
+            <ChevronLeft size={14} strokeWidth={2} />
+          </button>
 
+          <div className="flex items-stretch gap-3" role="list" aria-label="Property type filter">
+            {PROPERTY_TYPES.map((item) => (
+              <div key={item.type} role="listitem" className="flex-1">
+                <PropertyTypeCard
+                  item={item}
+                  isActive={selectedType === item.type}
+                  onClick={onTypeChange}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Next property type"
+            className="absolute -right-11 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-[3px] border border-[#EEEEEE] bg-white text-[#CCCCCC] transition-colors duration-200 hover:bg-[#FAFAFA] md:flex"
+          >
+            <ChevronRight size={14} strokeWidth={2} />
+          </button>
+        </div>
       </div>
     </section>
   );

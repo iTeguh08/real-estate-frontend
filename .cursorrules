@@ -1,22 +1,172 @@
-# ==========================================================================
-# REAL ESTATE LUXURY DESIGN SYSTEM (Taste-Skill & Typography Rules)
-# ==========================================================================
+# =============================================================================
+# HOMZEN REAL ESTATE DESIGN SYSTEM (Cursor Rules)
+# =============================================================================
+# Strict 1:1 clone of target Homzen landing page design.
+# Apply these rules to ALL component creation and redesigns.
 
-You must strictly follow the premium real-estate design language established in tailwind.config.js:
+## TYPOGRAPHY HIERARCHY
+- HEADINGS (H1, H2, H3, section titles, hero headline): 
+  Font: 'Poppins' (sans-serif, NO SERIFS, font-sans)
+  Weights: font-bold (700) or font-semibold (600)
+  Color: text-[#1A1A2E] (dark navy)
+  Letter-spacing: -0.5px
+  Line-height: 1.15 to 1.2 (tight, clean)
+  
+- BODY TEXT (descriptions, property features, paragraph text):
+  Font: 'Poppins' (sans-serif)
+  Weights: font-regular (400) or font-medium (500)
+  Color: text-[#555555] (medium gray)
+  Line-height: 1.6 to 1.65 (breathing room)
 
-1. TYPOGRAPHY RULES:
-   - HEADINGS: Every main heading, hero title, and section title MUST use the Serif font 'Cormorant Garamond' (font-display). Use lighter weights (font-light or font-normal) for a high-end fashion/architectural magazine feel.
-   - BODY/UI TEXT: All functional UI elements, price tags, descriptions, card contents, and filter buttons MUST use 'Satoshi' (font-sans) to ensure precision and clean readability.
+- UI TEXT (buttons, labels, tags, filters, prices, counts):
+  Font: 'Poppins' (sans-serif)
+  Weights: font-medium (500) or font-semibold (600)
+  Color: Varies by context (see COLOR PALETTE below)
+  Font-size: 12px to 16px (crisp, precise)
 
-2. COLOR PALETTE APPLICATION:
-   - Use `bg-luxury-cream` (#F9F8F6) as the primary background for sections to avoid harsh pure white blinding layers.
-   - Use `text-luxury-dark` (#111111) instead of pure black for highly elegant, readable typography.
-   - Use `bg-luxury-crimson` or `text-luxury-crimson` (#A31D1D) strictly as an accent color (e.g., primary buttons, selected states, or luxury badging). Do not over-use it.
+- SMALL TEXT (metadata, captions, helper text):
+  Font: 'Poppins' (sans-serif)
+  Weight: font-regular (400)
+  Color: text-[#717171] (muted gray)
+  Size: 11px to 13px
 
-3. ICONOGRAPHY DIRECTION:
-   - For structural/property visuals (Beds, Baths, Square Feet, Garage, Villa/Apartment icons), prioritize "Phosphor Icons" or equivalent fine-line linear icons with a thin weight (e.g., `stroke-[1.2]` or `stroke-[1.5]`).
-   - Use "Lucide React" ONLY for system utilities (arrows, close buttons, dropdown chevrons). Avoid generic thick icons on property cards to prevent an AI-slop look.
+## COLOR PALETTE (Tailwind Config)
+Primary Background:
+  - bg-[#FFFFFF] (pure white) — section backgrounds
+  - bg-[#F8F8F8] (soft gray) — alternate sections
 
-4. LAYOUT & WHITE-SPACE (UIUXPROMAX & Impeccable integration):
-   - Maintain generous padding-y (e.g., `py-24` or `py-32`) between sections to let the premium layout "breathe".
-   - Cards must have soft shadows (`shadow-sm`) and subtle rounded corners (`rounded-xl` or `rounded-2xl`) to match image_d045f8.jpg.
+Accent / CTA Color:
+  - bg-[#E84040] or text-[#E84040] (coral-red) — ONLY for:
+    ✓ Primary action buttons (Find Properties, Submit Property, etc.)
+    ✓ Selected/active states (tabs, filters, badges)
+    ✓ Highlight text, urgency markers
+  - Hover: #CC3232 (darker coral)
+  - Do NOT over-use; reserve for primary emphasis only
+
+Text Colors:
+  - text-[#1A1A2E] (#1A1A2E) — headings, dark text
+  - text-[#555555] (#555555) — primary body text
+  - text-[#717171] (#717171) — secondary, labels, metadata
+  - text-[#AAAAAA] (#AAAAAA) — disabled, placeholder text, muted
+
+Borders & Dividers:
+  - border-[#E5E5E5] (light gray)
+  - Use subtle dividers; avoid harsh blacks
+
+Backgrounds (Cards & Sections):
+  - bg-[#FFFFFF] for cards on white sections
+  - bg-[#F8F8F8] for subtle card backgrounds
+
+## ICONOGRAPHY RULES (CRITICAL)
+Property Feature Icons (Beds, Baths, Sq Ft, Garage, Type, Location):
+  - STYLE: Bold, heavy-weight, detailed, intricate icons (NOT thin lines)
+  - SOURCE: Font Awesome 6 (solid weight), Phosphor Icons (fill weight), or custom SVG
+  - Weight: Bold/Solid appearance, fill-based (not stroke-based)
+  - Size: 18px to 28px (prominent, not delicate)
+  - Color: text-[#555555] or text-[#1A1A2E]
+  - AVOID: Lucide React thin icons, stroke-based outlines (creates AI-slop look)
+
+System / Utility Icons (Arrows, Chevrons, Close, Hamburger, Search, Filter):
+  - Use Lucide React for these functional utilities ONLY
+  - Stroke weight: stroke-[1.5] or stroke-[2]
+  - Color: text-[#555555] or text-[#1A1A2E]
+  - Size: 16px to 20px
+
+Icon + Text Spacing:
+  - gap-2 (8px) for compact UI elements
+  - gap-3 (12px) for featured sections
+
+## LAYOUT & WHITESPACE
+Section Padding (Vertical):
+  - py-20 (80px) for major sections
+  - py-16 (64px) for moderate sections
+  - py-12 (48px) for smaller sections
+  - ALWAYS maintain breathing room
+
+Container Max-Width:
+  - max-w-7xl (1280px) for primary content
+  - Horizontal padding: px-20 (80px) on desktop, px-10 (40px) on tablet, px-5 (20px) on mobile
+
+Card Styling:
+  - bg-[#FFFFFF] with subtle shadow: shadow-sm (0 8px 40px rgba(0,0,0,0.10))
+  - Border-radius: rounded-xl (12px) or rounded-2xl (16px)
+  - Padding: p-6 (24px) for standard cards
+  - Border: Optional border-[#E5E5E5] (1px) for definition
+
+Grid Layout (Property Cards, Feature Grid):
+  - Desktop (1024px+): grid-cols-4 for standard cards
+  - Tablet (768px+): grid-cols-2
+  - Mobile (< 768px): grid-cols-1
+  - Gap: gap-6 (24px) between cards
+
+Hover States:
+  - Subtle lift: hover:shadow-lg
+  - Smooth transition: transition-all duration-300
+  - Text color shift: hover:text-[#E84040]
+  - Keep refined, no aggressive transforms
+
+## BUTTON STANDARDS
+Primary Button (CTA):
+  - bg-[#E84040], text-white
+  - px-6 py-3 (24px × 12px)
+  - font-poppins font-semibold text-sm
+  - rounded-lg, shadow-sm
+  - hover:bg-[#CC3232], transition-colors duration-200
+
+Secondary Button:
+  - bg-[#F8F8F8], text-[#1A1A2E]
+  - px-6 py-3
+  - font-poppins font-medium text-sm
+  - rounded-lg
+  - hover:bg-[#E5E5E5]
+
+Outline Button:
+  - border-1.5 border-[#E5E5E5], bg-transparent, text-[#333333]
+  - px-6 py-3
+  - font-poppins font-medium text-sm
+  - rounded-lg
+  - hover:border-[#E84040], hover:text-[#E84040]
+
+## RESPONSIVE DESIGN
+- Mobile-First: Design for 375px, scale up
+- Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
+- Hero Section: Single column on mobile, side-by-side on desktop
+- Property Grid: Adjust columns per breakpoint
+- Typography: Reduce heading size on mobile (text-4xl → text-2xl)
+- Padding: Reduce px on mobile; increase on desktop
+
+## COMPONENT ARCHITECTURE
+- Use Tailwind Utility Classes exclusively
+- Leverage component reusability (Card, Button, Badge, IconLabel)
+- Map all colors to hex values (no arbitrary colors)
+- Use Next.js Image component for all property photos
+- Implement lazy-loading for below-fold images
+
+## STRICT DO's AND DON'Ts
+DO:
+  ✓ Use 'Poppins' for ALL text (serif-free)
+  ✓ Use bold/solid icons for property features (Font Awesome/Phosphor solid)
+  ✓ Apply bg-[#FFFFFF] and bg-[#F8F8F8] for sections
+  ✓ Use text-[#E84040] ONLY for primary CTAs and highlights
+  ✓ Maintain generous section padding (py-20/py-16)
+  ✓ Soft shadows (shadow-sm) and rounded corners
+  ✓ Test hover states on all interactive elements
+  ✓ Keep icons bold, detailed, heavy-weight
+
+DON'T:
+  ✗ Use serif fonts (no Cormorant Garamond, no Georgia)
+  ✗ Use pure black (#000000); use text-[#1A1A2E]
+  ✗ Over-use text-[#E84040]; reserve for primary emphasis
+  ✗ Use thin-stroke icons on property cards (Lucide only for utilities)
+  ✗ Create cramped layouts; prioritize breathing room
+  ✗ Use harsh shadows or aggressive transforms
+  ✗ Mix serif and sans-serif on same component
+  ✗ Use arbitrary Tailwind colors; stick to defined palette
+
+## DESIGN REFERENCES
+- Target Image: Homzen Landing Page (1:1 clone)
+- Primary Font: Poppins (NO serifs, all weights 400-700)
+- Icon Style: Bold, solid, detailed, intricate (heavy-weight appearance)
+- Primary Color: #E84040 (coral-red for CTAs only)
+- Background: #FFFFFF and #F8F8F8
+- Dark Text: #1A1A2E, Body: #555555, Muted: #717171

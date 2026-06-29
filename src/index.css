@@ -10,6 +10,10 @@
 @import "@fontsource/cormorant-garamond/400-italic.css";
 @import "@fontsource/cormorant-garamond/500-italic.css";
 @import "@fontsource/cormorant-garamond/600-italic.css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -17,6 +21,16 @@
     /* ── Typography ──────────────────────────────────────── */
     --font-display: 'Cormorant Garamond', serif;
     --font-sans: 'Satoshi', 'Geist Variable', sans-serif;
+    --font-poppins: 'Poppins', sans-serif;
+
+    /* ── Homzen Component Palette (Navbar + Hero only) ───── */
+    --color-hz-primary: #B22F2A;
+    --color-hz-primary-hover: #8F2420;
+    --color-hz-dark: #1A1A2E;
+    --color-hz-body: #555555;
+    --color-hz-muted: #717171;
+    --color-hz-border: #E5E5E5;
+    --color-hz-bg-soft: #F5F5F5;
 
     /* ── Luxury Brand Palette ────────────────────────────── */
     --color-luxury-dark: oklch(0.14 0 0);

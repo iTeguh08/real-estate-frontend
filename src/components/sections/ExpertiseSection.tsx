@@ -1,19 +1,16 @@
 import { ArrowRight, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { section, luxuryButton, sectionEyebrow } from '@/lib/cva';
 import {
-  BuyHomeIllustration,
-  RentHomeIllustration,
-  SellHomeIllustration,
-} from '@/components/icons/ExpertiseIllustrations';
+  VillaIllustration,
+  ApartmentIllustration,
+  CommercialIllustration,
+} from '@/components/icons/PropertyTypeIllustrations';
 
 interface ExpertiseItem {
   id: string;
   label: string;
   description: string;
-  Illustration: React.ComponentType<{ className?: string; strokeClassName?: string }>;
+  Illustration: React.ComponentType<{ className?: string; iconClassName?: string }>;
 }
 
 const EXPERTISE_ITEMS: ExpertiseItem[] = [
@@ -21,22 +18,22 @@ const EXPERTISE_ITEMS: ExpertiseItem[] = [
     id: 'buy',
     label: 'Buy A Home',
     description:
-      'Find your place with an immersive photo experience and the most listings, including things you won\'t find anywhere else.',
-    Illustration: BuyHomeIllustration,
+      "Find your place with an immersive photo experience and the most listings, including things you won't find anywhere else.",
+    Illustration: VillaIllustration,
   },
   {
     id: 'rent',
     label: 'Rent A Home',
     description:
-      'We\'re creating a seamless online experience — from shopping on the largest rental network to applying, to paying rent.',
-    Illustration: RentHomeIllustration,
+      "We're creating a seamless online experience — from shopping on the largest rental network to applying, to paying rent.",
+    Illustration: ApartmentIllustration,
   },
   {
     id: 'sell',
     label: 'Sell A Home',
     description:
       'No matter what path you take to sell your home, we can help you navigate a successful sale.',
-    Illustration: SellHomeIllustration,
+    Illustration: CommercialIllustration,
   },
 ];
 
@@ -51,10 +48,10 @@ function ExpertiseCheckItem({ value, label }: { value: string; label: string }) 
   return (
     <div className="flex items-start gap-3">
       <span
-        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-luxury-crimson/10 ring-1 ring-luxury-crimson/30"
+        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600"
         aria-hidden="true"
       >
-        <Check size={11} strokeWidth={2.75} className="text-luxury-crimson" />
+        <Check size={11} strokeWidth={2.75} className="text-white" />
       </span>
       <div>
         <span className="font-sans text-sm font-semibold text-luxury-dark">{value}</span>
@@ -64,25 +61,66 @@ function ExpertiseCheckItem({ value, label }: { value: string; label: string }) 
   );
 }
 
+function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
+  const { Illustration, label, description } = item;
+
+  return (
+    <article
+      className={cn(
+        'group flex w-full items-center gap-6',
+        'rounded-[8px] border border-[#EEEEEE] bg-white p-6',
+        'shadow-[0_4px_20px_rgba(0,0,0,0.02)]',
+        'transition-all duration-300',
+        'hover:border-hz-primary/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
+      )}
+    >
+      <div
+        className="flex h-[88px] w-20 shrink-0 items-center justify-center"
+        aria-hidden="true"
+      >
+        <Illustration
+          className="flex h-full w-full items-center justify-center"
+          iconClassName="!h-full !w-full !translate-y-0 object-contain object-center !brightness-100 !contrast-100"
+        />
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
+        <h3 className="font-poppins text-lg font-semibold leading-tight text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
+          {label}
+        </h3>
+        <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">
+          {description}
+        </p>
+        <a
+          href="#"
+          className="mt-1 inline-flex w-fit items-center gap-1 font-poppins text-[13px] font-semibold text-hz-dark transition-colors duration-200 hover:text-hz-primary"
+        >
+          Learn More
+          <ArrowRight size={14} strokeWidth={1.6} />
+        </a>
+      </div>
+    </article>
+  );
+}
+
 export function ExpertiseSection() {
   return (
     <section
-      className={cn(section({ spacing: 'md', bg: 'white' }))}
+      className="w-full bg-[#F8F8F8] py-14 md:py-20"
       aria-labelledby="expertise-heading"
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="mx-auto max-w-7xl px-5 md:px-10 xl:px-20">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
 
-          {/* ── Left: Copy block (layout unchanged — checklist icons only) ── */}
+          {/* ── Left Column ── */}
           <div className="flex flex-col gap-6">
             <div>
-              <p className={cn(sectionEyebrow(), 'mb-2')}>
+              <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
                 Our Expertise
               </p>
               <h2
                 id="expertise-heading"
-                className="text-[clamp(1.8rem,3vw,2.8rem)] font-light leading-tight tracking-[-0.02em] text-luxury-dark"
-                style={{ fontFamily: 'var(--font-display)' }}
+                className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
               >
                 Discover What Sets Our Real Estate Expertise Apart
               </h2>
@@ -100,48 +138,25 @@ export function ExpertiseSection() {
               ))}
             </div>
 
-            <Button
-              variant="ghost"
-              className={cn(
-                luxuryButton({ variant: 'crimson', size: 'md' }),
-                'mt-2 gap-1.5 self-start'
-              )}
+            <a
+              href="#"
+              className="mt-2 flex items-center gap-1.5 self-start font-poppins text-[13px] text-hz-body transition-all duration-200 hover:text-hz-primary hover:underline hover:decoration-hz-primary hover:decoration-1 hover:underline-offset-4"
               aria-label="Learn more about us"
             >
               Learn More
               <ArrowRight size={14} strokeWidth={1.5} />
-            </Button>
+            </a>
           </div>
 
-          {/* ── Right: Service cards with sketch illustrations ─────────── */}
-          <div className="flex flex-col gap-0" role="list" aria-label="Our services">
-            {EXPERTISE_ITEMS.map((item, index) => (
+          {/* ── Right Column: stacked service cards ── */}
+          <div
+            className="mx-auto flex w-full max-w-[540px] flex-col gap-5 lg:mx-0 lg:max-w-none"
+            role="list"
+            aria-label="Our services"
+          >
+            {EXPERTISE_ITEMS.map((item) => (
               <div key={item.id} role="listitem">
-                <div className="group -mx-4 flex cursor-pointer items-start gap-5 rounded-xl px-4 py-6 transition-colors duration-200 hover:bg-luxury-cream">
-                  <span
-                    className="mt-0.5 flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-xl border border-luxury-border bg-luxury-cream transition-colors duration-300 group-hover:border-luxury-crimson/25 group-hover:bg-luxury-crimson/5 sm:h-20 sm:w-20"
-                    aria-hidden="true"
-                  >
-                    <item.Illustration className="h-11 w-11 sm:h-12 sm:w-12" />
-                  </span>
-                  <div className="min-w-0 flex flex-col gap-1.5">
-                    <h3 className="font-sans text-sm font-semibold text-luxury-dark transition-colors duration-200 group-hover:text-luxury-crimson">
-                      {item.label}
-                    </h3>
-                    <p className="font-sans text-sm leading-relaxed text-luxury-muted">
-                      {item.description}
-                    </p>
-                  </div>
-                  <span
-                    className="mt-2 shrink-0 translate-x-0 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
-                    aria-hidden="true"
-                  >
-                    <ArrowRight size={15} strokeWidth={1.5} className="text-luxury-crimson" />
-                  </span>
-                </div>
-                {index < EXPERTISE_ITEMS.length - 1 && (
-                  <Separator className="bg-luxury-border" />
-                )}
+                <ExpertiseServiceCard item={item} />
               </div>
             ))}
           </div>

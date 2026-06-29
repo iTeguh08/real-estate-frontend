@@ -1,29 +1,61 @@
 import type { VariantProps } from 'class-variance-authority';
-import { Bed, Bathtub, ArrowsOut, Car } from '@phosphor-icons/react';
-import { Heart } from 'lucide-react';
+import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
+import { ArrowLeftRight, ArrowRight, Eye, Heart, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { propertyCard, statusBadge, newBadge } from '@/lib/cva';
+import { propertyCard } from '@/lib/cva';
 import type { Property } from '@/types';
 
-// ─── Spec pill component ──────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function formatPropertyPrice({ price, currency, status }: Property) {
+  const amount = `${currency}${price.toLocaleString('en-US')}`;
+  return status === 'For Rent' ? `${amount} /month` : amount;
+}
+
+function statusLabel(status: Property['status']) {
+  return status.toUpperCase();
+}
+
+// ─── Spec pill ──────────────────────────────────────────────────────────────
 
 interface SpecPillProps {
   icon: React.ReactNode;
   value: string | number;
-  label: string;
+  suffix?: string;
 }
 
-function SpecPill({ icon, value, label }: SpecPillProps) {
+function SpecPill({ icon, value, suffix }: SpecPillProps) {
   return (
-    <div className="flex items-center gap-1.5" aria-label={`${value} ${label}`}>
-      <span className="text-luxury-muted" aria-hidden="true">
+    <div className="flex items-center gap-1.5" aria-label={`${value}${suffix ?? ''}`}>
+      <span className="text-hz-dark/80" aria-hidden="true">
         {icon}
       </span>
-      <span className="font-sans text-xs text-luxury-dark/70">
+      <span className="font-poppins text-xs text-hz-dark">
         {value}
-        <span className="ml-0.5 text-luxury-muted">{label}</span>
+        {suffix && <span className="text-hz-muted">{suffix}</span>}
       </span>
     </div>
+  );
+}
+
+function ImageActionButton({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick?: (e: React.MouseEvent) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-[2px] transition-colors duration-200 hover:bg-black/65"
+    >
+      {children}
+    </button>
   );
 }
 
@@ -48,7 +80,7 @@ export function PropertyCard({
   onSelect,
   onWishlist,
 }: PropertyCardProps) {
-  const { id, title, location, price, currency, status, specs, imageUrl, isNew } = property;
+  const { id, title, location, status, type, specs, imageUrl, isFeatured } = property;
   const isListVariant = variant === 'list';
   const isInteractive = Boolean(onSelect);
 
@@ -56,15 +88,21 @@ export function PropertyCard({
     onSelect?.(property);
   };
 
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <article
       className={cn(
         propertyCard({ variant, size }),
+        'border border-hz-border',
         uniformHeight && 'flex h-full flex-col',
-        isInteractive && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-luxury-crimson/40 focus-visible:ring-offset-2',
+        isInteractive &&
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary/30 focus-visible:ring-offset-2',
         className
       )}
-      aria-label={`${title}, ${status}, ${currency}${price.toLocaleString()}`}
+      aria-label={`${title}, ${status}, ${formatPropertyPrice(property)}`}
       onClick={isInteractive ? handleActivate : undefined}
       onKeyDown={
         isInteractive
@@ -79,12 +117,12 @@ export function PropertyCard({
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
     >
-      {/* ── Image wrapper ── */}
+      {/* ── Image ── */}
       <div
         className={cn(
-          'relative shrink-0 overflow-hidden bg-luxury-cream',
-          isListVariant ? 'w-[180px] shrink-0 rounded-l-xl' : 'rounded-t-xl',
-          !isListVariant && (uniformHeight ? 'aspect-[4/3]' : 'aspect-[4/3]')
+          'relative shrink-0 overflow-hidden bg-hz-bg-soft',
+          isListVariant ? 'w-[180px] shrink-0 rounded-l-[3px]' : 'rounded-t-[3px]',
+          !isListVariant && 'aspect-[16/10]'
         )}
       >
         <img
@@ -94,97 +132,121 @@ export function PropertyCard({
           className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
-        {/* Status badge */}
-        <span className={cn(statusBadge({ status, position: 'overlay' }))}>
-          {status}
-        </span>
-
-        {/* Top-right — new label + wishlist */}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
-          {isNew && (
-            <span className={cn(newBadge())}>New</span>
+        {/* Top-left — stacked status badges */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col items-start gap-1.5">
+          {isFeatured && (
+            <span className="rounded-[3px] bg-emerald-600 px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
+              Featured
+            </span>
           )}
-          <button
-            type="button"
+          <span
+            className={cn(
+              'rounded-[3px] px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white',
+              status === 'For Rent' ? 'bg-[#3D5A80]' : 'bg-[#2F4B7C]'
+            )}
+          >
+            {statusLabel(status)}
+          </span>
+        </div>
+
+        {/* Top-right — action icons */}
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+          <ImageActionButton
+            label={`Save ${title} to wishlist`}
             onClick={(e) => {
-              e.stopPropagation();
+              stopPropagation(e);
               onWishlist?.(id);
             }}
-            aria-label={`Save ${title} to wishlist`}
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/80 text-luxury-dark/50 transition-colors duration-200 hover:bg-white hover:text-luxury-crimson"
           >
-            <Heart size={13} strokeWidth={1.5} />
-          </button>
+            <Heart size={16} strokeWidth={1.75} />
+          </ImageActionButton>
+          <ImageActionButton label={`Compare ${title}`} onClick={stopPropagation}>
+            <ArrowLeftRight size={16} strokeWidth={1.75} />
+          </ImageActionButton>
+          <ImageActionButton
+            label={`Quick view ${title}`}
+            onClick={(e) => {
+              stopPropagation(e);
+              handleActivate();
+            }}
+          >
+            <Eye size={16} strokeWidth={1.75} />
+          </ImageActionButton>
+        </div>
+
+        {/* Bottom-left — property type */}
+        <div className="absolute bottom-3 left-3 z-10">
+          <span className="rounded-[3px] bg-white px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-hz-dark shadow-sm">
+            {type}
+          </span>
         </div>
       </div>
 
       {/* ── Content ── */}
       <div
         className={cn(
-          'flex flex-col gap-2 p-4',
-          uniformHeight && 'min-h-[148px] flex-1 overflow-hidden'
+          'flex flex-col gap-3 p-4',
+          uniformHeight && 'min-h-[156px] flex-1'
         )}
       >
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <h3
-              className={cn(
-                'font-sans text-sm font-medium text-luxury-dark',
-                uniformHeight ? 'line-clamp-2' : 'truncate'
-              )}
-              title={title}
-            >
-              {title}
-            </h3>
-            <p
-              className={cn(
-                'mt-0.5 font-sans text-xs text-luxury-muted',
-                uniformHeight ? 'line-clamp-1' : 'truncate'
-              )}
-              title={location}
-            >
-              {location}
-            </p>
-          </div>
-          <p
-            className="shrink-0 whitespace-nowrap font-sans text-sm font-semibold text-luxury-crimson"
-            aria-label={`Price: ${currency}${price.toLocaleString()}`}
+        <div className="min-w-0 space-y-1.5">
+          <h3
+            className={cn(
+              'font-poppins text-[15px] font-semibold leading-snug text-hz-dark',
+              uniformHeight ? 'line-clamp-2' : 'truncate'
+            )}
+            title={title}
           >
-            {currency}{price.toLocaleString()}
+            {title}
+          </h3>
+          <p
+            className={cn(
+              'flex items-start gap-1 font-poppins text-xs leading-relaxed text-hz-muted',
+              uniformHeight ? 'line-clamp-2' : 'truncate'
+            )}
+            title={location}
+          >
+            <MapPin size={12} strokeWidth={1.75} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <span>{location}</span>
           </p>
         </div>
 
-        <div className="my-1 h-px bg-luxury-border" aria-hidden="true" />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          <SpecPill
+            icon={<Bed size={18} weight="fill" />}
+            value={specs.beds}
+          />
+          <SpecPill
+            icon={<Bathtub size={18} weight="fill" />}
+            value={specs.baths}
+          />
+          <SpecPill
+            icon={<ArrowsOut size={18} weight="fill" />}
+            value={specs.sqft.toLocaleString()}
+            suffix=" SqFt"
+          />
+        </div>
 
-        {/* Specs — wrap within fixed height, clip overflow until card is opened */}
         <div
           className={cn(
-            'flex flex-wrap items-center gap-x-4 gap-y-1.5',
-            uniformHeight && 'max-h-[3.25rem] overflow-hidden'
+            'flex items-center justify-between gap-3 border-t border-hz-border pt-3',
+            uniformHeight && 'mt-auto'
           )}
         >
-          <SpecPill
-            icon={<Bed size={13} weight="light" />}
-            value={specs.beds}
-            label=" Beds"
-          />
-          <SpecPill
-            icon={<Bathtub size={13} weight="light" />}
-            value={specs.baths}
-            label=" Baths"
-          />
-          <SpecPill
-            icon={<ArrowsOut size={13} weight="light" />}
-            value={specs.sqft.toLocaleString()}
-            label=" sqft"
-          />
-          {specs.garage !== undefined && (
-            <SpecPill
-              icon={<Car size={13} weight="light" />}
-              value={specs.garage}
-              label=" Garage"
-            />
-          )}
+          <a
+            href="#"
+            onClick={stopPropagation}
+            className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
+          >
+            Learn More
+            <ArrowRight size={14} strokeWidth={1.6} />
+          </a>
+          <p
+            className="shrink-0 text-right font-poppins text-sm font-semibold text-hz-dark"
+            aria-label={`Price: ${formatPropertyPrice(property)}`}
+          >
+            {formatPropertyPrice(property)}
+          </p>
         </div>
       </div>
     </article>

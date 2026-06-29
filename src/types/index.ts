@@ -1,7 +1,7 @@
 // ─── Property ──────────────────────────────────────────────────────────────
 
 export type PropertyStatus = 'For Sale' | 'For Rent' | 'Off Plan' | 'Sold';
-export type PropertyType = 'Townhouse' | 'Villa' | 'Apartment' | 'Office' | 'Commercial';
+export type PropertyType = 'Townhouse' | 'Villa' | 'Studio' | 'Apartment' | 'Office' | 'Commercial';
 
 export interface PropertySpecs {
   beds: number;

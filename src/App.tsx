@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { SearchFilterBar } from '@/components/sections/SearchFilterBar';
 import { PropertyTypeGrid } from '@/components/sections/PropertyTypeGrid';
 import { FeaturedProperties } from '@/components/sections/FeaturedProperties';
 import { ExpertiseSection } from '@/components/sections/ExpertiseSection';
@@ -23,7 +22,6 @@ export default function App() {
 
       <main id="main-content">
         <HeroSection />
-        <SearchFilterBar />
         <PropertyTypeGrid
           activeType={activePropertyType}
           onTypeChange={setActivePropertyType}

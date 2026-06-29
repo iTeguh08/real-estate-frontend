@@ -47,7 +47,7 @@ export const propertyCard = cva(
   {
     variants: {
       variant: {
-        grid: 'rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1',
+        grid: 'rounded-[3px] shadow-sm hover:shadow-md hover:-translate-y-1',
         list: 'rounded-xl shadow-sm hover:shadow-md flex flex-row',
         featured: 'rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1',
       },
