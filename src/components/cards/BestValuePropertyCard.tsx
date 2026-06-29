@@ -1,7 +1,6 @@
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
-import { Heart, MapPin } from 'lucide-react';
+import { ArrowLeftRight, Eye, Heart, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { statusBadge } from '@/lib/cva';
 import type { PropertyWithAgent } from '@/types';
 
 interface BestValuePropertyCardProps {
@@ -10,9 +9,63 @@ interface BestValuePropertyCardProps {
   onSelect?: (property: PropertyWithAgent) => void;
 }
 
-function formatPricePerSqft(currency: string, price: number, sqft: number) {
-  const perSqft = price / sqft;
-  return `${currency}${perSqft.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/sqft`;
+function statusLabel(status: PropertyWithAgent['status']) {
+  return status.toUpperCase();
+}
+
+function formatCardPrice(property: PropertyWithAgent) {
+  const { price, currency, status, specs } = property;
+
+  if (status === 'For Rent') {
+    return `${currency}${price.toLocaleString('en-US')} /month`;
+  }
+
+  const perSqft = price / specs.sqft;
+  return `${currency}${perSqft.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} /sqft`;
+}
+
+function ImageActionButton({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick?: (e: React.MouseEvent) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-[2px] transition-colors duration-200 hover:bg-black/65"
+    >
+      {children}
+    </button>
+  );
+}
+
+function SpecItem({
+  icon,
+  value,
+  suffix,
+}: {
+  icon: React.ReactNode;
+  value: string | number;
+  suffix?: string;
+}) {
+  return (
+    <span className="flex items-center gap-1.5 font-poppins text-xs text-hz-dark">
+      <span className="text-hz-dark/80" aria-hidden="true">
+        {icon}
+      </span>
+      {value}
+      {suffix && <span className="text-hz-muted">{suffix}</span>}
+    </span>
+  );
 }
 
 export function BestValuePropertyCard({
@@ -23,8 +76,6 @@ export function BestValuePropertyCard({
   const {
     title,
     location,
-    price,
-    currency,
     status,
     type,
     specs,
@@ -34,17 +85,20 @@ export function BestValuePropertyCard({
   } = property;
   const isInteractive = Boolean(onSelect);
 
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <article
       className={cn(
-        'group flex h-full overflow-hidden rounded-xl border border-luxury-border bg-white shadow-sm',
-        'transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]',
-        'hover:border-luxury-crimson/15 hover:shadow-md',
+        'group flex h-full overflow-hidden rounded-[3px] border border-hz-border bg-white shadow-sm',
+        'transition-all duration-300 hover:border-hz-primary/20 hover:shadow-md',
         isInteractive &&
-          'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-luxury-crimson/40 focus-visible:ring-offset-2',
+          'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary/30 focus-visible:ring-offset-2',
         className
       )}
-      aria-label={`${title}, ${location}, ${formatPricePerSqft(currency, price, specs.sqft)}`}
+      aria-label={`${title}, ${location}, ${formatCardPrice(property)}`}
       onClick={isInteractive ? () => onSelect?.(property) : undefined}
       onKeyDown={
         isInteractive
@@ -59,102 +113,95 @@ export function BestValuePropertyCard({
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
     >
-      {/* Image — fixed 3:2 aspect ratio */}
-      <div className="relative aspect-3/2 w-[148px] shrink-0 overflow-hidden bg-luxury-cream sm:w-[168px]">
+      <div className="relative w-[168px] shrink-0 self-stretch overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <img
           src={imageUrl}
           alt={`${title} — ${location}`}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.03]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
-        {/* Soft bottom fade — keeps type readable without a heavy badge */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/35 to-transparent"
-          aria-hidden="true"
-        />
-
-        {/* Single status badge — top-left only */}
-        <span
-          className={cn(
-            statusBadge({ status, position: 'inline' }),
-            'absolute top-2.5 left-2.5 z-10 text-[9px] px-2 py-0.5'
+        <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1">
+          {isFeatured && (
+            <span className="rounded-[3px] bg-emerald-600 px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white">
+              Featured
+            </span>
           )}
-        >
-          {status}
-        </span>
+          <span
+            className={cn(
+              'rounded-[3px] px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white',
+              status === 'For Rent' ? 'bg-[#3D5A80]' : 'bg-[#2F4B7C]'
+            )}
+          >
+            {statusLabel(status)}
+          </span>
+        </div>
 
-        {/* Wishlist — one quiet control, top-right */}
-        <button
-          type="button"
-          aria-label="Save to wishlist"
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-2.5 right-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-luxury-dark/55 shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-white hover:text-luxury-crimson"
-        >
-          <Heart size={12} strokeWidth={1.75} />
-        </button>
+        <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1">
+          <ImageActionButton label={`Save ${title} to wishlist`} onClick={stopPropagation}>
+            <Heart size={14} strokeWidth={1.75} />
+          </ImageActionButton>
+          <ImageActionButton label={`Compare ${title}`} onClick={stopPropagation}>
+            <ArrowLeftRight size={14} strokeWidth={1.75} />
+          </ImageActionButton>
+          <ImageActionButton
+            label={`Quick view ${title}`}
+            onClick={(e) => {
+              stopPropagation(e);
+              onSelect?.(property);
+            }}
+          >
+            <Eye size={14} strokeWidth={1.75} />
+          </ImageActionButton>
+        </div>
 
-        {/* Property type — bottom strip, not a floating box */}
-        <span className="absolute bottom-2.5 left-2.5 z-10 font-sans text-[10px] font-medium uppercase tracking-[0.12em] text-white/90">
-          {type}
-        </span>
+        <div className="absolute bottom-2.5 left-2.5 z-10">
+          <span className="rounded-[3px] bg-white px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-hz-dark shadow-sm">
+            {type}
+          </span>
+        </div>
       </div>
 
-      {/* Content — fixed rhythm so every card matches height */}
-      <div className="flex min-h-[168px] min-w-0 flex-1 flex-col p-5 sm:p-6">
-        <div className="min-h-[5.75rem] space-y-1.5">
-          <p
-            className={cn(
-              'font-sans text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-600',
-              !isFeatured && 'invisible'
-            )}
-            aria-hidden={!isFeatured}
-          >
-            Featured
-          </p>
+      <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
+        <div className="min-w-0 space-y-1.5">
           <h3
-            className="line-clamp-2 min-h-[2.5rem] font-sans text-sm font-semibold leading-snug text-luxury-dark sm:text-[15px]"
+            className="line-clamp-2 font-poppins text-[15px] font-semibold leading-snug text-hz-dark sm:text-base"
             title={title}
           >
             {title}
           </h3>
           <p
-            className="flex min-h-[2.5rem] items-start gap-1.5 font-sans text-xs leading-relaxed text-luxury-muted"
+            className="flex items-start gap-1 font-poppins text-xs leading-relaxed text-hz-muted sm:text-[13px]"
             title={location}
           >
-            <MapPin size={11} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+            <MapPin size={12} strokeWidth={1.75} className="mt-0.5 shrink-0" aria-hidden="true" />
             <span className="line-clamp-2">{location}</span>
           </p>
         </div>
 
-        <div className="mt-4 flex min-h-[1.25rem] flex-wrap items-center gap-x-5 gap-y-2 pb-5">
-          <span className="flex items-center gap-1.5 font-sans text-xs text-luxury-dark/75">
-            <Bed size={13} weight="light" className="text-luxury-muted" aria-hidden="true" />
-            {specs.beds}
-          </span>
-          <span className="flex items-center gap-1.5 font-sans text-xs text-luxury-dark/75">
-            <Bathtub size={13} weight="light" className="text-luxury-muted" aria-hidden="true" />
-            {specs.baths}
-          </span>
-          <span className="flex items-center gap-1.5 font-sans text-xs text-luxury-dark/75">
-            <ArrowsOut size={13} weight="light" className="text-luxury-muted" aria-hidden="true" />
-            {specs.sqft.toLocaleString()} SqFt
-          </span>
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          <SpecItem icon={<Bed size={16} weight="fill" />} value={specs.beds} />
+          <SpecItem icon={<Bathtub size={16} weight="fill" />} value={specs.baths} />
+          <SpecItem
+            icon={<ArrowsOut size={16} weight="fill" />}
+            value={specs.sqft.toLocaleString()}
+            suffix=" SqFt"
+          />
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-4 border-t border-luxury-border pt-5">
-          <div className="flex min-w-0 items-center gap-2.5">
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-hz-border pt-4">
+          <div className="flex min-w-0 items-center gap-2">
             <img
               src={agent.avatarUrl}
               alt={agent.name}
-              className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-luxury-border"
+              className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-hz-border"
             />
-            <span className="truncate font-sans text-xs font-medium text-luxury-dark">
+            <span className="truncate font-poppins text-xs font-medium text-hz-dark sm:text-[13px]">
               {agent.name}
             </span>
           </div>
-          <p className="shrink-0 text-right font-sans text-xs font-semibold leading-tight text-luxury-crimson sm:text-sm">
-            {formatPricePerSqft(currency, price, specs.sqft)}
+          <p className="shrink-0 text-right font-poppins text-sm font-semibold text-hz-dark">
+            {formatCardPrice(property)}
           </p>
         </div>
       </div>

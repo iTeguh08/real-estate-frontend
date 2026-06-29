@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { section, luxuryButton, sectionEyebrow } from '@/lib/cva';
 import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
+import { cn } from '@/lib/utils';
 import type { PropertyWithAgent } from '@/types';
 
 const STUB_BEST_VALUE: PropertyWithAgent[] = [
@@ -88,45 +85,46 @@ export function BestPropertyValueSection({
 
   return (
     <section
-      className={cn(section({ spacing: 'md', bg: 'white' }))}
+      className="w-full bg-[#F8F8F8] py-16 md:py-20"
       aria-labelledby="best-value-heading"
     >
-      <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+      <div className="mx-auto max-w-7xl px-5 md:px-10">
 
-        <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className={cn(sectionEyebrow(), 'mb-2')}>
+            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               Top Picks
             </p>
             <h2
               id="best-value-heading"
-              className="text-[clamp(1.8rem,3vw,2.8rem)] font-light leading-tight tracking-[-0.02em] text-luxury-dark"
-              style={{ fontFamily: 'var(--font-display)' }}
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
             >
               Best Property Value
             </h2>
           </div>
-          <Button
-            variant="ghost"
-            className={cn(luxuryButton({ variant: 'outline', size: 'md' }), 'shrink-0 gap-1.5')}
+
+          <a
+            href="#listings"
+            className={cn(
+              'inline-flex shrink-0 items-center justify-center self-start sm:self-auto',
+              'rounded-[3px] border-none bg-hz-primary px-6 py-2.5',
+              'font-poppins text-[13px] font-semibold text-white no-underline outline-none',
+              'transition-colors duration-200 hover:bg-hz-primary-hover'
+            )}
             aria-label="View all best value properties"
           >
             View All
-            <ArrowRight size={14} strokeWidth={1.5} />
-          </Button>
+          </a>
         </div>
 
         <div
-          className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2 lg:gap-8"
+          className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-2"
           role="list"
           aria-label="Best property value listings"
         >
           {properties.map((property) => (
             <div key={property.id} className="h-full" role="listitem">
-              <BestValuePropertyCard
-                property={property}
-                onSelect={setSelectedProperty}
-              />
+              <BestValuePropertyCard property={property} onSelect={setSelectedProperty} />
             </div>
           ))}
         </div>
