@@ -113,12 +113,12 @@ export function BestValuePropertyCard({
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
     >
-      <div className="relative w-[168px] shrink-0 self-stretch overflow-hidden bg-hz-bg-soft sm:w-[200px]">
+      <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <img
           src={imageUrl}
           alt={`${title} — ${location}`}
           loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1">
@@ -179,17 +179,21 @@ export function BestValuePropertyCard({
           </p>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-          <SpecItem icon={<Bed size={16} weight="fill" />} value={specs.beds} />
-          <SpecItem icon={<Bathtub size={16} weight="fill" />} value={specs.baths} />
+        <div className="my-4 h-px w-full bg-hz-border" aria-hidden="true" />
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          <SpecItem icon={<Bed size={16} weight="regular" />} value={specs.beds} />
+          <SpecItem icon={<Bathtub size={16} weight="regular" />} value={specs.baths} />
           <SpecItem
-            icon={<ArrowsOut size={16} weight="fill" />}
+            icon={<ArrowsOut size={16} weight="regular" />}
             value={specs.sqft.toLocaleString()}
             suffix=" SqFt"
           />
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-hz-border pt-4">
+        <div className="my-4 h-px w-full bg-hz-border" aria-hidden="true" />
+
+        <div className="mt-auto flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
             <img
               src={agent.avatarUrl}
