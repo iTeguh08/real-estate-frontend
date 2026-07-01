@@ -1,42 +1,40 @@
-import { useState } from 'react';
-import { SiteHeader } from '@/components/layout/SiteHeader';
-import { SiteFooter } from '@/components/layout/SiteFooter';
-import { HeroSection } from '@/components/sections/HeroSection';
-import { PropertyTypeGrid } from '@/components/sections/PropertyTypeGrid';
-import { FeaturedProperties } from '@/components/sections/FeaturedProperties';
-import { ExpertiseSection } from '@/components/sections/ExpertiseSection';
-import { LocationSection } from '@/components/sections/LocationSection';
-import { BestPropertyValueSection } from '@/components/sections/BestPropertyValueSection';
-import { MeetOurAgentsSection } from '@/components/sections/MeetOurAgentsSection';
-import { WhatPeopleSaySection } from '@/components/sections/WhatPeopleSaySection';
-import { HelpfulGuidesSection } from '@/components/sections/HelpfulGuidesSection';
-import type { PropertyType } from '@/types';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { AppShell } from '@/components/layout/AppShell';
+import { ListingFiltersProvider } from '@/hooks/useListingFilters';
+import { HomePage } from '@/pages/HomePage';
+import { PropertyDetailPage } from '@/pages/PropertyDetailPage';
+import { BlogPage } from '@/pages/BlogPage';
+import { BlogArticlePage } from '@/pages/BlogArticlePage';
+import { ComparePage } from '@/pages/ComparePage';
+import { WishlistPage } from '@/pages/WishlistPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { RegisterPage } from '@/pages/RegisterPage';
+import { SubmitPropertyPage } from '@/pages/SubmitPropertyPage';
+import { DashboardPage } from '@/pages/DashboardPage';
+import { AgentProfilePage } from '@/pages/AgentProfilePage';
+import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export default function App() {
-  const [activePropertyType, setActivePropertyType] = useState<PropertyType | undefined>(
-    undefined
-  );
-
   return (
-    <div className="min-h-screen bg-[--color-luxury-cream]">
-      <SiteHeader />
-
-      <main id="main-content">
-        <HeroSection />
-        <PropertyTypeGrid
-          activeType={activePropertyType}
-          onTypeChange={setActivePropertyType}
-        />
-        <FeaturedProperties />
-        <ExpertiseSection />
-        <LocationSection />
-        <BestPropertyValueSection />
-        <MeetOurAgentsSection />
-        <WhatPeopleSaySection />
-        <HelpfulGuidesSection />
-      </main>
-
-      <SiteFooter />
-    </div>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <ListingFiltersProvider>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route index element={<HomePage />} />
+            <Route path="properties/:slug" element={<PropertyDetailPage />} />
+            <Route path="blog" element={<BlogPage />} />
+            <Route path="blog/:slug" element={<BlogArticlePage />} />
+            <Route path="agents/:slug" element={<AgentProfilePage />} />
+            <Route path="compare" element={<ComparePage />} />
+            <Route path="wishlist" element={<WishlistPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="submit-property" element={<SubmitPropertyPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </ListingFiltersProvider>
+    </BrowserRouter>
   );
 }

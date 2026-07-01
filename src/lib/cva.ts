@@ -15,13 +15,13 @@ export const luxuryButton = cva(
     variants: {
       variant: {
         crimson:
-          'bg-luxury-crimson text-white rounded-sm hover:bg-luxury-crimson-hover hover:text-white',
+          'bg-luxury-crimson text-white rounded-hz hover:bg-luxury-crimson-hover hover:text-white',
         ghost:
-          'bg-transparent text-luxury-dark hover:bg-luxury-dark/6 rounded-sm',
+          'bg-transparent text-luxury-dark hover:bg-luxury-dark/6 rounded-hz',
         outline:
-          'border border-luxury-dark/20 bg-white text-luxury-dark rounded-sm hover:bg-luxury-dark hover:text-white',
+          'border border-luxury-dark/20 bg-white text-luxury-dark rounded-hz hover:bg-luxury-dark hover:text-white',
         'outline-crimson':
-          'border border-luxury-crimson text-luxury-crimson rounded-sm hover:bg-luxury-crimson hover:text-white',
+          'border border-luxury-crimson text-luxury-crimson rounded-hz hover:bg-luxury-crimson hover:text-white',
       },
       size: {
         sm: 'px-4 py-2 text-xs',
@@ -47,9 +47,9 @@ export const propertyCard = cva(
   {
     variants: {
       variant: {
-        grid: 'rounded-[3px] shadow-sm hover:shadow-md hover:-translate-y-1',
-        list: 'rounded-xl shadow-sm hover:shadow-md flex flex-row',
-        featured: 'rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1',
+        grid: 'rounded-hz shadow-sm hover:shadow-md hover:-translate-y-1',
+        list: 'rounded-hz shadow-sm hover:shadow-md flex flex-row',
+        featured: 'rounded-hz shadow-md hover:shadow-lg hover:-translate-y-1',
       },
       size: {
         sm: 'max-w-[260px]',
@@ -66,7 +66,7 @@ export type PropertyCardVariants = VariantProps<typeof propertyCard>;
 
 // ─── Property Status Badge ──────────────────────────────────────────────────
 export const statusBadge = cva(
-  'inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-sans font-medium tracking-wide uppercase rounded-[3px]',
+  'inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-sans font-medium tracking-wide uppercase rounded-hz',
   {
     variants: {
       status: {
@@ -89,7 +89,7 @@ export type StatusBadgeVariants = VariantProps<typeof statusBadge>;
 // ─── "New" listing badge ────────────────────────────────────────────────────
 // Frosted ivory pill — distinct from status badges without loud amber/yellow.
 export const newBadge = cva(
-  'inline-flex items-center justify-center px-2.5 py-1 font-sans text-[10px] font-semibold uppercase leading-none tracking-[0.14em] rounded-[3px] bg-white/95 text-luxury-crimson shadow-sm ring-1 ring-white/40 backdrop-blur-sm'
+  'inline-flex items-center justify-center px-2.5 py-1 font-sans text-[10px] font-semibold uppercase leading-none tracking-[0.14em] rounded-hz bg-white/95 text-luxury-crimson shadow-sm ring-1 ring-white/40 backdrop-blur-sm'
 );
 
 export type NewBadgeVariants = VariantProps<typeof newBadge>;

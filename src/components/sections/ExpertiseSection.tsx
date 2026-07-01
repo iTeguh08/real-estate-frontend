@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import { ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { routes } from '@/lib/routes';
 import {
   VillaIllustration,
   ApartmentIllustration,
@@ -54,8 +56,8 @@ function ExpertiseCheckItem({ value, label }: { value: string; label: string }) 
         <Check size={11} strokeWidth={2.75} className="text-white" />
       </span>
       <div>
-        <span className="font-sans text-sm font-semibold text-luxury-dark">{value}</span>
-        <span className="ml-1.5 font-sans text-sm text-luxury-muted">{label}</span>
+        <span className="font-poppins text-sm font-semibold text-hz-dark">{value}</span>
+        <span className="ml-1.5 font-poppins text-sm text-hz-muted">{label}</span>
       </div>
     </div>
   );
@@ -68,7 +70,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
     <article
       className={cn(
         'group flex w-full items-center gap-6',
-        'rounded-[8px] bg-white p-6',
+        'rounded-hz bg-white p-6',
         'shadow-[0_4px_20px_rgba(0,0,0,0.02)]',
         'transition-all duration-300',
         'hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
@@ -91,13 +93,13 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
         <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">
           {description}
         </p>
-        <a
-          href="#"
-          className="mt-1 inline-flex w-fit items-center gap-1 font-poppins text-[13px] font-semibold text-hz-dark transition-colors duration-200 hover:text-hz-primary"
+        <Link
+          to={{ pathname: routes.home, hash: '#listings' }}
+          className="mt-1 inline-flex w-fit items-center gap-1 font-poppins text-[13px] font-semibold text-hz-dark no-underline transition-colors duration-200 hover:text-hz-primary"
         >
           Learn More
           <ArrowRight size={14} strokeWidth={1.6} />
-        </a>
+        </Link>
       </div>
     </article>
   );
@@ -106,6 +108,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
 export function ExpertiseSection() {
   return (
     <section
+      id="expertise"
       className="w-full bg-[#F8F8F8] py-14 md:py-20"
       aria-labelledby="expertise-heading"
     >
@@ -126,7 +129,7 @@ export function ExpertiseSection() {
               </h2>
             </div>
 
-            <p className="max-w-[460px] font-sans text-sm leading-relaxed text-luxury-muted">
+            <p className="max-w-[460px] font-poppins text-sm leading-relaxed text-hz-muted">
               We provide a full suite of real estate services — from first consultation to
               closing — supported by market-leading data and a team of dedicated professionals
               who put your goals first.
@@ -138,14 +141,14 @@ export function ExpertiseSection() {
               ))}
             </div>
 
-            <a
-              href="#"
-              className="mt-2 flex items-center gap-1.5 self-start font-poppins text-[13px] text-hz-body transition-all duration-200 hover:text-hz-primary hover:underline hover:decoration-hz-primary hover:decoration-1 hover:underline-offset-4"
-              aria-label="Learn more about us"
+            <Link
+              to={{ pathname: routes.home, hash: '#listings' }}
+              className="mt-2 flex items-center gap-1.5 self-start font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:decoration-hz-primary hover:decoration-1 hover:underline-offset-4"
+              aria-label="Browse listings"
             >
               Learn More
               <ArrowRight size={14} strokeWidth={1.5} />
-            </a>
+            </Link>
           </div>
 
           {/* ── Right Column: stacked service cards ── */}

@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { routes } from '@/lib/routes';
 import type { Article } from '@/types';
 
 interface ArticleCardProps {
@@ -7,22 +9,22 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, className }: ArticleCardProps) {
-  const { title, excerpt, category, publishedAt, imageUrl } = article;
+  const { title, excerpt, category, publishedAt, imageUrl, slug } = article;
 
   return (
-    <a
-      href="#"
-      className={cn('group block cursor-pointer', className)}
+    <Link
+      to={routes.blogArticle(slug)}
+      className={cn('group block cursor-pointer no-underline', className)}
       aria-label={`Read article: ${title}`}
     >
-      <div className="relative aspect-[16/10] overflow-hidden rounded-[3px] bg-hz-bg-soft">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
         <img
           src={imageUrl}
           alt=""
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
-        <span className="absolute bottom-3 left-3 rounded-[3px] bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
+        <span className="absolute bottom-3 left-3 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
           {category}
         </span>
       </div>
@@ -38,6 +40,6 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
           {excerpt}
         </p>
       </div>
-    </a>
+    </Link>
   );
 }

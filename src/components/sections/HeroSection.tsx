@@ -1,40 +1,176 @@
-import { useState } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Search, LocateFixed, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import heroImage from '@/assets/hero.png';
+import { useListingFilters } from '@/hooks/useListingFilters';
+import type { PropertyStatus, PropertyType } from '@/types';
+import heroImage from '@/assets/hero.webp';
 
-const TABS = ['For Rent', 'For Sale'] as const;
-type Tab = (typeof TABS)[number];
+const TABS = ['For Rent', 'For Sale'] as const satisfies readonly PropertyStatus[];
+type HeroTab = (typeof TABS)[number];
 
-const PROPERTY_TYPES = ['Apartment', 'Villa', 'Studio', 'House', 'Office'] as const;
-type PropertyType = (typeof PROPERTY_TYPES)[number];
+const PROPERTY_TYPES = [
+  'Apartment',
+  'Villa',
+  'Studio',
+  'Townhouse',
+  'Office',
+] as const satisfies readonly PropertyType[];
 
-const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES];
+const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES] as const;
 
 export function HeroSection() {
-  const [activeTab, setActiveTab] = useState<Tab>('For Rent');
-  const [keyword, setKeyword] = useState('');
-  const [location, setLocation] = useState('');
-  const [propertyType, setPropertyType] = useState('All');
+  const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
+
+  const [activeTab, setActiveTab] = useState<HeroTab>('For Rent');
+  const [keyword, setKeywordLocal] = useState('');
+  const [location, setLocationLocal] = useState('');
+  const [propertyType, setPropertyTypeLocal] = useState<string>('All');
   const [activeChip, setActiveChip] = useState<PropertyType>('Apartment');
+
+  useEffect(() => {
+    setKeywordLocal(filters.keyword);
+    setLocationLocal(filters.location);
+    setPropertyTypeLocal(filters.propertyType || 'All');
+    if (filters.status === 'For Sale' || filters.status === 'For Rent') {
+      setActiveTab(filters.status);
+    }
+  }, [filters.keyword, filters.location, filters.propertyType, filters.status]);
+
+  const handleTabChange = (tab: HeroTab) => {
+    setActiveTab(tab);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const trimmedKeyword = keyword.trim();
+    const trimmedLocation = location.trim();
+    const typeFilter = propertyType === 'All' ? '' : (propertyType as PropertyType);
+    const isBrowseAll = !trimmedKeyword && !trimmedLocation && !typeFilter;
+
+    if (isBrowseAll) {
+      applySearch({}, { resetOthers: true });
+      return;
+    }
+
+    applySearch(
+      {
+        keyword: trimmedKeyword,
+        location: trimmedLocation,
+        status: activeTab,
+        propertyType: typeFilter,
+        beds: '',
+        minPrice: '',
+        maxPrice: '',
+      },
+      { resetOthers: true }
+    );
+  };
+
+  const handleChipClick = (type: PropertyType) => {
+    setActiveChip(type);
+    setPropertyTypeLocal(type);
+    applySearch(
+      {
+        keyword: keyword.trim(),
+        location: location.trim(),
+        status: activeTab,
+        propertyType: type,
+        beds: '',
+        minPrice: '',
+        maxPrice: '',
+      },
+      { resetOthers: true }
+    );
+  };
+
+  const searchFields = (
+    <>
+      <div className="flex flex-col justify-center px-4 border-[#ECECEC] max-lg:border-b max-lg:px-3 max-lg:py-3 lg:flex-1 lg:min-w-0 lg:border-r">
+        <label
+          htmlFor="hero-keyword"
+          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
+        >
+          Keyword
+        </label>
+        <input
+          id="hero-keyword"
+          type="search"
+          placeholder="e.g. Villa, Brooklyn, Office"
+          value={keyword}
+          onChange={(e) => setKeywordLocal(e.target.value)}
+          className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0"
+        />
+      </div>
+
+      <div className="flex flex-col justify-center px-4 border-[#ECECEC] max-lg:border-b max-lg:px-3 max-lg:py-3 lg:flex-1 lg:min-w-0 lg:border-r">
+        <label
+          htmlFor="hero-location"
+          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
+        >
+          Location
+        </label>
+        <div className="flex items-center gap-2 min-w-0">
+          <input
+            id="hero-location"
+            type="search"
+            placeholder="e.g. New York, Los Angeles"
+            value={location}
+            onChange={(e) => setLocationLocal(e.target.value)}
+            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0"
+          />
+          <LocateFixed
+            size={16}
+            className="shrink-0 text-hz-dark max-lg:text-[#AAAAAA]"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col justify-center px-4 max-lg:border-b max-lg:px-3 max-lg:py-3 lg:flex-1 lg:min-w-0 lg:border-r lg:border-[#ECECEC]">
+        <label
+          htmlFor="hero-type"
+          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
+        >
+          Type
+        </label>
+        <div className="flex items-center gap-2 min-w-0">
+          <select
+            id="hero-type"
+            value={propertyType}
+            onChange={(e) => setPropertyTypeLocal(e.target.value)}
+            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent appearance-none cursor-pointer w-full min-w-0"
+          >
+            {TYPE_OPTIONS.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={15}
+            className="shrink-0 text-[#AAAAAA] pointer-events-none"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+    </>
+  );
 
   return (
     <section
       className="bg-[#F7F7F7] font-poppins min-h-[60dvh] lg:min-h-[80dvh]"
       aria-label="Hero — Find your home"
     >
-      <div className="w-full h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[80dvh] lg:items-stretch lg:gap-0">
-
-          {/* ══ LEFT COLUMN ════════════════════════════════════════ */}
-          <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center px-10 max-md:px-5 py-12 lg:py-16 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14 3xl:pl-20 3xl:pr-16">
-            <div className="max-w-[620px] 3xl:max-w-[720px]">
-            {/* Eyebrow */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[80dvh] lg:items-stretch lg:gap-0">
+        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center px-10 max-md:px-5 py-12 lg:py-16 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14 3xl:pl-20 3xl:pr-16">
+          <div className="max-w-[620px] 3xl:max-w-[720px]">
             <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
               Real Estate Agency
             </p>
 
-            {/* Headline */}
             <h1
               className={cn(
                 'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px]',
@@ -42,230 +178,149 @@ export function HeroSection() {
                 'max-w-[500px] 3xl:max-w-[580px]'
               )}
             >
-              Find A Home That<br />
-              Fits Dream Home
+              Find A Home That
+              <br />
+              Fits Your Dream
             </h1>
 
-            {/* Subtext */}
             <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] 3xl:max-w-[520px] mb-6">
               We are a real estate agency that will help you find the best
               residence for you at an affordable price.
             </p>
-            </div>
+          </div>
 
-            {/* ── Property Search Bar — extends to mid-point of hero image ── */}
-            <div
-              className={cn(
-                'relative z-30 mt-0 max-w-[560px]',
-                'lg:max-w-none lg:w-[calc(80vw-max(92px,calc((100vw-1280px)/2+92px)))]',
-                '3xl:w-[calc(85vw-max(96px,calc((100vw-1680px)/2+96px)))]'
-              )}
-            >
-              {/* Tab Row */}
-              <div className="flex">
-                {TABS.map((tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveTab(tab)}
-                    className={cn(
-                      'font-poppins px-6 py-[10px] text-[12px] uppercase tracking-[0.5px]',
-                      'rounded-t-[3px] transition-colors duration-200 cursor-pointer border-none',
-                      activeTab === tab
-                        ? 'bg-white text-hz-dark font-semibold'
-                        : 'bg-[#EDEDED] text-[#888888] font-medium hover:text-hz-dark'
-                    )}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-
-              {/* Search Container */}
-              <div
-                className="bg-white rounded-b-[3px] rounded-tr-[10px]"
-                style={{ boxShadow: '0 12px 40px rgba(0,0,0,0.10)' }}
-              >
-                {/* ── Desktop (lg+) ─────────────────────────────── */}
-                <div className="hidden lg:flex items-stretch p-3 gap-0">
-                  {/* Keyword */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-center px-4 border-r border-[#ECECEC]">
-                    <label className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px]">
-                      Keyword
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Search Keywords"
-                      value={keyword}
-                      onChange={(e) => setKeyword(e.target.value)}
-                      className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0"
-                    />
-                  </div>
-
-                  {/* Location */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-center px-4 border-r border-[#ECECEC]">
-                    <label className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px]">
-                      Location
-                    </label>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <input
-                        type="text"
-                        placeholder="Search Location"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0"
-                      />
-                      <LocateFixed size={16} className="shrink-0 text-hz-dark" strokeWidth={1.5} aria-hidden="true" />
-                    </div>
-                  </div>
-
-                  {/* Type */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-center px-4 border-r border-[#ECECEC]">
-                    <label className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px]">
-                      Type
-                    </label>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <select
-                        value={propertyType}
-                        onChange={(e) => setPropertyType(e.target.value)}
-                        className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent appearance-none cursor-pointer w-full min-w-0"
-                      >
-                        {TYPE_OPTIONS.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                      <ChevronDown size={15} className="shrink-0 text-[#AAAAAA] pointer-events-none" strokeWidth={1.5} aria-hidden="true" />
-                    </div>
-                  </div>
-
-                  {/* Advanced */}
-                  <button
-                    type="button"
-                    className="shrink-0 flex items-center gap-2 px-4 font-poppins font-medium text-[13px] text-hz-dark hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200 whitespace-nowrap"
-                  >
-                    <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
-                    Advanced
-                  </button>
-
-                  {/* Find Properties */}
-                  <div className="shrink-0 flex items-center pl-2">
-                    <button
-                      type="button"
-                      className={cn(
-                        'flex items-center justify-center gap-2',
-                        'bg-hz-primary hover:bg-hz-primary-hover text-white',
-                        'font-poppins font-semibold text-[14px]',
-                        'px-6 py-[14px] rounded-[8px]',
-                        'border-none cursor-pointer',
-                        'transition-colors duration-200 whitespace-nowrap'
-                      )}
-                    >
-                      <Search size={16} strokeWidth={2} aria-hidden="true" />
-                      Find Properties
-                    </button>
-                  </div>
-                </div>
-
-                {/* ── Mobile (< lg) ─────────────────────────────── */}
-                <div className="lg:hidden flex flex-col p-3 gap-0">
-                  <div className="flex flex-col px-3 py-3 border-b border-[#ECECEC]">
-                    <label className="font-poppins font-semibold text-[11px] text-[#AAAAAA] uppercase tracking-[0.8px] mb-[2px]">Keyword</label>
-                    <input
-                      type="text"
-                      placeholder="Search Keywords"
-                      value={keyword}
-                      onChange={(e) => setKeyword(e.target.value)}
-                      className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full"
-                    />
-                  </div>
-                  <div className="flex flex-col px-3 py-3 border-b border-[#ECECEC]">
-                    <label className="font-poppins font-semibold text-[11px] text-[#AAAAAA] uppercase tracking-[0.8px] mb-[2px]">Location</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="Search Location"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full"
-                      />
-                      <LocateFixed size={16} className="shrink-0 text-[#AAAAAA]" strokeWidth={1.5} aria-hidden="true" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col px-3 py-3 border-b border-[#ECECEC]">
-                    <label className="font-poppins font-semibold text-[11px] text-[#AAAAAA] uppercase tracking-[0.8px] mb-[2px]">Type</label>
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={propertyType}
-                        onChange={(e) => setPropertyType(e.target.value)}
-                        className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent appearance-none cursor-pointer w-full"
-                      >
-                        {TYPE_OPTIONS.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                      <ChevronDown size={15} className="shrink-0 text-[#AAAAAA] pointer-events-none" strokeWidth={1.5} aria-hidden="true" />
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-2 mx-3 mt-3 font-poppins font-medium text-[13px] text-hz-body hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200"
-                  >
-                    <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
-                    Advanced
-                  </button>
-
-                  <div className="px-3 pt-3">
-                    <button
-                      type="button"
-                      className="w-full flex items-center justify-center gap-2 bg-hz-primary hover:bg-hz-primary-hover text-white text-[14px] font-semibold px-4 py-3 rounded-[8px] border-none cursor-pointer transition-colors duration-200 font-poppins"
-                    >
-                      <Search size={16} strokeWidth={2} aria-hidden="true" />
-                      Find Properties
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── Property Type Quick Links ──────────────────── */}
-            <div className="mt-5 max-w-[620px] 3xl:max-w-[720px] flex items-center gap-3 flex-wrap">
-              <span className="font-poppins font-normal text-[13px] text-hz-muted">
-                When you are looking for:
-              </span>
-              {PROPERTY_TYPES.map((type, idx) => (
-                <span key={type} className="flex items-center gap-3">
-                  {idx > 0 && (
-                    <span className="text-[#DDDDDD] select-none" aria-hidden="true">|</span>
+          <div
+            className={cn(
+              'relative z-30 mt-0 max-w-[560px]',
+              'lg:max-w-none lg:w-[calc(80vw-max(92px,calc((100vw-1280px)/2+92px)))]',
+              '3xl:w-[calc(85vw-max(96px,calc((100vw-1680px)/2+96px)))]'
+            )}
+          >
+            <div className="flex">
+              {TABS.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => handleTabChange(tab)}
+                  aria-pressed={activeTab === tab}
+                  className={cn(
+                    'font-poppins px-6 py-[10px] text-[12px] uppercase tracking-[0.5px]',
+                    'rounded-t-hz transition-colors duration-200 cursor-pointer border-none',
+                    activeTab === tab
+                      ? 'bg-white text-hz-dark font-semibold'
+                      : 'bg-[#EDEDED] text-[#888888] font-medium hover:text-hz-dark'
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setActiveChip(type)}
-                    className={cn(
-                      'font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent p-0',
-                      'transition-colors duration-200',
-                      activeChip === type
-                        ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
-                        : 'text-hz-body hover:text-hz-primary'
-                    )}
-                  >
-                    {type}
-                  </button>
-                </span>
+                >
+                  {tab}
+                </button>
               ))}
             </div>
+
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white rounded-b-hz rounded-tr-hz shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
+            >
+              <div className="hidden lg:flex items-stretch p-3 gap-0">
+                {searchFields}
+
+                <button
+                  type="button"
+                  onClick={() => setAdvancedSearchOpen(true)}
+                  className="shrink-0 flex items-center gap-2 px-4 font-poppins font-medium text-[13px] text-hz-dark hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200 whitespace-nowrap"
+                >
+                  <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
+                  Advanced
+                </button>
+
+                <div className="shrink-0 flex items-center pl-2">
+                  <button
+                    type="submit"
+                    className={cn(
+                      'flex items-center justify-center gap-2',
+                      'bg-hz-primary hover:bg-hz-primary-hover text-white',
+                      'font-poppins font-semibold text-[14px]',
+                      'px-6 py-[14px] rounded-hz',
+                      'border-none cursor-pointer',
+                      'transition-colors duration-200 whitespace-nowrap'
+                    )}
+                  >
+                    <Search size={16} strokeWidth={2} aria-hidden="true" />
+                    Find Properties
+                  </button>
+                </div>
+              </div>
+
+              <div className="lg:hidden flex flex-col p-3 gap-0">
+                {searchFields}
+
+                  <button
+                    type="button"
+                    onClick={() => setAdvancedSearchOpen(true)}
+                    className="flex items-center justify-center gap-2 mx-3 mt-3 font-poppins font-medium text-[13px] text-hz-body hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200"
+                  >
+                  <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
+                  Advanced
+                </button>
+
+                <div className="px-3 pt-3">
+                  <button
+                    type="submit"
+                    className="w-full flex items-center justify-center gap-2 bg-hz-primary hover:bg-hz-primary-hover text-white text-[14px] font-semibold px-4 py-3 rounded-hz border-none cursor-pointer transition-colors duration-200 font-poppins"
+                  >
+                    <Search size={16} strokeWidth={2} aria-hidden="true" />
+                    Find Properties
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
 
-          {/* ══ RIGHT COLUMN ═══════════════════════════════════════ */}
-          <div className="relative order-1 lg:order-2 min-h-[320px] lg:min-h-[80dvh] w-full overflow-hidden">
-            <img
-              src={heroImage}
-              alt="Modern luxury residential home"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              loading="eager"
-            />
-          </div>
+          <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted">
+            Your search preferences are saved and shared via the URL. Results will be refined by
+            our listings database soon — until then, explore featured properties below.
+          </p>
 
+          <div className="mt-4 max-w-[620px] 3xl:max-w-[720px] flex items-center gap-3 flex-wrap">
+            <span className="font-poppins font-normal text-[13px] text-hz-muted">
+              When you are looking for:
+            </span>
+            {PROPERTY_TYPES.map((type, idx) => (
+              <span key={type} className="flex items-center gap-3">
+                {idx > 0 && (
+                  <span className="text-[#DDDDDD] select-none" aria-hidden="true">
+                    |
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleChipClick(type)}
+                  aria-pressed={activeChip === type}
+                  className={cn(
+                    'font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent p-0',
+                    'transition-colors duration-200',
+                    activeChip === type
+                      ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
+                      : 'text-hz-body hover:text-hz-primary'
+                  )}
+                >
+                  {type}
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative order-1 lg:order-2 min-h-[320px] lg:min-h-[80dvh] w-full overflow-hidden">
+          <img
+            src={heroImage}
+            alt="Modern luxury residential home"
+            width={1280}
+            height={1103}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
         </div>
       </div>
     </section>

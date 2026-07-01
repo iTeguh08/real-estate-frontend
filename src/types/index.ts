@@ -12,6 +12,7 @@ export interface PropertySpecs {
 
 export interface Property {
   id: string;
+  slug: string;
   title: string;
   location: string;
   price: number;
@@ -33,6 +34,7 @@ export interface PropertyWithAgent extends Property {
 
 export interface Agent {
   id: string;
+  slug: string;
   name: string;
   role: string;
   avatarUrl: string;
@@ -40,6 +42,8 @@ export interface Agent {
   avatarObjectPosition?: string;
   listingsCount: number;
   phone?: string;
+  email?: string;
+  bio?: string;
 }
 
 // ─── Testimonial ───────────────────────────────────────────────────────────
@@ -61,7 +65,6 @@ export interface Location {
   country: string;
   propertiesCount: number;
   imageUrl: string;
-  tagline?: string;
 }
 
 // ─── PropertyTypeFilter ────────────────────────────────────────────────────
@@ -86,12 +89,51 @@ export interface SearchFilters {
   maxPrice: string;
 }
 
+/** URL-synced search intent — persisted for shareable links; filtering happens on the backend. */
+export interface ListingFilters {
+  keyword: string;
+  location: string;
+  propertyType: PropertyType | '';
+  status: PropertyStatus | '';
+  beds: string;
+  minPrice: string;
+  maxPrice: string;
+}
+
+export const DEFAULT_LISTING_FILTERS: ListingFilters = {
+  keyword: '',
+  location: '',
+  propertyType: '',
+  status: '',
+  beds: '',
+  minPrice: '',
+  maxPrice: '',
+};
+
+/** Future GraphQL query variables (Laravel + MySQL). */
+export type PropertySort = 'PRICE_ASC' | 'PRICE_DESC' | 'NEWEST' | 'FEATURED';
+
+export interface PropertySearchVariables {
+  keyword?: string;
+  location?: string;
+  type?: PropertyType;
+  status?: PropertyStatus;
+  minBeds?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: PropertySort;
+  page?: number;
+  perPage?: number;
+}
+
 // ─── Article ───────────────────────────────────────────────────────────────
 
 export interface Article {
   id: string;
+  slug: string;
   title: string;
   excerpt: string;
+  body?: string;
   category: string;
   publishedAt: string;
   imageUrl: string;

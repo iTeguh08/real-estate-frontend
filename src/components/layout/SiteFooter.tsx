@@ -1,12 +1,14 @@
 import {
   ArrowUp,
-  ArrowRight,
   Building2,
   Mail,
   MapPin,
   Phone,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { NewsletterForm } from '@/components/layout/NewsletterForm';
+import { SITE_CONFIG } from '@/data/site-config';
+import { routes } from '@/lib/routes';
 
 type SocialIconProps = { className?: string };
 
@@ -59,7 +61,7 @@ function YoutubeIcon({ className }: SocialIconProps) {
 }
 
 const CATEGORIES_LINKS = [
-  { label: 'Pricing Plans', href: '#' },
+  { label: 'List Your Property', href: '/submit-property' },
   { label: 'Our Services', href: '#expertise' },
   { label: 'About Us', href: '#expertise' },
   { label: 'Contact Us', href: '#contact' },
@@ -68,7 +70,8 @@ const CATEGORIES_LINKS = [
 const COMPANY_LINKS = [
   { label: 'Property For Sale', href: '#listings' },
   { label: 'Property For Rent', href: '#listings' },
-  { label: 'Property For Buy', href: '#listings' },
+  { label: 'Saved Listings', href: '/wishlist' },
+  { label: 'Compare Properties', href: '/compare' },
   { label: 'Our Agents', href: '#agents' },
 ] as const;
 
@@ -87,6 +90,33 @@ const SOCIAL_LINKS = [
   { label: 'YouTube', href: '#', icon: YoutubeIcon },
 ] as const;
 
+function FooterNavLink({ href, label }: { href: string; label: string }) {
+  const className =
+    'font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white no-underline';
+
+  if (href.startsWith('/')) {
+    return (
+      <Link to={href} className={className}>
+        {label}
+      </Link>
+    );
+  }
+
+  if (href.startsWith('#')) {
+    return (
+      <Link to={{ pathname: routes.home, hash: href.slice(1) }} className={className}>
+        {label}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={href} className={className}>
+      {label}
+    </a>
+  );
+}
+
 function FooterLinkList({
   heading,
   links,
@@ -100,12 +130,7 @@ function FooterLinkList({
       <ul className="flex flex-col gap-3">
         {links.map((link) => (
           <li key={link.label}>
-            <a
-              href={link.href}
-              className="font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white"
-            >
-              {link.label}
-            </a>
+            <FooterNavLink href={link.href} label={link.label} />
           </li>
         ))}
       </ul>
@@ -139,14 +164,14 @@ export function SiteFooter() {
 
         {/* Tier 1 — logo & social */}
         <div className="flex flex-col gap-6 border-b border-white/10 py-10 sm:flex-row sm:items-center sm:justify-between">
-          <a href="/" className="inline-flex items-center gap-2 no-underline">
-            <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[3px] bg-hz-primary">
+          <Link to={routes.home} className="inline-flex items-center gap-2 no-underline">
+            <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
               <Building2 size={15} strokeWidth={2} className="text-white" aria-hidden="true" />
             </div>
             <span className="font-poppins text-[22px] font-bold tracking-tight text-white">
-              Homzen
+              {SITE_CONFIG.brand}
             </span>
-          </a>
+          </Link>
 
           <div className="flex flex-col gap-3 sm:items-end">
             <p className="font-poppins text-sm font-medium text-white">Follow Us</p>
@@ -184,25 +209,25 @@ export function SiteFooter() {
                     className="mt-0.5 shrink-0 text-white/80"
                     aria-hidden="true"
                   />
-                  <span>101 E 129th St, East Chicago, IN 46312, US</span>
+                  <span>{SITE_CONFIG.contact.address}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="tel:+13125550123"
+                  href={SITE_CONFIG.contact.phoneHref}
                   className="group flex items-center gap-3 font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white"
                 >
                   <Phone size={16} strokeWidth={1.75} className="shrink-0 text-white/80" aria-hidden="true" />
-                  <span>1-333-345-6868</span>
+                  <span>{SITE_CONFIG.contact.phone}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@homzen.com"
+                  href={`mailto:${SITE_CONFIG.contact.email}`}
                   className="group flex items-center gap-3 font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white"
                 >
                   <Mail size={16} strokeWidth={1.75} className="shrink-0 text-white/80" aria-hidden="true" />
-                  <span>info@homzen.com</span>
+                  <span>{SITE_CONFIG.contact.email}</span>
                 </a>
               </li>
             </ul>
@@ -216,32 +241,7 @@ export function SiteFooter() {
             <p className="mb-5 font-poppins text-sm leading-relaxed text-white/65">
               Your Weekly/Monthly Dose of Knowledge and Inspiration
             </p>
-            <form
-              className="relative"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <label htmlFor="footer-newsletter" className="sr-only">
-                Email for newsletter
-              </label>
-              <input
-                id="footer-newsletter"
-                type="email"
-                placeholder="Your e-mail"
-                className={cn(
-                  'h-12 w-full rounded-[3px] border border-white/15 bg-white/5',
-                  'pr-14 pl-4 font-poppins text-sm text-white placeholder:text-white/40',
-                  'outline-none transition-colors duration-200',
-                  'focus:border-hz-primary/60 focus:bg-white/8'
-                )}
-              />
-              <button
-                type="submit"
-                aria-label="Subscribe to newsletter"
-                className="absolute top-1/2 right-1.5 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-[3px] bg-hz-primary text-white transition-colors duration-200 hover:bg-hz-primary-hover"
-              >
-                <ArrowRight size={16} strokeWidth={2} />
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
 
@@ -249,7 +249,7 @@ export function SiteFooter() {
         <div className="relative border-t border-white/10 py-6">
           <div className="flex flex-col items-start justify-between gap-4 pr-14 md:flex-row md:items-center">
             <p className="font-poppins text-xs text-white/50">
-              © {year} Homzen. All Rights Reserved.
+              © {year} {SITE_CONFIG.brand}. All Rights Reserved.
             </p>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               {LEGAL_LINKS.map((link) => (

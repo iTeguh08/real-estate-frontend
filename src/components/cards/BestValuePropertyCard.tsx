@@ -1,5 +1,9 @@
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, Eye, Heart, MapPin } from 'lucide-react';
+import { ImageActionButton } from '@/components/ui/image-action-button';
+import { useCompare } from '@/hooks/useCompare';
+import { useWishlist } from '@/hooks/useWishlist';
+import { formatPerSqftPrice, statusLabel } from '@/lib/format-property';
 import { cn } from '@/lib/utils';
 import type { PropertyWithAgent } from '@/types';
 
@@ -7,45 +11,6 @@ interface BestValuePropertyCardProps {
   property: PropertyWithAgent;
   className?: string;
   onSelect?: (property: PropertyWithAgent) => void;
-}
-
-function statusLabel(status: PropertyWithAgent['status']) {
-  return status.toUpperCase();
-}
-
-function formatCardPrice(property: PropertyWithAgent) {
-  const { price, currency, status, specs } = property;
-
-  if (status === 'For Rent') {
-    return `${currency}${price.toLocaleString('en-US')} /month`;
-  }
-
-  const perSqft = price / specs.sqft;
-  return `${currency}${perSqft.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} /sqft`;
-}
-
-function ImageActionButton({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick?: (e: React.MouseEvent) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-[2px] transition-colors duration-200 hover:bg-black/65"
-    >
-      {children}
-    </button>
-  );
 }
 
 function SpecItem({
@@ -74,6 +39,7 @@ export function BestValuePropertyCard({
   onSelect,
 }: BestValuePropertyCardProps) {
   const {
+    id,
     title,
     location,
     status,
@@ -83,6 +49,10 @@ export function BestValuePropertyCard({
     agent,
     isFeatured,
   } = property;
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const { isCompared, toggleCompare } = useCompare();
+  const saved = isWishlisted(id);
+  const compared = isCompared(id);
   const isInteractive = Boolean(onSelect);
 
   const stopPropagation = (e: React.MouseEvent) => {
@@ -92,13 +62,13 @@ export function BestValuePropertyCard({
   return (
     <article
       className={cn(
-        'group flex h-full overflow-hidden rounded-[3px] border border-hz-border bg-white shadow-sm',
+        'group flex h-full overflow-hidden rounded-hz border-[0.5px] border-hz-border bg-white',
         'transition-all duration-300 hover:border-hz-primary/20 hover:shadow-md',
         isInteractive &&
           'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary/30 focus-visible:ring-offset-2',
         className
       )}
-      aria-label={`${title}, ${location}, ${formatCardPrice(property)}`}
+      aria-label={`${title}, ${location}, ${formatPerSqftPrice(property)}`}
       onClick={isInteractive ? () => onSelect?.(property) : undefined}
       onKeyDown={
         isInteractive
@@ -123,13 +93,13 @@ export function BestValuePropertyCard({
 
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1">
           {isFeatured && (
-            <span className="rounded-[3px] bg-emerald-600 px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white">
+            <span className="rounded-hz bg-emerald-600 px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white">
               Featured
             </span>
           )}
           <span
             className={cn(
-              'rounded-[3px] px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white',
+              'rounded-hz px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white',
               status === 'For Rent' ? 'bg-[#3D5A80]' : 'bg-[#2F4B7C]'
             )}
           >
@@ -138,13 +108,33 @@ export function BestValuePropertyCard({
         </div>
 
         <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1">
-          <ImageActionButton label={`Save ${title} to wishlist`} onClick={stopPropagation}>
-            <Heart size={14} strokeWidth={1.75} />
+          <ImageActionButton
+            size="sm"
+            label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
+            onClick={(e) => {
+              stopPropagation(e);
+              toggleWishlist(id);
+            }}
+          >
+            <Heart
+              size={14}
+              strokeWidth={1.75}
+              className={cn(saved && 'fill-hz-primary text-hz-primary')}
+            />
           </ImageActionButton>
-          <ImageActionButton label={`Compare ${title}`} onClick={stopPropagation}>
+          <ImageActionButton
+            size="sm"
+            label={compared ? `Remove ${title} from compare` : `Compare ${title}`}
+            active={compared}
+            onClick={(e) => {
+              stopPropagation(e);
+              toggleCompare(id);
+            }}
+          >
             <ArrowLeftRight size={14} strokeWidth={1.75} />
           </ImageActionButton>
           <ImageActionButton
+            size="sm"
             label={`Quick view ${title}`}
             onClick={(e) => {
               stopPropagation(e);
@@ -156,7 +146,7 @@ export function BestValuePropertyCard({
         </div>
 
         <div className="absolute bottom-2.5 left-2.5 z-10">
-          <span className="rounded-[3px] bg-white px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-hz-dark shadow-sm">
+          <span className="rounded-hz bg-white px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-hz-dark shadow-sm">
             {type}
           </span>
         </div>
@@ -205,7 +195,7 @@ export function BestValuePropertyCard({
             </span>
           </div>
           <p className="shrink-0 text-right font-poppins text-sm font-semibold text-hz-dark">
-            {formatCardPrice(property)}
+            {formatPerSqftPrice(property)}
           </p>
         </div>
       </div>

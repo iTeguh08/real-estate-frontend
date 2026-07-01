@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Bed, Bathtub, ArrowsOut, Car } from '@phosphor-icons/react';
 import { MapPin } from 'lucide-react';
 import {
@@ -7,10 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { luxuryButton, statusBadge, sectionEyebrow } from '@/lib/cva';
+import { formatPropertyPrice } from '@/lib/format-property';
 import type { Property } from '@/types';
+import { routes } from '@/lib/routes';
 
 interface PropertyDetailDialogProps {
   property: Property | null;
@@ -28,13 +29,13 @@ function DetailSpec({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-sm border border-luxury-border bg-luxury-cream/60 px-3 py-2">
-      <span className="text-luxury-muted" aria-hidden="true">
+    <div className="flex items-center gap-2 rounded-hz border border-hz-border bg-[#F8F8F8] px-3 py-2">
+      <span className="text-hz-dark/80" aria-hidden="true">
         {icon}
       </span>
-      <span className="font-sans text-sm text-luxury-dark">
+      <span className="font-poppins text-sm text-hz-dark">
         <span className="font-medium">{value}</span>
-        <span className="text-luxury-muted">{label}</span>
+        <span className="text-hz-muted">{label}</span>
       </span>
     </div>
   );
@@ -57,68 +58,65 @@ export function PropertyDetailDialog({
 }
 
 function PropertyDetailBody({ property }: { property: Property }) {
-  const { title, location, price, currency, status, type, specs, imageUrl } = property;
+  const { title, location, status, type, specs, imageUrl } = property;
 
   return (
     <>
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-xl bg-luxury-cream">
-          <img
-            src={imageUrl}
-            alt={`${title} — ${location}`}
-            className="h-full w-full object-cover"
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-hz bg-hz-bg-soft">
+        <img
+          src={imageUrl}
+          alt={`${title} — ${location}`}
+          className="h-full w-full object-cover"
+        />
+        <span className="absolute top-4 left-4 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
+          {status}
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-5 p-6">
+        <DialogHeader className="gap-3 text-left">
+          <p className="font-poppins text-xs font-semibold uppercase tracking-[0.18em] text-hz-primary">
+            {type}
+          </p>
+          <DialogTitle className="font-poppins text-xl font-semibold leading-snug text-hz-dark sm:text-2xl">
+            {title}
+          </DialogTitle>
+          <DialogDescription asChild>
+            <p className="flex items-start gap-1.5 font-poppins text-sm leading-relaxed text-hz-muted">
+              <MapPin size={14} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+              {location}
+            </p>
+          </DialogDescription>
+        </DialogHeader>
+
+        <p className="font-poppins text-2xl font-semibold text-hz-dark">
+          {formatPropertyPrice(property)}
+        </p>
+
+        <div className="grid grid-cols-2 gap-2">
+          <DetailSpec icon={<Bed size={18} weight="fill" />} value={specs.beds} label=" Beds" />
+          <DetailSpec icon={<Bathtub size={18} weight="fill" />} value={specs.baths} label=" Baths" />
+          <DetailSpec
+            icon={<ArrowsOut size={18} weight="fill" />}
+            value={specs.sqft.toLocaleString()}
+            label=" sqft"
           />
-          <span className={cn(statusBadge({ status, position: 'overlay' }), 'top-4 left-4')}>
-            {status}
-          </span>
+          {specs.garage !== undefined && (
+            <DetailSpec icon={<Car size={18} weight="fill" />} value={specs.garage} label=" Garage" />
+          )}
         </div>
 
-        <div className="flex flex-col gap-5 p-6">
-          <DialogHeader className="gap-3 text-left">
-            <p className={sectionEyebrow()}>
-              {type}
-            </p>
-            <DialogTitle
-              className="text-xl font-medium leading-snug text-luxury-dark sm:text-2xl"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              {title}
-            </DialogTitle>
-            <DialogDescription asChild>
-              <p className="flex items-start gap-1.5 font-sans text-sm leading-relaxed text-luxury-muted">
-                <MapPin size={14} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-                {location}
-              </p>
-            </DialogDescription>
-          </DialogHeader>
-
-          <p className="font-sans text-2xl font-semibold text-luxury-crimson">
-            {currency}{price.toLocaleString()}
-          </p>
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
-            <DetailSpec icon={<Bed size={16} weight="light" />} value={specs.beds} label=" Beds" />
-            <DetailSpec icon={<Bathtub size={16} weight="light" />} value={specs.baths} label=" Baths" />
-            <DetailSpec
-              icon={<ArrowsOut size={16} weight="light" />}
-              value={specs.sqft.toLocaleString()}
-              label=" sqft"
-            />
-            {specs.garage !== undefined && (
-              <DetailSpec
-                icon={<Car size={16} weight="light" />}
-                value={specs.garage}
-                label=" Garage"
-              />
+          <Link
+            to={routes.property(property.slug)}
+            className={cn(
+              'flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3',
+              'font-poppins text-sm font-semibold text-white no-underline',
+              'transition-colors duration-200 hover:bg-hz-primary-hover'
             )}
-          </div>
-
-          <Button
-            variant="ghost"
-            className={cn(luxuryButton({ variant: 'crimson', size: 'lg' }), 'w-full justify-center')}
           >
             View Full Listing
-          </Button>
-        </div>
-      </>
+          </Link>
+      </div>
+    </>
   );
 }

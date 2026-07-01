@@ -1,15 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-@import "@fontsource/cormorant-garamond/300.css";
-@import "@fontsource/cormorant-garamond/400.css";
-@import "@fontsource/cormorant-garamond/500.css";
-@import "@fontsource/cormorant-garamond/600.css";
-@import "@fontsource/cormorant-garamond/300-italic.css";
-@import "@fontsource/cormorant-garamond/400-italic.css";
-@import "@fontsource/cormorant-garamond/500-italic.css";
-@import "@fontsource/cormorant-garamond/600-italic.css";
 @import "@fontsource/poppins/400.css";
 @import "@fontsource/poppins/500.css";
 @import "@fontsource/poppins/600.css";
@@ -28,18 +19,21 @@
     --container-max-width-4xl: 1920px;
 
     /* ── Typography ──────────────────────────────────────── */
-    --font-display: 'Cormorant Garamond', serif;
-    --font-sans: 'Satoshi', 'Geist Variable', sans-serif;
+    --font-display: 'Poppins', sans-serif;
+    --font-sans: 'Poppins', sans-serif;
     --font-poppins: 'Poppins', sans-serif;
 
-    /* ── Homzen Component Palette (Navbar + Hero only) ───── */
-    --color-hz-primary: #B22F2A;
-    --color-hz-primary-hover: #8F2420;
+    /* ── Homzen Component Palette ────────────────────────── */
+    --color-hz-primary: #E84040;
+    --color-hz-primary-hover: #CC3232;
     --color-hz-dark: #1A1A2E;
     --color-hz-body: #555555;
     --color-hz-muted: #717171;
     --color-hz-border: #E5E5E5;
     --color-hz-bg-soft: #F5F5F5;
+
+    /* ── Homzen border radius (Try Searching For cards) ─ */
+    --radius-hz: 4px;
 
     /* ── Luxury Brand Palette ────────────────────────────── */
     --color-luxury-dark: oklch(0.14 0 0);
@@ -119,7 +113,7 @@
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
+    --radius: 0.25rem; /* 4px — matches Homzen card radius */
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -169,18 +163,17 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: var(--font-sans);
+    @apply bg-background text-foreground antialiased font-poppins;
   }
   html {
     scroll-behavior: smooth;
   }
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
+    font-family: var(--font-poppins);
     text-wrap: balance;
   }
   p, span, a, label, input, button {
-    font-family: var(--font-sans);
+    font-family: var(--font-poppins);
   }
 }
 

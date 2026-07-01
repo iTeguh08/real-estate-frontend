@@ -1,77 +1,33 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
+import { routes } from '@/lib/routes';
 import type { Location } from '@/types';
 
-const WIDE_LOCATIONS: Location[] = [
-  {
-    id: 'l5',
-    city: 'Maldives',
-    country: 'South Asia',
-    propertiesCount: 94,
-    imageUrl: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1200&auto=format&fit=crop&q=80',
-    tagline: 'Overwater villas and private island residences along crystal lagoons.',
-  },
-  {
-    id: 'l6',
-    city: 'Swiss Alps',
-    country: 'Switzerland',
-    propertiesCount: 131,
-    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&auto=format&fit=crop&q=80',
-    tagline: 'Alpine chalets with panoramic peaks — ski-in retreats and year-round luxury.',
-  },
-];
-
-const SQUARE_LOCATIONS: Location[] = [
-  {
-    id: 'l1',
-    city: 'Cape Town',
-    country: 'South Africa',
-    propertiesCount: 324,
-    imageUrl: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'l2',
-    city: 'Bali',
-    country: 'Indonesia',
-    propertiesCount: 218,
-    imageUrl: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'l3',
-    city: 'Lisbon',
-    country: 'Portugal',
-    propertiesCount: 156,
-    imageUrl: 'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'l4',
-    city: 'Dubai',
-    country: 'United Arab Emirates',
-    propertiesCount: 287,
-    imageUrl: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&auto=format&fit=crop&q=80',
-  },
-];
-
 type LocationCardVariant = 'square' | 'wide';
+
+const LOCATION_IMAGE_HEIGHT =
+  'h-[calc((100cqw-0.75rem)/2)] lg:h-[calc((100cqw-2.25rem)/4)]';
 
 interface LocationCardProps {
   location: Location;
   variant: LocationCardVariant;
 }
 
-function LocationCard({ location, variant }: LocationCardProps) {
-  const isWide = variant === 'wide';
+function LocationCard({ location }: LocationCardProps) {
   const label = `${location.city}, ${location.country}`;
 
   return (
-    <a
-      href="#location"
-      className="group block cursor-pointer"
-      aria-label={`${label} — ${location.propertiesCount} listings`}
+    <Link
+      to={{ pathname: routes.home, hash: '#listings' }}
+      className="group block cursor-pointer no-underline"
+      aria-label={`${label} — explore listings`}
     >
       <div
         className={cn(
-          'relative overflow-hidden rounded-[3px] bg-hz-bg-soft',
-          isWide ? 'aspect-[2/1]' : 'aspect-square'
+          'relative overflow-hidden rounded-hz bg-hz-bg-soft',
+          LOCATION_IMAGE_HEIGHT
         )}
       >
         <img
@@ -90,7 +46,7 @@ function LocationCard({ location, variant }: LocationCardProps) {
           {location.propertiesCount.toLocaleString()} listings
         </p>
       </div>
-    </a>
+    </Link>
   );
 }
 
@@ -99,10 +55,55 @@ interface LocationSectionProps {
   squareLocations?: Location[];
 }
 
+function buildLocationRows(wideLocations: Location[], squareLocations: Location[]) {
+  const squaresPerRow = 2;
+
+  return wideLocations.map((wide, index) => ({
+    wide,
+    squares: squareLocations.slice(index * squaresPerRow, index * squaresPerRow + squaresPerRow),
+  }));
+}
+
+const ROWS_PER_SLIDE = 2;
+
+function buildLocationSlides(wideLocations: Location[], squareLocations: Location[]) {
+  const rows = buildLocationRows(wideLocations, squareLocations);
+  const slides: ReturnType<typeof buildLocationRows>[] = [];
+
+  for (let index = 0; index < rows.length; index += ROWS_PER_SLIDE) {
+    slides.push(rows.slice(index, index + ROWS_PER_SLIDE));
+  }
+
+  return slides;
+}
+
+function LocationRow({ row }: { row: ReturnType<typeof buildLocationRows>[number] }) {
+  return (
+    <div className="@container grid grid-cols-2 gap-3 lg:grid-cols-4" role="presentation">
+      <div className="col-span-2" role="listitem">
+        <LocationCard location={row.wide} variant="wide" />
+      </div>
+      {row.squares.map((location) => (
+        <div key={location.id} role="listitem">
+          <LocationCard location={location} variant="square" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function LocationSection({
   wideLocations = WIDE_LOCATIONS,
   squareLocations = SQUARE_LOCATIONS,
 }: LocationSectionProps) {
+  const locationSlides = buildLocationSlides(wideLocations, squareLocations);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeSlide = locationSlides[activeIndex];
+
+  if (!activeSlide) {
+    return null;
+  }
+
   return (
     <section
       id="location"
@@ -110,7 +111,6 @@ export function LocationSection({
       aria-labelledby="locations-heading"
     >
       <div className="section-container">
-
         <div className="mb-12 flex flex-col items-center text-center">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             Explore Areas
@@ -123,23 +123,33 @@ export function LocationSection({
           </h2>
         </div>
 
-        <div
-          className="grid grid-cols-2 gap-3 lg:grid-cols-4"
-          role="list"
-          aria-label="Available locations"
-        >
-          {wideLocations.map((location) => (
-            <div key={location.id} className="col-span-2" role="listitem">
-              <LocationCard location={location} variant="wide" />
-            </div>
-          ))}
-          {squareLocations.map((location) => (
-            <div key={location.id} role="listitem">
-              <LocationCard location={location} variant="square" />
-            </div>
-          ))}
+        <div role="list" aria-label="Available locations">
+          <div className="flex flex-col gap-9">
+            {activeSlide.map((row) => (
+              <LocationRow key={row.wide.id} row={row} />
+            ))}
+          </div>
         </div>
 
+        {locationSlides.length > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            {locationSlides.map((slide, index) => (
+              <button
+                key={slide[0]?.wide.id ?? index}
+                type="button"
+                onClick={() => setActiveIndex(index)}
+                aria-label={`Go to location slide ${index + 1}`}
+                aria-current={activeIndex === index ? 'true' : undefined}
+                className={cn(
+                  'h-2 w-2 rounded-full transition-colors duration-200',
+                  activeIndex === index
+                    ? 'bg-hz-primary'
+                    : 'bg-hz-border hover:bg-hz-muted'
+                )}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -13,7 +13,7 @@ export function TestimonialCard({ testimonial, className }: TestimonialCardProps
   return (
     <article
       className={cn(
-        'flex h-full flex-col rounded-[3px] border border-hz-border bg-white p-6 shadow-sm sm:p-7',
+        'flex h-full flex-col rounded-hz border border-hz-border bg-white p-6 shadow-sm sm:p-7',
         className
       )}
     >
