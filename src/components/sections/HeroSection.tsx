@@ -168,7 +168,7 @@ export function HeroSection() {
       aria-label="Hero — Find your home"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
-        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-10 max-md:px-5 py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14 3xl:pl-20 3xl:pr-16">
+        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-5 py-12 max-md:px-5 md:px-10 lg:h-full lg:min-h-0 lg:py-10 lg:pr-8 xl:pr-10 2xl:px-12 3xl:px-16">
           <div className="max-w-[620px] 3xl:max-w-[720px]">
             <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
               Real Estate Agency
@@ -195,8 +195,7 @@ export function HeroSection() {
           <div
             className={cn(
               'relative z-30 mt-0 w-full max-w-[560px]',
-              // Full width up to 900px; extend past text column for hero overlap, capped on ultra-wide screens
-              'lg:max-w-[900px] lg:w-[min(900px,max(100%,calc(80vw-7.5rem)))]'
+              'lg:max-w-[900px] lg:w-[min(900px,calc(100%+4rem))]'
             )}
           >
             <div className="flex">
