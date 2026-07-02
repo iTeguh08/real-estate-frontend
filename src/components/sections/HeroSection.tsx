@@ -168,7 +168,7 @@ export function HeroSection() {
       aria-label="Hero — Find your home"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
-        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-5 py-12 max-md:px-5 md:px-10 lg:h-full lg:min-h-0 lg:py-10 lg:pr-8 xl:pr-10 2xl:px-12 3xl:px-16">
+        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-10 max-md:px-5 py-12 lg:h-full lg:min-h-0 lg:py-10 lg:px-10 lg:pr-6 xl:px-12 xl:pr-8 2xl:pl-14 2xl:pr-10">
           <div className="max-w-[620px] 3xl:max-w-[720px]">
             <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
               Real Estate Agency
@@ -195,7 +195,8 @@ export function HeroSection() {
           <div
             className={cn(
               'relative z-30 mt-0 w-full max-w-[560px]',
-              'lg:max-w-[900px] lg:w-[min(900px,calc(100%+4rem))]'
+              // Extend search bar into the image column without relying on excessive left padding
+              'lg:max-w-[900px] lg:w-[min(900px,calc(100%+10rem))]'
             )}
           >
             <div className="flex">
