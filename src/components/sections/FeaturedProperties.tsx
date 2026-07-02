@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { SITE_CONFIG } from '@/data/site-config';
 import { usePropertySearchQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
-import { hasSearchIntent } from '@/lib/search-intent';
 import type { Property } from '@/types';
 
 function PropertyCardSkeleton() {
@@ -32,7 +31,6 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
     filters
   );
   const properties = propertiesProp ?? fetchedProperties;
-  const searchActive = hasSearchIntent(filters);
 
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
@@ -121,11 +119,9 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
               'font-poppins text-sm font-semibold text-white outline-none',
               'transition-colors duration-200 hover:bg-hz-primary-hover'
             )}
-            aria-label={
-              searchActive ? 'Clear search and browse all properties' : 'Browse all properties'
-            }
+            aria-label="Browse all listings"
           >
-            {searchActive ? 'Clear Search' : 'Browse All Listings'}
+            Browse All Listings
           </button>
         </div>
       </div>

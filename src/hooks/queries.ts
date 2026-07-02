@@ -6,9 +6,12 @@ import {
   getFeaturedProperties,
   getBestValueProperties,
   getPropertyBySlug,
+  getPropertyDetailById,
+  getPropertyDetailBySlug,
+  getRelatedProperties,
   searchProperties,
 } from '@/services/properties.service';
-import type { ListingFilters } from '@/types';
+import type { ListingFilters, PropertyDetail } from '@/types';
 
 function intentQueryKey(intent: ListingFilters): Record<string, string> {
   return {
@@ -48,6 +51,30 @@ export function usePropertyQuery(slug: string | undefined) {
     queryKey: queryKeys.properties.detail(slug ?? ''),
     queryFn: () => getPropertyBySlug(slug!),
     enabled: Boolean(slug),
+  });
+}
+
+export function usePropertyDetailQuery(slug: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.properties.detail(slug ?? ''),
+    queryFn: () => getPropertyDetailBySlug(slug!),
+    enabled: Boolean(slug),
+  });
+}
+
+export function usePropertyDetailByIdQuery(id: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.properties.detailById(id ?? ''),
+    queryFn: () => getPropertyDetailById(id!),
+    enabled: Boolean(id),
+  });
+}
+
+export function useRelatedPropertiesQuery(property: PropertyDetail | undefined) {
+  return useQuery({
+    queryKey: queryKeys.properties.related(property?.id ?? ''),
+    queryFn: () => getRelatedProperties(property!),
+    enabled: Boolean(property),
   });
 }
 

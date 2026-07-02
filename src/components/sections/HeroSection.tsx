@@ -84,9 +84,12 @@ export function HeroSection() {
     );
   };
 
+  const fieldClassName =
+    'flex min-h-[52px] flex-col justify-center px-4 border-[#ECECEC] max-lg:border-b max-lg:px-3 max-lg:py-3 lg:min-w-[140px] lg:border-r';
+
   const searchFields = (
     <>
-      <div className="flex flex-col justify-center px-4 border-[#ECECEC] max-lg:border-b max-lg:px-3 max-lg:py-3 lg:flex-1 lg:min-w-0 lg:border-r">
+      <div className={fieldClassName}>
         <label
           htmlFor="hero-keyword"
           className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
@@ -99,11 +102,11 @@ export function HeroSection() {
           placeholder="e.g. Villa, Brooklyn, Office"
           value={keyword}
           onChange={(e) => setKeywordLocal(e.target.value)}
-          className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0"
+          className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0 truncate"
         />
       </div>
 
-      <div className="flex flex-col justify-center px-4 border-[#ECECEC] max-lg:border-b max-lg:px-3 max-lg:py-3 lg:flex-1 lg:min-w-0 lg:border-r">
+      <div className={fieldClassName}>
         <label
           htmlFor="hero-location"
           className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
@@ -117,7 +120,7 @@ export function HeroSection() {
             placeholder="e.g. New York, Los Angeles"
             value={location}
             onChange={(e) => setLocationLocal(e.target.value)}
-            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0"
+            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0 truncate"
           />
           <LocateFixed
             size={16}
@@ -128,7 +131,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center px-4 max-lg:border-b max-lg:px-3 max-lg:py-3 lg:flex-1 lg:min-w-0 lg:border-r lg:border-[#ECECEC]">
+      <div className={fieldClassName}>
         <label
           htmlFor="hero-type"
           className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
@@ -140,7 +143,7 @@ export function HeroSection() {
             id="hero-type"
             value={propertyType}
             onChange={(e) => setPropertyTypeLocal(e.target.value)}
-            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent appearance-none cursor-pointer w-full min-w-0"
+            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent appearance-none cursor-pointer w-full min-w-0 truncate"
           >
             {TYPE_OPTIONS.map((type) => (
               <option key={type} value={type}>
@@ -161,11 +164,11 @@ export function HeroSection() {
 
   return (
     <section
-      className="bg-[#F7F7F7] font-poppins min-h-[60dvh] lg:min-h-[80dvh]"
+      className="bg-[#F7F7F7] font-poppins"
       aria-label="Hero — Find your home"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[80dvh] lg:items-stretch lg:gap-0">
-        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center px-10 max-md:px-5 py-12 lg:py-16 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14 3xl:pl-20 3xl:pr-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
+        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-10 max-md:px-5 py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pl-[max(40px,calc((100vw-1280px)/2+40px))] lg:pr-14 3xl:pl-20 3xl:pr-16">
           <div className="max-w-[620px] 3xl:max-w-[720px]">
             <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
               Real Estate Agency
@@ -191,9 +194,9 @@ export function HeroSection() {
 
           <div
             className={cn(
-              'relative z-30 mt-0 max-w-[560px]',
-              'lg:max-w-none lg:w-[calc(80vw-max(92px,calc((100vw-1280px)/2+92px)))]',
-              '3xl:w-[calc(85vw-max(96px,calc((100vw-1680px)/2+96px)))]'
+              'relative z-30 mt-0 w-full max-w-[560px]',
+              // Full width up to 900px; extend past text column for hero overlap, capped on ultra-wide screens
+              'lg:max-w-[900px] lg:w-[min(900px,max(100%,calc(80vw-7.5rem)))]'
             )}
           >
             <div className="flex">
@@ -220,19 +223,19 @@ export function HeroSection() {
               onSubmit={handleSubmit}
               className="bg-white rounded-b-hz rounded-tr-hz shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
             >
-              <div className="hidden lg:flex items-stretch p-3 gap-0">
+              <div className="hidden lg:grid lg:grid-cols-[minmax(140px,1fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto_auto] items-stretch p-3 gap-0 min-w-0">
                 {searchFields}
 
                 <button
                   type="button"
                   onClick={() => setAdvancedSearchOpen(true)}
-                  className="shrink-0 flex items-center gap-2 px-4 font-poppins font-medium text-[13px] text-hz-dark hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200 whitespace-nowrap"
+                  className="flex shrink-0 items-center gap-2 self-center px-4 font-poppins font-medium text-[13px] text-hz-dark hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200 whitespace-nowrap"
                 >
                   <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
                   Advanced
                 </button>
 
-                <div className="shrink-0 flex items-center pl-2">
+                <div className="flex shrink-0 items-center self-center pl-2">
                   <button
                     type="submit"
                     className={cn(
@@ -310,7 +313,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="relative order-1 lg:order-2 min-h-[320px] lg:min-h-[80dvh] w-full overflow-hidden">
+        <div className="relative order-1 lg:order-2 aspect-[1280/1103] w-full min-h-0 overflow-hidden lg:aspect-auto lg:h-full">
           <img
             src={heroImage}
             alt="Modern luxury residential home"

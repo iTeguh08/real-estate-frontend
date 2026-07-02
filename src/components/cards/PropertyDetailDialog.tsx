@@ -107,7 +107,7 @@ function PropertyDetailBody({ property }: { property: Property }) {
         </div>
 
           <Link
-            to={routes.property(property.slug)}
+            to={routes.propertyById(property.id)}
             className={cn(
               'flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3',
               'font-poppins text-sm font-semibold text-white no-underline',

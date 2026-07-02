@@ -77,17 +77,38 @@ function buildLocationSlides(wideLocations: Location[], squareLocations: Locatio
   return slides;
 }
 
-function LocationRow({ row }: { row: ReturnType<typeof buildLocationRows>[number] }) {
+function LocationRow({
+  row,
+  reverseOrder = false,
+}: {
+  row: ReturnType<typeof buildLocationRows>[number];
+  reverseOrder?: boolean;
+}) {
+  const wideCard = (
+    <div className="col-span-2" role="listitem">
+      <LocationCard location={row.wide} variant="wide" />
+    </div>
+  );
+
+  const squareCards = row.squares.map((location) => (
+    <div key={location.id} role="listitem">
+      <LocationCard location={location} variant="square" />
+    </div>
+  ));
+
   return (
     <div className="@container grid grid-cols-2 gap-3 lg:grid-cols-4" role="presentation">
-      <div className="col-span-2" role="listitem">
-        <LocationCard location={row.wide} variant="wide" />
-      </div>
-      {row.squares.map((location) => (
-        <div key={location.id} role="listitem">
-          <LocationCard location={location} variant="square" />
-        </div>
-      ))}
+      {reverseOrder ? (
+        <>
+          {squareCards}
+          {wideCard}
+        </>
+      ) : (
+        <>
+          {wideCard}
+          {squareCards}
+        </>
+      )}
     </div>
   );
 }
@@ -125,8 +146,8 @@ export function LocationSection({
 
         <div role="list" aria-label="Available locations">
           <div className="flex flex-col gap-9">
-            {activeSlide.map((row) => (
-              <LocationRow key={row.wide.id} row={row} />
+            {activeSlide.map((row, index) => (
+              <LocationRow key={row.wide.id} row={row} reverseOrder={index === 1} />
             ))}
           </div>
         </div>

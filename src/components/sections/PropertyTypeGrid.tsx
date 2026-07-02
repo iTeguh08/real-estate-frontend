@@ -15,6 +15,8 @@ import {
 } from '@/components/icons/PropertyTypeIllustrations';
 import type { PropertyType } from '@/types';
 
+const DEFAULT_HIGHLIGHT_TYPE = 'Apartment' satisfies PropertyType;
+
 const ILLUSTRATIONS: Record<
   PropertyType,
   React.ComponentType<{ className?: string; iconClassName?: string }>
@@ -86,6 +88,9 @@ export function PropertyTypeGrid() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { filters, setPropertyType } = useListingFilters();
 
+  const isCardActive = (type: PropertyType) =>
+    filters.propertyType ? filters.propertyType === type : type === DEFAULT_HIGHLIGHT_TYPE;
+
   const scrollByCard = (direction: 'prev' | 'next') => {
     const el = scrollRef.current;
     if (!el) return;
@@ -153,7 +158,7 @@ export function PropertyTypeGrid() {
                 <PropertyTypeCard
                   type={item.type}
                   count={item.count}
-                  isActive={filters.propertyType === item.type}
+                  isActive={isCardActive(item.type)}
                   onClick={() =>
                     setPropertyType(filters.propertyType === item.type ? '' : item.type)
                   }

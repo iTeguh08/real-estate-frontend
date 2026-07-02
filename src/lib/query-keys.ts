@@ -6,6 +6,8 @@ export const queryKeys = {
       [...queryKeys.properties.all, 'search', intent] as const,
     bestValue: () => [...queryKeys.properties.all, 'best-value'] as const,
     detail: (slug: string) => [...queryKeys.properties.all, 'detail', slug] as const,
+    detailById: (id: string) => [...queryKeys.properties.all, 'detail-by-id', id] as const,
+    related: (id: string) => [...queryKeys.properties.all, 'related', id] as const,
   },
   agents: {
     all: ['agents'] as const,

@@ -25,6 +25,23 @@ export interface Property {
   isNew?: boolean;
 }
 
+export interface PropertyGalleryImage {
+  id: string;
+  url: string;
+  alt: string;
+}
+
+export interface PropertyDetail extends Property {
+  description: string;
+  tagline: string;
+  gallery: PropertyGalleryImage[];
+  features: string[];
+  amenities: string[];
+  showcaseImages: PropertyGalleryImage[];
+  featureImageUrl: string;
+  relatedPropertyIds?: string[];
+}
+
 /** Property listing with assigned agent — used in Best Property Value rows */
 export interface PropertyWithAgent extends Property {
   agent: Pick<Agent, 'id' | 'name' | 'avatarUrl'>;

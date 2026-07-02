@@ -1,7 +1,8 @@
+import { enrichPropertyDetail } from '@/data/property-details';
 import { BEST_VALUE_PROPERTIES, FEATURED_PROPERTIES } from '@/data/properties';
 import { listingFiltersToSearchVariables } from '@/lib/search-intent';
 import { apiFetch, useMockData } from '@/services/api-client';
-import type { ListingFilters, Property, PropertyWithAgent } from '@/types';
+import type { ListingFilters, Property, PropertyDetail, PropertyWithAgent } from '@/types';
 
 const ALL_PROPERTIES: Property[] = [
   ...FEATURED_PROPERTIES,
@@ -46,6 +47,38 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
     return ALL_PROPERTIES.find((p) => p.slug === slug) ?? null;
   }
   return apiFetch<Property>(`/properties/${slug}`);
+}
+
+export async function getPropertyById(id: string): Promise<Property | null> {
+  if (useMockData()) {
+    return ALL_PROPERTIES.find((p) => p.id === id) ?? null;
+  }
+  return apiFetch<Property>(`/properties/id/${id}`);
+}
+
+export async function getPropertyDetailBySlug(slug: string): Promise<PropertyDetail | null> {
+  const property = await getPropertyBySlug(slug);
+  return property ? enrichPropertyDetail(property) : null;
+}
+
+export async function getPropertyDetailById(id: string): Promise<PropertyDetail | null> {
+  const property = await getPropertyById(id);
+  return property ? enrichPropertyDetail(property) : null;
+}
+
+export async function getRelatedProperties(
+  property: PropertyDetail,
+  limit = 3
+): Promise<Property[]> {
+  const ids = property.relatedPropertyIds ?? [];
+  const related = await getPropertiesByIds(ids);
+  if (related.length >= limit) {
+    return related.slice(0, limit);
+  }
+  const fallback = ALL_PROPERTIES.filter(
+    (p) => p.id !== property.id && p.type === property.type && !related.some((r) => r.id === p.id)
+  );
+  return [...related, ...fallback].slice(0, limit);
 }
 
 export async function getPropertiesByIds(ids: string[]): Promise<Property[]> {

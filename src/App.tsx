@@ -3,6 +3,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { ListingFiltersProvider } from '@/hooks/useListingFilters';
 import { HomePage } from '@/pages/HomePage';
 import { PropertyDetailPage } from '@/pages/PropertyDetailPage';
+import { PropertyShowcasePage } from '@/pages/PropertyShowcasePage';
 import { BlogPage } from '@/pages/BlogPage';
 import { BlogArticlePage } from '@/pages/BlogArticlePage';
 import { ComparePage } from '@/pages/ComparePage';
@@ -22,6 +23,7 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route index element={<HomePage />} />
             <Route path="properties/:slug" element={<PropertyDetailPage />} />
+            <Route path="property/:id" element={<PropertyShowcasePage />} />
             <Route path="blog" element={<BlogPage />} />
             <Route path="blog/:slug" element={<BlogArticlePage />} />
             <Route path="agents/:slug" element={<AgentProfilePage />} />

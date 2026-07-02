@@ -1,14 +1,14 @@
 import { useParams } from 'react-router-dom';
-import { usePropertyDetailQuery } from '@/hooks/queries';
+import { usePropertyDetailByIdQuery } from '@/hooks/queries';
 import {
   PropertyShowcaseNotFound,
   PropertyShowcaseSkeleton,
   PropertyShowcaseView,
 } from '@/components/property/PropertyShowcaseView';
 
-export function PropertyDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const { data: property, isLoading, isError } = usePropertyDetailQuery(slug);
+export function PropertyShowcasePage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: property, isLoading, isError } = usePropertyDetailByIdQuery(id);
 
   if (isLoading) {
     return (

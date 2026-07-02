@@ -4,6 +4,7 @@ export const routes = {
   blog: '/blog',
   blogArticle: (slug: string) => `/blog/${slug}`,
   property: (slug: string) => `/properties/${slug}`,
+  propertyById: (id: string) => `/property/${id}`,
   agent: (slug: string) => `/agents/${slug}`,
   compare: '/compare',
   wishlist: '/wishlist',
