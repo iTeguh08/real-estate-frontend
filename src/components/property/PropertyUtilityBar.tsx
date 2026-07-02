@@ -1,4 +1,5 @@
 import { Blueprint, ChatsCircle, MapPin } from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
 import type { PropertyDetail } from '@/types';
 
 const UTILITIES = [
@@ -36,7 +37,7 @@ export function PropertyUtilityBar({
     <div
       className={
         isFloating
-          ? 'absolute bottom-0 left-1/2 z-20 w-full max-w-3xl -translate-x-1/2 translate-y-[38%] px-5 md:translate-y-[73%]'
+          ? 'absolute bottom-0 left-1/2 z-20 w-full max-w-3xl -translate-x-1/2 translate-y-[62%] px-5 md:translate-y-[73%]'
           : 'border-y border-hz-border bg-white py-8 md:py-10'
       }
       aria-label="Property quick actions"
@@ -44,28 +45,32 @@ export function PropertyUtilityBar({
       <ul
         className={
           isFloating
-            ? 'flex items-stretch justify-center gap-4 md:gap-6'
+            ? 'flex items-start justify-center gap-3 md:gap-6'
             : 'mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-8 md:gap-14'
         }
       >
         {UTILITIES.map(({ id, label, icon: Icon }) => (
-          <li key={id} className={isFloating ? 'flex-1 max-w-[100px]' : undefined}>
+          <li key={id} className={isFloating ? 'w-[90px] shrink-0 md:w-auto md:max-w-[100px] md:flex-1' : undefined}>
             <button
               type="button"
               onClick={() => onUtilityAction?.(id)}
-              className="group flex w-full flex-col items-center gap-3 text-center"
+              className="group flex w-full flex-col items-center gap-2 text-center md:gap-3"
               aria-label={`${label} for ${property.title}`}
             >
               <span
                 className={
                   isFloating
-                    ? 'flex aspect-square w-full items-center justify-center rounded-hz border border-hz-border bg-white text-hz-dark shadow-md transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-hz-primary group-hover:text-hz-primary group-hover:shadow-lg'
+                    ? 'flex size-[78px] items-center justify-center rounded-hz border border-hz-border bg-white text-hz-dark shadow-md transition-colors duration-200 group-hover:border-hz-primary group-hover:text-hz-primary group-hover:shadow-lg md:aspect-square md:size-auto md:w-full md:transition-all md:group-hover:-translate-y-0.5'
                     : 'flex size-14 items-center justify-center rounded-full border border-hz-border bg-[#F8F8F8] text-hz-dark transition-colors duration-200 group-hover:border-hz-primary group-hover:text-hz-primary'
                 }
               >
-                <Icon size={isFloating ? 28 : 24} weight="fill" aria-hidden="true" />
+                <Icon
+                  weight="fill"
+                  aria-hidden="true"
+                  className={cn(isFloating ? 'size-[22px] md:size-7' : 'size-6')}
+                />
               </span>
-              <span className="font-poppins text-xs font-medium text-hz-body group-hover:text-hz-primary">
+              <span className="font-poppins text-[11px] font-medium leading-tight text-hz-body group-hover:text-hz-primary md:text-xs">
                 {label}
               </span>
             </button>

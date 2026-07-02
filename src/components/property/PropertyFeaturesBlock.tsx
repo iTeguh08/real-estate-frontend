@@ -16,7 +16,7 @@ export function PropertyFeaturesBlock({ property, children }: PropertyFeaturesBl
   return (
     <section
       aria-labelledby="property-features-heading"
-      className="relative overflow-visible bg-hz-dark pb-20 pt-16 md:pb-20 md:pt-20"
+      className="relative overflow-visible bg-hz-dark pb-32 pt-16 md:pb-36 md:pt-20"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-16 -translate-y-full overflow-hidden md:h-20" aria-hidden="true">
         <img
@@ -79,7 +79,7 @@ export function PropertyFeaturesBlock({ property, children }: PropertyFeaturesBl
           </ul>
         </div>
 
-        <div className="relative">
+        <div className="relative mb-14 md:mb-0">
           <div className="relative aspect-[5/4] w-full overflow-hidden rounded-hz border-4 border-white/90 shadow-2xl lg:aspect-[4/3]">
             <img
               src={featureImageUrl}
