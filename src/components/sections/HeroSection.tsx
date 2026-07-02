@@ -168,7 +168,8 @@ export function HeroSection() {
       aria-label="Hero — Find your home"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
-        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-10 max-md:px-5 py-12 lg:h-full lg:min-h-0 lg:py-10 lg:px-10 lg:pr-6 xl:px-12 xl:pr-8 2xl:pl-14 2xl:pr-10">
+        {/* MODIFIKASI: Mengganti rumus calc padding kiri dengan token responsive yang konsisten */}
+        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible px-10 max-md:px-5 py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pl-12 xl:pl-20 2xl:pl-28 lg:pr-14 3xl:pl-32 3xl:pr-16">
           <div className="max-w-[620px] 3xl:max-w-[720px]">
             <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
               Real Estate Agency
@@ -195,8 +196,7 @@ export function HeroSection() {
           <div
             className={cn(
               'relative z-30 mt-0 w-full max-w-[560px]',
-              // Extend search bar into the image column without relying on excessive left padding
-              'lg:max-w-[900px] lg:w-[min(900px,calc(100%+10rem))]'
+              'lg:max-w-[900px] lg:w-[min(900px,max(100%,calc(80vw-7.5rem)))]'
             )}
           >
             <div className="flex">
@@ -256,11 +256,11 @@ export function HeroSection() {
               <div className="lg:hidden flex flex-col p-3 gap-0">
                 {searchFields}
 
-                  <button
-                    type="button"
-                    onClick={() => setAdvancedSearchOpen(true)}
-                    className="flex items-center justify-center gap-2 mx-3 mt-3 font-poppins font-medium text-[13px] text-hz-body hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200"
-                  >
+                <button
+                  type="button"
+                  onClick={() => setAdvancedSearchOpen(true)}
+                  className="flex items-center justify-center gap-2 mx-3 mt-3 font-poppins font-medium text-[13px] text-hz-body hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200"
+                >
                   <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
                   Advanced
                 </button>
