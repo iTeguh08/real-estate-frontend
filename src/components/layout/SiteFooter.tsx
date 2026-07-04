@@ -62,9 +62,9 @@ function YoutubeIcon({ className }: SocialIconProps) {
 
 const CATEGORIES_LINKS = [
   { label: 'List Your Property', href: '/submit-property' },
-  { label: 'Our Services', href: '#expertise' },
-  { label: 'About Us', href: '#expertise' },
-  { label: 'Contact Us', href: '#contact' },
+  { label: 'Our Services', href: '/about' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Contact Us', href: '/contact' },
 ] as const;
 
 const COMPANY_LINKS = [

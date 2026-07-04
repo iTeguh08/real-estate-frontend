@@ -1,24 +1,18 @@
 import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { PropertyCtaSection } from '@/components/property/PropertyCtaSection';
 import { PropertyDetailHero } from '@/components/property/PropertyDetailHero';
 import { PropertyFeaturesBlock } from '@/components/property/PropertyFeaturesBlock';
 import { PropertyGalleryGrid } from '@/components/property/PropertyGalleryGrid';
+import { PropertyInquiryDialogs } from '@/components/property/PropertyInquiryDialogs';
 import { PropertyOverviewCanvas } from '@/components/property/PropertyOverviewCanvas';
 import { PropertyRelatedSection } from '@/components/property/PropertyRelatedSection';
+import { PropertyShowcaseVillaView } from '@/components/property/PropertyShowcaseVillaView';
 import { PropertySpecsSection } from '@/components/property/PropertySpecsSection';
 import { PropertyUtilityBar } from '@/components/property/PropertyUtilityBar';
 import { useRelatedPropertiesQuery } from '@/hooks/queries';
+import { resolvePropertyCustomLayout } from '@/lib/property-layout';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -26,7 +20,23 @@ export interface PropertyShowcaseViewProps {
   property: PropertyDetail;
 }
 
+/**
+ * Entry point for the property detail page. Picks between the CMS-driven
+ * "Custom Layout" templates — see `resolvePropertyCustomLayout` for how the
+ * choice is made ahead of the real backend field shipping.
+ */
 export function PropertyShowcaseView({ property }: PropertyShowcaseViewProps) {
+  const layout = resolvePropertyCustomLayout(property);
+
+  if (layout === 'layout-2') {
+    return <PropertyShowcaseVillaView property={property} />;
+  }
+
+  return <PropertyShowcaseClassicView property={property} />;
+}
+
+/** Custom Layout 1 (default) — the original property detail template. */
+function PropertyShowcaseClassicView({ property }: PropertyShowcaseViewProps) {
   const { data: related = [] } = useRelatedPropertiesQuery(property);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
@@ -85,46 +95,13 @@ export function PropertyShowcaseView({ property }: PropertyShowcaseViewProps) {
       />
       <PropertyRelatedSection properties={related} currentPropertyId={property.id} />
 
-      <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-poppins text-hz-dark">Schedule a Viewing</DialogTitle>
-            <DialogDescription className="font-poppins text-hz-muted">
-              Request a private tour for {property.title}. Our team will confirm your preferred date
-              and time.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              onClick={() => setScheduleOpen(false)}
-              className="h-auto rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover"
-            >
-              Submit Request
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-poppins text-hz-dark">Contact an Agent</DialogTitle>
-            <DialogDescription className="font-poppins text-hz-muted">
-              Get in touch about {property.title} at {property.location}.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              onClick={() => setContactOpen(false)}
-              className="h-auto rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover"
-            >
-              Send Message
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PropertyInquiryDialogs
+        property={property}
+        scheduleOpen={scheduleOpen}
+        onScheduleOpenChange={setScheduleOpen}
+        contactOpen={contactOpen}
+        onContactOpenChange={setContactOpen}
+      />
     </>
   );
 }

@@ -3,17 +3,34 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DetailSpec } from '@/components/property/DetailSpec';
+import { cn } from '@/lib/utils';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertySpecsSectionProps {
   property: PropertyDetail;
+  /**
+   * Custom Layout 1 floats a utility bar that overlaps the top of this
+   * section, so it needs extra top padding to clear it (default `true`).
+   * Custom Layout 2 doesn't use that floating overlap, so it passes `false`
+   * for normal section spacing instead.
+   */
+  reserveFloatingBarSpace?: boolean;
 }
 
-export function PropertySpecsSection({ property }: PropertySpecsSectionProps) {
+export function PropertySpecsSection({
+  property,
+  reserveFloatingBarSpace = true,
+}: PropertySpecsSectionProps) {
   const { specs, amenities, type, status, imageUrl, title } = property;
 
   return (
-    <section aria-labelledby="property-specs-heading" className="bg-[#F8F8F8] pt-36 pb-20 md:pt-40 md:pb-28">
+    <section
+      aria-labelledby="property-specs-heading"
+      className={cn(
+        'bg-[#F8F8F8] pb-20 md:pb-28',
+        reserveFloatingBarSpace ? 'pt-36 md:pt-40' : 'pt-20 md:pt-24'
+      )}
+    >
       <div className="section-container">
         <div className="mb-10 grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end lg:gap-12">
           <div>

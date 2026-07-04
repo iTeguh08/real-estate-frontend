@@ -13,6 +13,8 @@ import { RegisterPage } from '@/pages/RegisterPage';
 import { SubmitPropertyPage } from '@/pages/SubmitPropertyPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { AgentProfilePage } from '@/pages/AgentProfilePage';
+import { AboutUsPage } from '@/pages/AboutUsPage';
+import { ContactUsPage } from '@/pages/ContactUsPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export default function App() {
@@ -32,6 +34,8 @@ export default function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="submit-property" element={<SubmitPropertyPage />} />
+            <Route path="about" element={<AboutUsPage />} />
+            <Route path="contact" element={<ContactUsPage />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

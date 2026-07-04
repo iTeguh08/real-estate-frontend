@@ -3,6 +3,13 @@
 export type PropertyStatus = 'For Sale' | 'For Rent' | 'Off Plan' | 'Sold';
 export type PropertyType = 'Townhouse' | 'Villa' | 'Studio' | 'Apartment' | 'Office' | 'Commercial';
 
+/**
+ * Mirrors the upcoming CMS "Custom Layout" radio field on the property record:
+ * - `layout-1` (default) — the current property detail template.
+ * - `layout-2` — the alternate editorial/villa-style template.
+ */
+export type PropertyCustomLayout = 'layout-1' | 'layout-2';
+
 export interface PropertySpecs {
   beds: number;
   baths: number;
@@ -23,6 +30,8 @@ export interface Property {
   imageUrl: string;
   isFeatured?: boolean;
   isNew?: boolean;
+  /** Not yet wired to the backend — see `resolvePropertyCustomLayout`. */
+  customLayout?: PropertyCustomLayout;
 }
 
 export interface PropertyGalleryImage {

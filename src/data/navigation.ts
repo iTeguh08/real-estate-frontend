@@ -40,7 +40,7 @@ const PAGE_SECTION_HASHES = new Set([
   '#testimonials',
 ]);
 
-const PAGE_ROUTES = new Set(['/login', '/register', '/submit-property']);
+const PAGE_ROUTES = new Set(['/login', '/register', '/submit-property', '/about', '/contact']);
 
 function normalizePath(pathname: string): string {
   return pathname.replace(/\/$/, '') || '/';
@@ -127,6 +127,8 @@ export function isNavItemActive(
   const path = normalizePath(pathname);
   const target = normalizePath(href);
   if (target === '/blog') return path.startsWith('/blog');
+  if (target === '/about') return path === '/about';
+  if (target === '/contact') return path === '/contact';
   return path === target;
 }
 
@@ -162,9 +164,9 @@ export const PAGES_NAV_GROUPS: NavLinkGroup[] = [
   {
     title: 'Company',
     items: [
-      { label: 'About Us', href: '#expertise', description: 'Our story & expertise' },
+      { label: 'About Us', href: '/about', description: 'Our story & expertise' },
       { label: 'Our Agents', href: '#agents', description: 'Meet the team' },
-      { label: 'Contact', href: '#contact', description: 'Get in touch' },
+      { label: 'Contact', href: '/contact', description: 'Get in touch' },
     ],
   },
   {

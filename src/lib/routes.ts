@@ -12,4 +12,6 @@ export const routes = {
   register: '/register',
   submitProperty: '/submit-property',
   dashboard: '/dashboard',
+  about: '/about',
+  contact: '/contact',
 } as const;
