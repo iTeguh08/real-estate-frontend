@@ -32,7 +32,7 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
     <section aria-labelledby="property-villa-hero-heading" className="bg-white">
       {/* Side gutters — image sits inside, not edge-to-edge */}
       <div className={VILLA_SECTION_GUTTERS}>
-        <div className="relative min-h-[min(82vh,720px)] overflow-hidden bg-hz-dark md:min-h-[min(88vh,800px)]">
+        <div className="relative min-h-[min(78vh,720px)] overflow-hidden bg-hz-dark md:min-h-[min78vh,800px)]">
           {/* Background image */}
           <div className="absolute inset-0" aria-hidden="true">
             <img

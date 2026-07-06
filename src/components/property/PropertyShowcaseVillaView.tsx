@@ -5,11 +5,11 @@ import { PropertyRelatedSection } from '@/components/property/PropertyRelatedSec
 import { PropertySpecsSection } from '@/components/property/PropertySpecsSection';
 import { PropertyVillaCtaBanner } from '@/components/property/PropertyVillaCtaBanner';
 import { PropertyVillaHero } from '@/components/property/PropertyVillaHero';
+import { PropertyVillaEditorialSection } from '@/components/property/PropertyVillaEditorialSection';
 import {
   PropertyVillaHighlights,
   type PropertyVillaUtilityAction,
 } from '@/components/property/PropertyVillaHighlights';
-import { PropertyVillaOverviewStrip } from '@/components/property/PropertyVillaOverviewStrip';
 import { useRelatedPropertiesQuery } from '@/hooks/queries';
 import type { PropertyDetail } from '@/types';
 
@@ -46,7 +46,7 @@ export function PropertyShowcaseVillaView({ property }: PropertyShowcaseVillaVie
   return (
     <>
       <PropertyVillaHero property={property} onScheduleViewing={handleScheduleViewing} />
-      <PropertyVillaOverviewStrip property={property} />
+      <PropertyVillaEditorialSection property={property} onUtilityAction={handleUtilityAction} />
       <PropertyVillaHighlights property={property} onUtilityAction={handleUtilityAction} />
       <PropertySpecsSection property={property} reserveFloatingBarSpace={false} />
       <PropertyGalleryGrid images={property.gallery} title={property.title} />
