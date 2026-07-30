@@ -396,15 +396,6 @@ export function HeroSection() {
             fetchPriority="high"
             decoding="async"
           />
-          <div
-            className={cn(
-              'pointer-events-none absolute inset-0',
-              isLight
-                ? 'bg-gradient-to-l from-transparent from-[18%] via-transparent to-hz-page/25'
-                : 'bg-gradient-to-l from-transparent via-transparent to-hz-sunken/80'
-            )}
-            aria-hidden="true"
-          />
         </div>
       </div>
     </section>
