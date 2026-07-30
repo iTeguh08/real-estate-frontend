@@ -169,6 +169,12 @@ function seedFromId(id: string): number {
   return id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }
 
+/** Wraps around `mergedGallery` so every mock slot resolves to a real image. */
+function pickUrl(mergedGallery: PropertyGalleryImage[], index: number): string {
+  const item = mergedGallery[index % mergedGallery.length];
+  return item!.url;
+}
+
 export function enrichPropertyDetail(property: Property): PropertyDetail {
   const seed = seedFromId(property.id);
   const copy = DETAIL_COPY[property.id];
@@ -186,11 +192,22 @@ export function enrichPropertyDetail(property: Property): PropertyDetail {
       copy?.description ??
       `Explore ${property.title} in ${property.location}. A ${property.type.toLowerCase()} offering ${property.specs.beds} bedrooms and ${property.specs.sqft.toLocaleString()} sq ft of living space.`,
     gallery: mergedGallery,
-    showcaseImages: [
-      mergedGallery[1] ?? mergedGallery[0]!,
-      mergedGallery[2] ?? mergedGallery[0]!,
-    ],
-    featureImageUrl: mergedGallery[3]?.url ?? heroImage,
+    layout1Media: {
+      showcaseOneUrl: pickUrl(mergedGallery, 1),
+      showcaseTwoUrl: pickUrl(mergedGallery, 2),
+      showcaseThreeUrl: pickUrl(mergedGallery, 3),
+      featureVerticalUrl: pickUrl(mergedGallery, 1),
+      featureSquareUrl: pickUrl(mergedGallery, 2),
+      bannerUrl: pickUrl(mergedGallery, 3),
+    },
+    layout2Media: {
+      splitVerticalUrl: pickUrl(mergedGallery, 1),
+      splitLandscapeUrl: pickUrl(mergedGallery, 2),
+      bannerUrl: pickUrl(mergedGallery, 3),
+      gridOneUrl: pickUrl(mergedGallery, 1),
+      gridTwoUrl: pickUrl(mergedGallery, 2),
+      gridThreeUrl: pickUrl(mergedGallery, 3),
+    },
     features: copy?.features ?? [
       'Thoughtfully planned layout',
       'Quality finishes throughout',

@@ -13,13 +13,13 @@ export function PropertyOverviewBackground({ imageUrl }: PropertyOverviewBackgro
         loading="lazy"
         className="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-[0.11] md:opacity-[0.13] [mask-image:linear-gradient(to_bottom,transparent_0%,transparent_14%,rgba(0,0,0,0.35)_26%,black_40%,black_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,transparent_14%,rgba(0,0,0,0.35)_26%,black_40%,black_100%)]"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-white from-0% via-white/90 via-[16%] via-white/45 via-[32%] to-transparent to-[52%]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-hz-elevated from-0% via-hz-elevated/90 via-[16%] via-hz-elevated/45 via-[32%] to-transparent to-[52%]" />
     </div>
   );
 }
 
 export function getPropertyOverviewBackgroundImage(
-  property: Pick<PropertyDetail, 'imageUrl' | 'showcaseImages'>
+  property: Pick<PropertyDetail, 'imageUrl' | 'layout1Media'>
 ): string {
-  return property.showcaseImages[0]?.url ?? property.imageUrl;
+  return property.layout1Media.featureVerticalUrl ?? property.imageUrl;
 }

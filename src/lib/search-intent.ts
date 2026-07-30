@@ -1,4 +1,6 @@
+import { sortLabel } from '@/lib/sort-options';
 import type { ListingFilters, PropertySearchVariables } from '@/types';
+import { DEFAULT_LISTINGS_PER_PAGE } from '@/types';
 
 /** True when the user has expressed search preferences (URL-synced UI intent). */
 export function hasSearchIntent(filters: ListingFilters): boolean {
@@ -9,7 +11,8 @@ export function hasSearchIntent(filters: ListingFilters): boolean {
       filters.status ||
       filters.beds ||
       filters.minPrice ||
-      filters.maxPrice
+      filters.maxPrice ||
+      filters.agentSlug
   );
 }
 
@@ -27,6 +30,7 @@ export function describeSearchIntent(filters: ListingFilters): string {
     const max = filters.maxPrice ? `$${Number(filters.maxPrice).toLocaleString()}` : 'any';
     parts.push(`${min} – ${max}`);
   }
+  if (filters.sort) parts.push(`sorted by ${sortLabel(filters.sort).toLowerCase()}`);
 
   return parts.length > 0 ? parts.join(' · ') : 'all listings';
 }
@@ -52,7 +56,9 @@ export function listingFiltersToSearchVariables(
     minBeds: Number.isFinite(minBeds) ? minBeds : undefined,
     minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
     maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
-    page: 1,
-    perPage: 12,
+    agentSlug: filters.agentSlug || undefined,
+    sort: filters.sort || undefined,
+    page: filters.page > 0 ? filters.page : 1,
+    perPage: filters.perPage > 0 ? filters.perPage : DEFAULT_LISTINGS_PER_PAGE,
   };
 }

@@ -6,8 +6,6 @@
 @import "@fontsource/poppins/600.css";
 @import "@fontsource/poppins/700.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
     /* ── Responsive breakpoints & container tokens ─────── */
     --breakpoint-3xl: 1920px;
@@ -23,32 +21,49 @@
     --font-sans: 'Poppins', sans-serif;
     --font-poppins: 'Poppins', sans-serif;
 
-    /* ── Homzen Component Palette ────────────────────────── */
-    --color-hz-primary: #E84040;
-    --color-hz-primary-hover: #CC3232;
-    --color-hz-dark: #1A1A2E;
-    --color-hz-body: #555555;
-    --color-hz-muted: #717171;
-    --color-hz-border: #E5E5E5;
-    --color-hz-bg-soft: #F5F5F5;
+    /* ── Homzen semantic surfaces ───────────────────────── */
+    --color-hz-primary: var(--hz-primary);
+    --color-hz-primary-hover: var(--hz-primary-hover);
+    --color-hz-page: var(--hz-page);
+    --color-hz-elevated: var(--hz-elevated);
+    --color-hz-sunken: var(--hz-sunken);
+    --color-hz-ink: var(--hz-ink);
+    --color-hz-body: var(--hz-body);
+    --color-hz-muted: var(--hz-muted);
+    --color-hz-border: var(--hz-line);
+    --color-hz-line: var(--hz-line);
+    --color-hz-inverse: var(--hz-inverse);
+    --color-hz-inverse-fg: var(--hz-inverse-fg);
+    --color-hz-footer: var(--hz-footer);
+    --color-hz-footer-fg: var(--hz-footer-fg);
+    --color-hz-deep: var(--hz-deep);
+    --color-hz-deep-fg: var(--hz-deep-fg);
+    --color-hz-listings: var(--hz-listings);
+    /* Compatibility aliases */
+    --color-hz-dark: var(--hz-ink);
+    --color-hz-bg-soft: var(--hz-sunken);
 
-    /* ── Homzen border radius (Try Searching For cards) ─ */
+    --shadow-hz-sm: var(--hz-shadow-sm);
+    --shadow-hz-md: var(--hz-shadow-md);
+    --shadow-hz-elevated: var(--hz-shadow-elevated);
+
+    /* ── Homzen border radius ────────────────────────────── */
     --radius-hz: 4px;
 
     /* ── Luxury Brand Palette ────────────────────────────── */
-    --color-luxury-dark: oklch(0.14 0 0);
-    --color-luxury-cream: oklch(0.978 0.004 80);
-    --color-luxury-crimson: oklch(0.41 0.16 27);
-    --color-luxury-crimson-hover: oklch(0.35 0.16 27);
-    --color-luxury-muted: oklch(0.55 0 0);
-    --color-luxury-border: oklch(0.88 0.002 80);
-    --color-paper-warm: oklch(0.945 0.018 78);
-    --color-paper-fiber: oklch(0.91 0.022 72);
-    --color-paper-edge: oklch(0.84 0.028 70);
-    --color-paper-tape: oklch(0.9 0.035 82);
-    --color-luxury-footer: oklch(0.28 0.014 68);
-    --color-luxury-footer-ink: oklch(0.86 0.012 78);
-    --color-luxury-footer-muted: oklch(0.62 0.012 75);
+    --color-luxury-dark: var(--luxury-dark);
+    --color-luxury-cream: var(--luxury-cream);
+    --color-luxury-crimson: var(--hz-primary);
+    --color-luxury-crimson-hover: var(--hz-primary-hover);
+    --color-luxury-muted: var(--luxury-muted);
+    --color-luxury-border: var(--luxury-border);
+    --color-paper-warm: var(--paper-warm);
+    --color-paper-fiber: var(--paper-fiber);
+    --color-paper-edge: var(--paper-edge);
+    --color-paper-tape: var(--paper-tape);
+    --color-luxury-footer: var(--luxury-footer);
+    --color-luxury-footer-ink: var(--luxury-footer-ink);
+    --color-luxury-footer-muted: var(--luxury-footer-muted);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -89,31 +104,66 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ── Theme tokens ────────────────────────────────────────── */
 :root {
-    --background: oklch(0.978 0.004 80);   /* luxury-cream */
-    --foreground: oklch(0.14 0 0);         /* luxury-dark */
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
+    --hz-primary: oklch(0.64 0.19 45);
+    --hz-primary-hover: oklch(0.56 0.20 42);
+    --hz-page: oklch(0.978 0.004 80);
+    --hz-elevated: #ffffff;
+    --hz-sunken: #f5f5f5;
+    --hz-ink: #1a1a2e;
+    --hz-body: #555555;
+    --hz-muted: #717171;
+    --hz-line: #e5e5e5;
+    --hz-inverse: #1a1a2e;
+    --hz-inverse-fg: #ffffff;
+    --hz-footer: #1d2a3a;
+    --hz-footer-fg: #ffffff;
+    /* Always-dark bridge band (Latest News etc.) — darker than elevated, not footer clone */
+    --hz-deep: #222f40;
+    --hz-deep-fg: #ffffff;
+    /* Listings canvas — cool blue tint, still light enough for ink */
+    --hz-listings: color-mix(in oklch, #e8ecf2 82%, oklch(0.55 0.05 255) 18%);
+    --hz-shadow-sm: 0 1px 2px rgb(26 26 46 / 0.06);
+    --hz-shadow-md: 0 4px 16px rgb(26 26 46 / 0.08);
+    --hz-shadow-elevated: 0 8px 28px rgb(26 26 46 / 0.1);
+
+    --luxury-dark: oklch(0.14 0 0);
+    --luxury-cream: oklch(0.978 0.004 80);
+    --luxury-muted: oklch(0.55 0 0);
+    --luxury-border: oklch(0.88 0.002 80);
+    --paper-warm: oklch(0.945 0.018 78);
+    --paper-fiber: oklch(0.91 0.022 72);
+    --paper-edge: oklch(0.84 0.028 70);
+    --paper-tape: oklch(0.9 0.035 82);
+    --luxury-footer: oklch(0.28 0.014 68);
+    --luxury-footer-ink: oklch(0.86 0.012 78);
+    --luxury-footer-muted: oklch(0.62 0.012 75);
+
+    --background: var(--hz-page);
+    --foreground: var(--hz-ink);
+    --card: var(--hz-elevated);
+    --card-foreground: var(--hz-ink);
+    --popover: var(--hz-elevated);
+    --popover-foreground: var(--hz-ink);
     --primary: oklch(0.205 0 0);
     --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --secondary: var(--hz-sunken);
+    --secondary-foreground: var(--hz-ink);
+    --muted: var(--hz-sunken);
+    --muted-foreground: var(--hz-muted);
+    --accent: var(--hz-sunken);
+    --accent-foreground: var(--hz-ink);
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
+    --border: var(--hz-line);
+    --input: var(--hz-line);
     --ring: oklch(0.708 0 0);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --radius: 0.25rem; /* 4px — matches Homzen card radius */
+    --radius: 0.25rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -124,38 +174,85 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+/* ── Navy theme (opt-in): dark blue surfaces, light ink/borders; brand orange LOCKED ── */
+html[data-theme="navy"] {
+    color-scheme: dark;
+
+    --hz-primary: oklch(0.64 0.19 45);
+    --hz-primary-hover: oklch(0.56 0.20 42);
+
+    --hz-page: oklch(0.22 0.04 255);
+    --hz-elevated: oklch(0.28 0.035 255);
+    --hz-sunken: oklch(0.18 0.03 255);
+
+    --hz-ink: oklch(0.96 0.01 255);
+    --hz-body: oklch(0.78 0.02 255);
+    --hz-muted: oklch(0.65 0.02 255);
+    --hz-line: oklch(0.42 0.03 255);
+
+    /* Light emphasis band on navy canvas (not for footer) */
+    --hz-inverse: oklch(0.90 0.02 255);
+    --hz-inverse-fg: oklch(0.22 0.04 255);
+
+    /* Footer + deep bands always stay dark */
+    --hz-footer: oklch(0.12 0.04 255);
+    --hz-footer-fg: oklch(0.96 0.01 255);
+    --hz-deep: oklch(0.16 0.035 255);
+    --hz-deep-fg: oklch(0.96 0.01 255);
+    /* Midnight navy — near footer depth, soft blue still readable */
+    --hz-listings: oklch(0.145 0.032 255);
+
+    --hz-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
+    --hz-shadow-md: 0 4px 16px rgb(0 0 0 / 0.4);
+    --hz-shadow-elevated: 0 8px 28px rgb(0 0 0 / 0.45);
+
+    --luxury-dark: oklch(0.96 0.01 255);
+    --luxury-cream: oklch(0.22 0.04 255);
+    --luxury-muted: oklch(0.68 0.02 255);
+    --luxury-border: oklch(0.42 0.03 255);
+    --paper-warm: oklch(0.30 0.03 255);
+    --paper-fiber: oklch(0.26 0.035 255);
+    --paper-edge: oklch(0.38 0.03 255);
+    --paper-tape: oklch(0.34 0.04 255);
+    --luxury-footer: oklch(0.16 0.03 255);
+    --luxury-footer-ink: oklch(0.90 0.015 255);
+    --luxury-footer-muted: oklch(0.62 0.02 255);
+
+    --background: var(--hz-page);
+    --foreground: var(--hz-ink);
+    --card: var(--hz-elevated);
+    --card-foreground: var(--hz-ink);
+    --popover: var(--hz-elevated);
+    --popover-foreground: var(--hz-ink);
+    --primary: oklch(0.92 0.01 255);
+    --primary-foreground: oklch(0.22 0.04 255);
+    --secondary: var(--hz-sunken);
+    --secondary-foreground: var(--hz-ink);
+    --muted: var(--hz-sunken);
+    --muted-foreground: var(--hz-muted);
+    --accent: var(--hz-sunken);
+    --accent-foreground: var(--hz-ink);
+    --destructive: oklch(0.65 0.2 25);
+    --border: var(--hz-line);
+    --input: var(--hz-line);
+    --ring: oklch(0.55 0.04 255);
+    --chart-1: oklch(0.72 0.04 255);
+    --chart-2: oklch(0.62 0.03 255);
+    --chart-3: oklch(0.52 0.03 255);
+    --chart-4: oklch(0.42 0.03 255);
+    --chart-5: oklch(0.32 0.03 255);
+    --sidebar: oklch(0.24 0.035 255);
+    --sidebar-foreground: oklch(0.96 0.01 255);
+    --sidebar-primary: oklch(0.92 0.01 255);
+    --sidebar-primary-foreground: oklch(0.22 0.04 255);
+    --sidebar-accent: oklch(0.30 0.03 255);
+    --sidebar-accent-foreground: oklch(0.96 0.01 255);
+    --sidebar-border: oklch(0.42 0.03 255);
+    --sidebar-ring: oklch(0.55 0.04 255);
+}
+
+html {
+    color-scheme: light;
 }
 
 @layer base {
@@ -163,7 +260,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased font-poppins;
+    @apply bg-hz-page text-hz-ink antialiased font-poppins;
   }
   html {
     scroll-behavior: smooth;
@@ -174,6 +271,18 @@
   }
   p, span, a, label, input, button {
     font-family: var(--font-poppins);
+  }
+  a[href],
+  button:not(:disabled),
+  select:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
   }
 }
 
@@ -213,5 +322,47 @@
     .paper-note-tilt {
       transform: none !important;
     }
+  }
+
+  html[data-theme="navy"] .paper-note-surface {
+    background-image:
+      linear-gradient(
+        152deg,
+        color-mix(in oklch, var(--color-paper-warm) 88%, var(--hz-elevated)) 0%,
+        transparent 42%
+      ),
+      linear-gradient(
+        328deg,
+        color-mix(in oklch, var(--color-paper-fiber) 55%, transparent) 0%,
+        transparent 48%
+      );
+  }
+
+  html[data-theme="navy"] .paper-note-grain::after {
+    opacity: 0.14;
+    mix-blend-mode: soft-light;
+  }
+
+  /* Black-authored raster line icons — invert to light ink on navy surfaces */
+  .hz-raster-icon-on-surface {
+    /* light: native black line art on pale surfaces */
+  }
+
+  html[data-theme="navy"] .hz-raster-icon-on-surface {
+    filter: brightness(0) invert(1);
+    opacity: 0.88;
+  }
+
+  .hz-raster-icon-muted {
+    filter: brightness(0.75) contrast(1.5);
+  }
+
+  html[data-theme="navy"] .hz-raster-icon-muted {
+    filter: brightness(0) invert(1);
+    opacity: 0.78;
+  }
+
+  .hz-raster-icon-on-primary {
+    filter: brightness(0) invert(1);
   }
 }

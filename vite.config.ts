@@ -10,4 +10,16 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
+  server: {
+    proxy: {
+      '/graphql': 'http://localhost:8080',
+      '/newsletter': 'http://localhost:8080',
+      '/contact': 'http://localhost:8080',
+      '/property-submissions': 'http://localhost:8080',
+      '/wishlist': 'http://localhost:8080',
+      '/compare': 'http://localhost:8080',
+      '/security': 'http://localhost:8080',
+      '/api': 'http://localhost:8080',
+    },
+  },
 })

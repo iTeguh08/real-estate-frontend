@@ -5,14 +5,14 @@ import { PropertyCard } from '@/components/cards/PropertyCard';
 import { useWishlist } from '@/hooks/useWishlist';
 import { queryKeys } from '@/lib/query-keys';
 import { routes } from '@/lib/routes';
-import { getPropertiesByIds } from '@/services/properties.service';
+import { getWishlistProperties } from '@/services/wishlist.service';
 
 export function WishlistPage() {
   const { wishlistIds } = useWishlist();
 
   const { data: properties = [], isLoading } = useQuery({
     queryKey: queryKeys.wishlist.properties(wishlistIds),
-    queryFn: () => getPropertiesByIds(wishlistIds),
+    queryFn: () => getWishlistProperties(wishlistIds),
     enabled: wishlistIds.length > 0,
   });
 
@@ -27,7 +27,7 @@ export function WishlistPage() {
           Tap the heart icon on any listing to save it here for later.
         </p>
         <Link
-          to={{ pathname: routes.home, hash: 'listings' }}
+          to={routes.listings}
           className="mt-8 inline-flex items-center gap-2 rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white no-underline transition-colors hover:bg-hz-primary-hover"
         >
           <ArrowLeft size={16} />
@@ -38,10 +38,10 @@ export function WishlistPage() {
   }
 
   return (
-    <main id="main-content" className="bg-white py-10 md:py-16">
+    <main id="main-content" className="bg-hz-elevated py-10 md:py-16">
       <div className="section-container">
         <Link
-          to={{ pathname: routes.home, hash: 'listings' }}
+          to={routes.listings}
           className="mb-6 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors hover:text-hz-primary"
         >
           <ArrowLeft size={16} />
@@ -58,7 +58,7 @@ export function WishlistPage() {
         {isLoading ? (
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: wishlistIds.length }).map((_, i) => (
-              <div key={i} className="h-full animate-pulse rounded-hz border border-hz-border bg-white">
+              <div key={i} className="h-full animate-pulse rounded-hz border border-hz-border bg-hz-elevated">
                 <div className="aspect-[16/10] bg-hz-bg-soft" />
                 <div className="space-y-3 p-4">
                   <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />

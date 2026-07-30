@@ -1,24 +1,27 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Search, LocateFixed, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
+import { publicAsset } from '@/lib/public-asset';
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { useHomepageQuery } from '@/hooks/queries';
+import { useTheme } from '@/hooks/useTheme';
 import type { PropertyStatus, PropertyType } from '@/types';
 import heroImage from '@/assets/hero.webp';
+
+const LIGHT_HERO_LEFT_BG = publicAsset('bg/bg-hero-left-property-v1.webp');
 
 const TABS = ['For Rent', 'For Sale'] as const satisfies readonly PropertyStatus[];
 type HeroTab = (typeof TABS)[number];
 
-const PROPERTY_TYPES = [
-  'Apartment',
-  'Villa',
-  'Studio',
-  'Townhouse',
-  'Office',
-] as const satisfies readonly PropertyType[];
-
 const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES] as const;
 
 export function HeroSection() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+
+  const { data: homepage } = useHomepageQuery();
+  const hero = homepage?.hero;
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
 
   const [activeTab, setActiveTab] = useState<HeroTab>('For Rent');
@@ -85,14 +88,14 @@ export function HeroSection() {
   };
 
   const fieldClassName =
-    'flex min-h-[52px] flex-col justify-center px-4 border-[#ECECEC] max-lg:border-b max-lg:px-3 max-lg:py-3 lg:min-w-[140px] lg:border-r';
+    'flex min-h-[52px] flex-col justify-center px-4 border-hz-border max-lg:border-b max-lg:px-3 max-lg:py-3 lg:min-w-[140px] lg:border-r';
 
   const searchFields = (
     <>
       <div className={fieldClassName}>
         <label
           htmlFor="hero-keyword"
-          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
+          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-hz-muted"
         >
           Keyword
         </label>
@@ -102,14 +105,14 @@ export function HeroSection() {
           placeholder="e.g. Villa, Brooklyn, Office"
           value={keyword}
           onChange={(e) => setKeywordLocal(e.target.value)}
-          className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0 truncate"
+          className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-hz-muted w-full min-w-0 truncate"
         />
       </div>
 
       <div className={fieldClassName}>
         <label
           htmlFor="hero-location"
-          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
+          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-hz-muted"
         >
           Location
         </label>
@@ -120,11 +123,11 @@ export function HeroSection() {
             placeholder="e.g. New York, Los Angeles"
             value={location}
             onChange={(e) => setLocationLocal(e.target.value)}
-            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-[#BBBBBB] w-full min-w-0 truncate"
+            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-hz-muted w-full min-w-0 truncate"
           />
           <LocateFixed
             size={16}
-            className="shrink-0 text-hz-dark max-lg:text-[#AAAAAA]"
+            className="shrink-0 text-hz-dark max-lg:text-hz-muted"
             strokeWidth={1.5}
             aria-hidden="true"
           />
@@ -134,7 +137,7 @@ export function HeroSection() {
       <div className={fieldClassName}>
         <label
           htmlFor="hero-type"
-          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-[#AAAAAA]"
+          className="font-poppins font-semibold text-[11px] text-hz-dark uppercase tracking-[0.8px] mb-[2px] max-lg:text-hz-muted"
         >
           Type
         </label>
@@ -153,7 +156,7 @@ export function HeroSection() {
           </select>
           <ChevronDown
             size={15}
-            className="shrink-0 text-[#AAAAAA] pointer-events-none"
+            className="shrink-0 text-hz-muted pointer-events-none"
             strokeWidth={1.5}
             aria-hidden="true"
           />
@@ -162,169 +165,229 @@ export function HeroSection() {
     </>
   );
 
+  const heroCopy = (
+    <div className="max-w-[620px] 3xl:max-w-[720px]">
+      <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
+        {hero?.eyebrow ?? 'Real Estate Agency'}
+      </p>
+
+      <h1
+        className={cn(
+          'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px]',
+          'text-[36px] md:text-[42px] lg:text-[48px] 3xl:text-[56px]',
+          'max-w-[500px] 3xl:max-w-[580px]'
+        )}
+      >
+        {(hero?.headline ?? 'Find A Home That\nFits Your Dream').split('\n').map((line, index) => (
+          <span key={line}>
+            {index > 0 && <br />}
+            {line}
+          </span>
+        ))}
+      </h1>
+
+      <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] 3xl:max-w-[520px] mb-6">
+        {hero?.subheadline ??
+          'We are a real estate agency that will help you find the best residence for you at an affordable price.'}
+      </p>
+    </div>
+  );
+
+  const searchBlock = (
+    <div
+      className={cn(
+        'relative z-30 mt-0 w-full max-w-[560px]',
+        'lg:max-w-[900px] lg:w-[min(900px,max(100%,calc(80vw-7.5rem)))]'
+      )}
+    >
+      <div className="flex">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => handleTabChange(tab)}
+            aria-pressed={activeTab === tab}
+            className={cn(
+              'font-poppins px-6 py-[10px] text-[12px] uppercase tracking-[0.5px]',
+              'rounded-t-hz transition-colors duration-200 cursor-pointer border-none',
+              activeTab === tab
+                ? 'bg-hz-elevated text-hz-dark font-semibold'
+                : 'bg-hz-sunken text-hz-muted font-medium hover:text-hz-dark'
+            )}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-hz-elevated rounded-b-hz rounded-tr-hz shadow-hz-elevated"
+      >
+        <div className="hidden lg:grid lg:grid-cols-[minmax(140px,1fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto_auto] items-stretch p-3 gap-0 min-w-0">
+          {searchFields}
+
+          <button
+            type="button"
+            onClick={() => setAdvancedSearchOpen(true)}
+            className="flex shrink-0 items-center gap-2 self-center px-4 font-poppins font-medium text-[13px] text-hz-dark hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200 whitespace-nowrap"
+          >
+            <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
+            Advanced
+          </button>
+
+          <div className="flex shrink-0 items-center self-center pl-2">
+            <button
+              type="submit"
+              className={cn(
+                'flex items-center justify-center gap-2',
+                'bg-hz-primary hover:bg-hz-primary-hover text-white',
+                'font-poppins font-semibold text-[14px]',
+                'px-6 py-[14px] rounded-hz',
+                'border-none cursor-pointer',
+                'transition-colors duration-200 whitespace-nowrap'
+              )}
+            >
+              <Search size={16} strokeWidth={2} aria-hidden="true" />
+              Find Properties
+            </button>
+          </div>
+        </div>
+
+        <div className="lg:hidden flex flex-col p-3 gap-0">
+          {searchFields}
+
+          <button
+            type="button"
+            onClick={() => setAdvancedSearchOpen(true)}
+            className="flex items-center justify-center gap-2 mx-3 mt-3 font-poppins font-medium text-[13px] text-hz-body hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200"
+          >
+            <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
+            Advanced
+          </button>
+
+          <div className="px-3 pt-3">
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-hz-primary hover:bg-hz-primary-hover text-white text-[14px] font-semibold px-4 py-3 rounded-hz border-none cursor-pointer transition-colors duration-200 font-poppins"
+            >
+              <Search size={16} strokeWidth={2} aria-hidden="true" />
+              Find Properties
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+
+  const heroFooter = (
+    <>
+      <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted">
+        Your search preferences are saved and shared via the URL. Matching listings load live from
+        our database — scroll down to browse results.
+      </p>
+
+      <div className="mt-4 max-w-[620px] 3xl:max-w-[720px] flex items-center gap-3 flex-wrap">
+        <span className="font-poppins font-normal text-[13px] text-hz-muted">
+          When you are looking for:
+        </span>
+        {PROPERTY_TYPES.map((type, idx) => (
+          <span key={type} className="flex items-center gap-3">
+            {idx > 0 && (
+              <span className="text-hz-border select-none" aria-hidden="true">
+                |
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => handleChipClick(type)}
+              aria-pressed={activeChip === type}
+              className={cn(
+                'font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent p-0',
+                'transition-colors duration-200',
+                activeChip === type
+                  ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
+                  : 'text-hz-body hover:text-hz-primary'
+              )}
+            >
+              {type}
+            </button>
+          </span>
+        ))}
+      </div>
+    </>
+  );
+
   return (
     <section
-      className="bg-[#F7F7F7] font-poppins"
+      className={cn(
+        'relative overflow-hidden font-poppins',
+        isLight ? 'bg-hz-page' : 'bg-hz-sunken'
+      )}
       aria-label="Hero — Find your home"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
+      {isLight ? (
+        <div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          aria-hidden="true"
+        >
+          <img
+            src={LIGHT_HERO_LEFT_BG}
+            alt=""
+            width={1280}
+            height={960}
+            className="absolute inset-0 h-full w-full object-cover object-left opacity-[0.2]"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            style={{
+              WebkitMaskImage:
+                'linear-gradient(to right, #000 0%, #000 34%, rgba(0,0,0,0.75) 48%, rgba(0,0,0,0.35) 62%, rgba(0,0,0,0.12) 72%, transparent 84%)',
+              maskImage:
+                'linear-gradient(to right, #000 0%, #000 34%, rgba(0,0,0,0.75) 48%, rgba(0,0,0,0.35) 62%, rgba(0,0,0,0.12) 72%, transparent 84%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse at 16% 38%, color-mix(in oklch, white 14%, transparent), transparent 48%)',
+              WebkitMaskImage:
+                'linear-gradient(to right, #000 0%, #000 28%, transparent 68%)',
+              maskImage: 'linear-gradient(to right, #000 0%, #000 28%, transparent 68%)',
+            }}
+          />
+        </div>
+      ) : (
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[55%] md:block"
+          aria-hidden="true"
+          style={{
+            background:
+              'radial-gradient(ellipse at left, color-mix(in oklch, oklch(0.55 0.09 250) 18%, transparent), transparent 68%)',
+          }}
+        />
+      )}
+
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
         <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pr-14">
           <div
             className={cn(
-              'section-container',
+              'relative z-10 section-container',
               'lg:!mx-0 lg:!ml-[max(0px,calc((100vw-min(100vw,80rem))/2))] lg:w-full lg:max-w-none',
               '2xl:!ml-[max(0px,calc((100vw-min(100vw,1680px))/2))]',
               '3xl:!ml-[max(0px,calc((100vw-min(100vw,1920px))/2))]'
             )}
           >
-          <div className="max-w-[620px] 3xl:max-w-[720px]">
-            <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
-              Real Estate Agency
-            </p>
-
-            <h1
-              className={cn(
-                'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px]',
-                'text-[36px] md:text-[42px] lg:text-[48px] 3xl:text-[56px]',
-                'max-w-[500px] 3xl:max-w-[580px]'
-              )}
-            >
-              Find A Home That
-              <br />
-              Fits Your Dream
-            </h1>
-
-            <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] 3xl:max-w-[520px] mb-6">
-              We are a real estate agency that will help you find the best
-              residence for you at an affordable price.
-            </p>
-          </div>
-
-          <div
-            className={cn(
-              'relative z-30 mt-0 w-full max-w-[560px]',
-              // Full width up to 900px; extend past text column for hero overlap, capped on ultra-wide screens
-              'lg:max-w-[900px] lg:w-[min(900px,max(100%,calc(80vw-7.5rem)))]'
-            )}
-          >
-            <div className="flex">
-              {TABS.map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => handleTabChange(tab)}
-                  aria-pressed={activeTab === tab}
-                  className={cn(
-                    'font-poppins px-6 py-[10px] text-[12px] uppercase tracking-[0.5px]',
-                    'rounded-t-hz transition-colors duration-200 cursor-pointer border-none',
-                    activeTab === tab
-                      ? 'bg-white text-hz-dark font-semibold'
-                      : 'bg-[#EDEDED] text-[#888888] font-medium hover:text-hz-dark'
-                  )}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            <form
-              onSubmit={handleSubmit}
-              className="bg-white rounded-b-hz rounded-tr-hz shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
-            >
-              <div className="hidden lg:grid lg:grid-cols-[minmax(140px,1fr)_minmax(140px,1fr)_minmax(140px,1fr)_auto_auto] items-stretch p-3 gap-0 min-w-0">
-                {searchFields}
-
-                <button
-                  type="button"
-                  onClick={() => setAdvancedSearchOpen(true)}
-                  className="flex shrink-0 items-center gap-2 self-center px-4 font-poppins font-medium text-[13px] text-hz-dark hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200 whitespace-nowrap"
-                >
-                  <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
-                  Advanced
-                </button>
-
-                <div className="flex shrink-0 items-center self-center pl-2">
-                  <button
-                    type="submit"
-                    className={cn(
-                      'flex items-center justify-center gap-2',
-                      'bg-hz-primary hover:bg-hz-primary-hover text-white',
-                      'font-poppins font-semibold text-[14px]',
-                      'px-6 py-[14px] rounded-hz',
-                      'border-none cursor-pointer',
-                      'transition-colors duration-200 whitespace-nowrap'
-                    )}
-                  >
-                    <Search size={16} strokeWidth={2} aria-hidden="true" />
-                    Find Properties
-                  </button>
-                </div>
-              </div>
-
-              <div className="lg:hidden flex flex-col p-3 gap-0">
-                {searchFields}
-
-                  <button
-                    type="button"
-                    onClick={() => setAdvancedSearchOpen(true)}
-                    className="flex items-center justify-center gap-2 mx-3 mt-3 font-poppins font-medium text-[13px] text-hz-body hover:text-hz-primary bg-transparent border-none cursor-pointer transition-colors duration-200"
-                  >
-                  <SlidersHorizontal size={16} strokeWidth={1.8} aria-hidden="true" />
-                  Advanced
-                </button>
-
-                <div className="px-3 pt-3">
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center gap-2 bg-hz-primary hover:bg-hz-primary-hover text-white text-[14px] font-semibold px-4 py-3 rounded-hz border-none cursor-pointer transition-colors duration-200 font-poppins"
-                  >
-                    <Search size={16} strokeWidth={2} aria-hidden="true" />
-                    Find Properties
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted">
-            Your search preferences are saved and shared via the URL. Results will be refined by
-            our listings database soon — until then, explore featured properties below.
-          </p>
-
-          <div className="mt-4 max-w-[620px] 3xl:max-w-[720px] flex items-center gap-3 flex-wrap">
-            <span className="font-poppins font-normal text-[13px] text-hz-muted">
-              When you are looking for:
-            </span>
-            {PROPERTY_TYPES.map((type, idx) => (
-              <span key={type} className="flex items-center gap-3">
-                {idx > 0 && (
-                  <span className="text-[#DDDDDD] select-none" aria-hidden="true">
-                    |
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleChipClick(type)}
-                  aria-pressed={activeChip === type}
-                  className={cn(
-                    'font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent p-0',
-                    'transition-colors duration-200',
-                    activeChip === type
-                      ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
-                      : 'text-hz-body hover:text-hz-primary'
-                  )}
-                >
-                  {type}
-                </button>
-              </span>
-            ))}
-          </div>
+            {heroCopy}
+            {searchBlock}
+            {heroFooter}
           </div>
         </div>
 
         <div className="relative order-1 lg:order-2 aspect-[1280/1103] w-full min-h-0 overflow-hidden lg:aspect-auto lg:h-full">
           <img
-            src={heroImage}
+            src={hero?.backgroundImage ?? heroImage}
             alt="Modern luxury residential home"
             width={1280}
             height={1103}
@@ -332,6 +395,15 @@ export function HeroSection() {
             loading="eager"
             fetchPriority="high"
             decoding="async"
+          />
+          <div
+            className={cn(
+              'pointer-events-none absolute inset-0',
+              isLight
+                ? 'bg-gradient-to-l from-transparent from-[18%] via-transparent to-hz-page/25'
+                : 'bg-gradient-to-l from-transparent via-transparent to-hz-sunken/80'
+            )}
+            aria-hidden="true"
           />
         </div>
       </div>

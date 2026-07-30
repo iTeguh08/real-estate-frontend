@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <pattern id="soft-lines" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#E07030" stroke-width="0.6" stroke-opacity="0.12" />
+    </pattern>
+  </defs>
+  <rect width="96" height="96" fill="url(#soft-lines)" />
+</svg>

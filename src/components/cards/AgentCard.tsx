@@ -19,7 +19,7 @@ export function AgentCard({ agent, className }: AgentCardProps) {
         className="block no-underline"
         aria-label={`View profile for ${name}`}
       >
-        <div className="aspect-[16/10] overflow-hidden rounded-hz">
+        <div className="aspect-[16/10] overflow-hidden rounded-hz border border-hz-border">
           <img
             src={avatarUrl}
             alt={name}

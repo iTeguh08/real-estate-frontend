@@ -2,168 +2,208 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
+import { listingsHref } from '@/data/navigation';
+import { useHomepageQuery } from '@/hooks/queries';
+import { useTheme } from '@/hooks/useTheme';
+import type { HomepageExpertiseItem } from '@/data/cms-fallbacks';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import {
   VillaIllustration,
   ApartmentIllustration,
   CommercialIllustration,
 } from '@/components/icons/PropertyTypeIllustrations';
 
-interface ExpertiseItem {
-  id: string;
-  label: string;
-  description: string;
-  Illustration: React.ComponentType<{ className?: string; iconClassName?: string }>;
-}
-
-const EXPERTISE_ITEMS: ExpertiseItem[] = [
-  {
-    id: 'buy',
-    label: 'Buy A Home',
-    description:
-      "Find your place with an immersive photo experience and the most listings, including things you won't find anywhere else.",
+const SERVICE_META = {
+  buy: {
     Illustration: VillaIllustration,
+    href: listingsHref({ status: 'For Sale' }),
+    cta: 'Browse homes for sale',
+    step: '01',
   },
-  {
-    id: 'rent',
-    label: 'Rent A Home',
-    description:
-      "We're creating a seamless online experience — from shopping on the largest rental network to applying, to paying rent.",
+  rent: {
     Illustration: ApartmentIllustration,
+    href: listingsHref({ status: 'For Rent' }),
+    cta: 'Explore rentals',
+    step: '02',
   },
-  {
-    id: 'sell',
-    label: 'Sell A Home',
-    description:
-      'No matter what path you take to sell your home, we can help you navigate a successful sale.',
+  sell: {
     Illustration: CommercialIllustration,
+    href: routes.submitProperty,
+    cta: 'List your property',
+    step: '03',
   },
-];
+} as const;
+
+type ExpertiseItem = HomepageExpertiseItem & {
+  Illustration: React.ComponentType<{ className?: string; iconClassName?: string }>;
+  href: string;
+  cta: string;
+  step: string;
+};
 
 const KEY_DIFFERENTIATORS = [
-  { value: '3,500+', label: 'Transactions Completed' },
-  { value: '5-Star', label: 'Client Satisfaction' },
-  { value: 'Proven', label: 'Market Knowledge' },
-  { value: 'Expert', label: 'Local Advisors' },
+  { value: '3,500+', label: 'Closings guided' },
+  { value: '98%', label: 'Client recommend' },
+  { value: '12+', label: 'Years in market' },
+  { value: '40+', label: 'Local advisors' },
 ];
 
-function ExpertiseCheckItem({ value, label }: { value: string; label: string }) {
+function ExpertiseMetric({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex items-start gap-3">
-      <span
-        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600"
-        aria-hidden="true"
-      >
-        <Check size={11} strokeWidth={2.75} className="text-white" />
+    <div className="flex flex-col gap-1 sm:px-4 sm:first:pl-0 sm:last:pr-0">
+      <span className="font-poppins text-2xl font-semibold tracking-tight text-hz-dark md:text-[28px]">
+        {value}
       </span>
-      <div>
-        <span className="font-poppins text-sm font-semibold text-hz-dark">{value}</span>
-        <span className="ml-1.5 font-poppins text-sm text-hz-muted">{label}</span>
-      </div>
+      <span className="font-poppins text-[12px] leading-snug text-hz-muted">{label}</span>
     </div>
   );
 }
 
 function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
-  const { Illustration, label, description } = item;
+  const { Illustration, label, description, href, cta, step } = item;
 
   return (
-    <article
+    <Link
+      to={href}
       className={cn(
-        'group flex w-full items-center gap-6',
-        'rounded-hz bg-white p-6',
-        'shadow-[0_4px_20px_rgba(0,0,0,0.02)]',
+        'group relative flex w-full items-center gap-5 no-underline',
+        'overflow-hidden rounded-hz border border-hz-border bg-hz-elevated p-5 md:gap-6 md:p-6',
+        'shadow-hz-sm',
         'transition-all duration-300',
-        'hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]'
+        'hover:-translate-y-0.5 hover:border-hz-primary/40 hover:shadow-hz-elevated'
       )}
+      aria-label={`${label} — ${cta}`}
     >
+      <span
+        className="absolute top-4 right-5 font-poppins text-[11px] font-semibold tracking-[0.2em] text-hz-border transition-colors duration-300 group-hover:text-hz-primary/40"
+        aria-hidden="true"
+      >
+        {step}
+      </span>
+
       <div
         className="flex h-[88px] w-20 shrink-0 items-center justify-center"
         aria-hidden="true"
       >
         <Illustration
           className="flex h-full w-full items-center justify-center"
-          iconClassName="!h-full !w-full !translate-y-0 object-contain object-center !brightness-100 !contrast-100"
+          iconClassName="!h-full !w-full !translate-y-0 hz-raster-icon-on-surface"
         />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 pr-8">
         <h3 className="font-poppins text-lg font-semibold leading-tight text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
           {label}
         </h3>
-        <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">
-          {description}
-        </p>
-        <Link
-          to={{ pathname: routes.home, hash: '#listings' }}
-          className="mt-1 inline-flex w-fit items-center gap-1 font-poppins text-[13px] font-semibold text-hz-dark no-underline transition-colors duration-200 hover:text-hz-primary"
-        >
-          Learn More
-          <ArrowRight size={14} strokeWidth={1.6} />
-        </Link>
+        <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">{description}</p>
+        <span className="mt-1 inline-flex w-fit items-center gap-1.5 font-poppins text-[13px] font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
+          {cta}
+          <ArrowRight
+            size={14}
+            strokeWidth={1.75}
+            className="transition-transform duration-300 group-hover:translate-x-0.5"
+          />
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
 export function ExpertiseSection() {
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
+  const { data: homepage } = useHomepageQuery();
+  const expertise = homepage?.expertise;
+
+  const items: ExpertiseItem[] = (expertise?.items ?? []).map((item) => {
+    const meta = SERVICE_META[item.id] ?? SERVICE_META.buy;
+    return { ...item, ...meta };
+  });
+
+  if (!expertise || items.length === 0) {
+    return null;
+  }
+
   return (
     <section
       id="expertise"
-      className="w-full bg-[#F8F8F8] py-14 md:py-20"
+      className="relative w-full overflow-hidden bg-hz-sunken py-16 md:py-24"
       aria-labelledby="expertise-heading"
     >
-      <div className="section-container xl:px-16 2xl:px-20">
+      <SectionAtmosphere
+        tone={isNavy ? 'dark' : 'light'}
+        surface="sunken"
+        intensity="quiet"
+        variant="dual"
+        side="left"
+        image="none"
+      />
+      <div className="section-container relative z-10 xl:px-16 2xl:px-20">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
-
-          {/* ── Left Column ── */}
-          <div className="flex flex-col gap-6">
-            <div>
-              <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
-                Our Expertise
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <p className="font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+                {expertise.eyebrow}
               </p>
               <h2
                 id="expertise-heading"
-                className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+                className="max-w-[420px] font-poppins text-[30px] font-semibold leading-[1.15] tracking-[-0.4px] text-hz-dark md:text-[38px]"
               >
-                Discover What Sets Our Real Estate Expertise Apart
+                {expertise.title}
               </h2>
+              <p className="max-w-[460px] font-poppins text-[15px] leading-relaxed text-hz-muted">
+                {expertise.description}
+              </p>
             </div>
 
-            <p className="max-w-[460px] font-poppins text-sm leading-relaxed text-hz-muted">
-              We provide a full suite of real estate services — from first consultation to
-              closing — supported by market-leading data and a team of dedicated professionals
-              who put your goals first.
-            </p>
-
-            <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-4">
+            <div className="grid grid-cols-2 gap-6 rounded-hz border border-hz-border bg-hz-elevated/70 p-5 backdrop-blur-sm sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-hz-border sm:p-6">
               {KEY_DIFFERENTIATORS.map((item) => (
-                <ExpertiseCheckItem key={item.label} value={item.value} label={item.label} />
+                <ExpertiseMetric key={item.label} value={item.value} label={item.label} />
               ))}
             </div>
 
+            <ul className="flex flex-col gap-3" aria-label="Why clients choose Homzen">
+              {[
+                'End-to-end guidance from first viewing to closing',
+                'Local advisors with live market insight',
+                'Curated listings you will not find on mass portals',
+              ].map((point) => (
+                <li key={point} className="flex items-start gap-3">
+                  <span
+                    className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-hz-primary"
+                    aria-hidden="true"
+                  >
+                    <Check size={11} strokeWidth={2.75} className="text-white" />
+                  </span>
+                  <span className="font-poppins text-sm leading-snug text-hz-body">{point}</span>
+                </li>
+              ))}
+            </ul>
+
             <Link
-              to={{ pathname: routes.home, hash: '#listings' }}
-              className="mt-2 flex items-center gap-1.5 self-start font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:decoration-hz-primary hover:decoration-1 hover:underline-offset-4"
-              aria-label="Browse listings"
+              to={routes.contact}
+              className={cn(
+                'inline-flex w-fit items-center gap-2 self-start rounded-hz',
+                'bg-hz-primary px-6 py-3 font-poppins text-sm font-semibold text-white no-underline',
+                'transition-colors duration-200 hover:bg-hz-primary-hover'
+              )}
             >
-              Learn More
-              <ArrowRight size={14} strokeWidth={1.5} />
+              Talk to an advisor
+              <ArrowRight size={15} strokeWidth={1.75} />
             </Link>
           </div>
 
-          {/* ── Right Column: stacked service cards ── */}
           <div
-            className="mx-auto flex w-full max-w-[540px] flex-col gap-5 lg:mx-0 lg:max-w-none"
+            className="mx-auto flex w-full max-w-[560px] flex-col gap-4 lg:mx-0 lg:max-w-none"
             role="list"
             aria-label="Our services"
           >
-            {EXPERTISE_ITEMS.map((item) => (
+            {items.map((item) => (
               <div key={item.id} role="listitem">
                 <ExpertiseServiceCard item={item} />
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </section>

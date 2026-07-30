@@ -1,17 +1,27 @@
 export const routes = {
   home: '/',
-  listings: '/#listings',
+  listings: '/listings',
+  news: '/news',
+  newsArticle: (slug: string) => `/news/${slug}`,
   blog: '/blog',
   blogArticle: (slug: string) => `/blog/${slug}`,
   property: (slug: string) => `/properties/${slug}`,
   propertyById: (id: string) => `/property/${id}`,
   agent: (slug: string) => `/agents/${slug}`,
+  agents: '/agents',
   compare: '/compare',
   wishlist: '/wishlist',
   login: '/login',
   register: '/register',
   submitProperty: '/submit-property',
   dashboard: '/dashboard',
+  myProperty: '/dashboard/my-property',
+  myPropertyDetail: (id: string | number) => `/dashboard/my-property/${id}`,
+  /** @deprecated use myProperty */
+  myListings: '/dashboard/my-property',
+  /** @deprecated use myPropertyDetail */
+  myListingEdit: (id: string | number) => `/dashboard/my-property/${id}`,
   about: '/about',
   contact: '/contact',
+  privacy: '/privacy',
 } as const;

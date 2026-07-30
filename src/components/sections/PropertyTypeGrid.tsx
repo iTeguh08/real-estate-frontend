@@ -1,8 +1,10 @@
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { PROPERTY_TYPE_ITEMS } from '@/data/property-types';
+import { usePropertyTypeCountsQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { routes } from '@/lib/routes';
 import {
@@ -16,6 +18,8 @@ import {
 import type { PropertyType } from '@/types';
 
 const DEFAULT_HIGHLIGHT_TYPE = 'Apartment' satisfies PropertyType;
+/** Desktop shows up to this many cards without overflow; arrows only when more. */
+const VISIBLE_DESKTOP_COUNT = 6;
 
 const ILLUSTRATIONS: Record<
   PropertyType,
@@ -53,9 +57,9 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
         isActive
           ? 'bg-hz-primary text-white shadow-sm'
           : cn(
-              'bg-[#F8F8F8] text-hz-dark',
+              'bg-hz-sunken text-hz-dark',
               'hover:bg-hz-primary/[0.07]',
-              'focus-visible:bg-[#F0F0F0] focus-visible:ring-2 focus-visible:ring-hz-primary/20'
+              'focus-visible:bg-hz-sunken focus-visible:ring-2 focus-visible:ring-hz-primary/20'
             )
       )}
     >
@@ -64,7 +68,7 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
           className="flex h-full w-full items-center justify-center"
           iconClassName={cn(
             'h-[80px] w-[80px] max-w-none translate-y-0 object-contain transition-[filter,opacity] duration-300',
-            isActive ? 'brightness-0 invert' : 'brightness-75 contrast-150'
+            isActive ? 'hz-raster-icon-on-primary' : 'hz-raster-icon-muted'
           )}
         />
       </div>
@@ -74,7 +78,7 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
         <span
           className={cn(
             'font-poppins text-[12px] leading-none',
-            isActive ? 'text-white/80' : 'text-[#9A9A9A]'
+            isActive ? 'text-white/80' : 'text-hz-muted'
           )}
         >
           {count > 0 ? `${count.toLocaleString()} ${countLabel}` : 'Explore'}
@@ -85,26 +89,74 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
 }
 
 export function PropertyTypeGrid() {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const { filters, setPropertyType } = useListingFilters();
+  const { data: typeItems = PROPERTY_TYPE_ITEMS } = usePropertyTypeCountsQuery();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const needsDesktopScroll = typeItems.length > VISIBLE_DESKTOP_COUNT;
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) {
+      setCanScrollPrev(false);
+      setCanScrollNext(false);
+      return;
+    }
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollPrev(scrollLeft > 1);
+    setCanScrollNext(scrollLeft + clientWidth < scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !needsDesktopScroll) {
+      setCanScrollPrev(false);
+      setCanScrollNext(false);
+      return;
+    }
+
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [needsDesktopScroll, typeItems.length, updateScrollState]);
 
   const isCardActive = (type: PropertyType) =>
     filters.propertyType ? filters.propertyType === type : type === DEFAULT_HIGHLIGHT_TYPE;
 
-  const scrollByCard = (direction: 'prev' | 'next') => {
+  const scrollByAmount = (direction: 'prev' | 'next') => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector('[data-type-card]')?.clientWidth ?? 200;
-    el.scrollBy({ left: direction === 'next' ? cardWidth + 12 : -(cardWidth + 12), behavior: 'smooth' });
+    const card = el.querySelector<HTMLElement>('[data-type-card]');
+    const gap = 12; // gap-3
+    const amount = (card?.offsetWidth ?? 200) + gap;
+    el.scrollBy({
+      left: direction === 'next' ? amount : -amount,
+      behavior: 'smooth',
+    });
   };
 
   return (
     <section
       id="properties"
-      className="w-full bg-white py-14 md:py-16"
+      className="relative w-full overflow-hidden bg-hz-elevated pt-14 pb-20 md:pt-16 md:pb-24"
       aria-labelledby="property-type-heading"
     >
-      <div className="section-container">
+      <SectionAtmosphere
+        tone="soft"
+        surface="elevated"
+        intensity="quiet"
+        variant="dual"
+        side="left"
+        image="interior-light"
+      />
+      <div className="section-container relative z-10">
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -119,7 +171,7 @@ export function PropertyTypeGrid() {
           </div>
 
           <Link
-            to={{ pathname: routes.home, hash: '#listings' }}
+            to={routes.listings}
             className="hidden shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1 md:inline-flex"
           >
             See All Types
@@ -128,14 +180,22 @@ export function PropertyTypeGrid() {
         </div>
 
         <div className="relative mt-7">
-          <button
-            type="button"
-            onClick={() => scrollByCard('prev')}
-            aria-label="Previous property type"
-            className="absolute -left-11 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-hz border border-hz-primary bg-hz-primary text-white transition-colors duration-200 hover:bg-hz-primary/90 md:flex"
-          >
-            <ChevronLeft size={14} strokeWidth={2} />
-          </button>
+          {needsDesktopScroll && (
+            <button
+              type="button"
+              onClick={() => scrollByAmount('prev')}
+              disabled={!canScrollPrev}
+              aria-label="Scroll property types left"
+              className={cn(
+                'absolute -left-11 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-hz border transition-colors duration-200 md:flex',
+                canScrollPrev
+                  ? 'cursor-pointer border-hz-primary bg-hz-primary text-white hover:bg-hz-primary/90'
+                  : 'cursor-not-allowed border-hz-border bg-hz-elevated text-hz-muted'
+              )}
+            >
+              <ChevronLeft size={14} strokeWidth={2} />
+            </button>
+          )}
 
           <div
             ref={scrollRef}
@@ -143,17 +203,23 @@ export function PropertyTypeGrid() {
               'flex items-stretch gap-3 overflow-x-auto scroll-smooth',
               'max-md:-mx-5 max-md:px-5',
               'max-md:snap-x max-md:snap-mandatory max-md:scroll-pl-5 max-md:scroll-pr-5',
-              'max-md:[&::-webkit-scrollbar]:hidden max-md:scrollbar-none'
+              'max-md:[&::-webkit-scrollbar]:hidden max-md:scrollbar-none',
+              needsDesktopScroll && 'md:[&::-webkit-scrollbar]:hidden md:scrollbar-none'
             )}
             role="list"
             aria-label="Property types to explore"
           >
-            {PROPERTY_TYPE_ITEMS.map((item) => (
+            {typeItems.map((item) => (
               <div
                 key={item.type}
                 data-type-card
                 role="listitem"
-                className="max-md:w-[calc((100%-12px)/2)] max-md:min-w-[172px] max-md:max-w-[190px] max-md:shrink-0 max-md:snap-start md:flex-1"
+                className={cn(
+                  'max-md:w-[calc((100%-12px)/2)] max-md:min-w-[172px] max-md:max-w-[190px] max-md:shrink-0 max-md:snap-start',
+                  needsDesktopScroll
+                    ? 'md:w-[calc((100%-60px)/6)] md:min-w-[140px] md:shrink-0'
+                    : 'md:flex-1'
+                )}
               >
                 <PropertyTypeCard
                   type={item.type}
@@ -167,14 +233,22 @@ export function PropertyTypeGrid() {
             ))}
           </div>
 
-          <button
-            type="button"
-            onClick={() => scrollByCard('next')}
-            aria-label="Next property type"
-            className="absolute -right-11 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-hz border border-[#EEEEEE] bg-white text-[#CCCCCC] transition-colors duration-200 hover:bg-[#FAFAFA] md:flex"
-          >
-            <ChevronRight size={14} strokeWidth={2} />
-          </button>
+          {needsDesktopScroll && (
+            <button
+              type="button"
+              onClick={() => scrollByAmount('next')}
+              disabled={!canScrollNext}
+              aria-label="Scroll property types right"
+              className={cn(
+                'absolute -right-11 top-1/2 z-10 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-hz border transition-colors duration-200 md:flex',
+                canScrollNext
+                  ? 'cursor-pointer border-hz-primary bg-hz-primary text-white hover:bg-hz-primary/90'
+                  : 'cursor-not-allowed border-hz-border bg-hz-elevated text-hz-muted'
+              )}
+            >
+              <ChevronRight size={14} strokeWidth={2} />
+            </button>
+          )}
         </div>
       </div>
     </section>

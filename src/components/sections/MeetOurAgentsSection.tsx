@@ -1,5 +1,9 @@
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { AgentCard } from '@/components/cards/AgentCard';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useAgentsQuery } from '@/hooks/queries';
+import { routes } from '@/lib/routes';
 import type { Agent } from '@/types';
 
 interface MeetOurAgentsSectionProps {
@@ -13,10 +17,18 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
   return (
     <section
       id="agents"
-      className="w-full bg-white py-16 md:py-20"
+      className="relative w-full overflow-hidden bg-hz-sunken pb-16 pt-12 md:pb-20 md:pt-14"
       aria-labelledby="agents-heading"
     >
-      <div className="section-container">
+      <SectionAtmosphere
+        tone="light"
+        surface="sunken"
+        intensity="quiet"
+        variant="dual"
+        side="right"
+        image="none"
+      />
+      <div className="section-container relative z-10">
         <header className="mb-12 text-center">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             Our Team
@@ -27,6 +39,13 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           >
             Meet Our Agents
           </h2>
+          <Link
+            to={routes.agents}
+            className="mt-4 inline-flex items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4"
+          >
+            View all agents
+            <ArrowRight size={14} strokeWidth={1.6} />
+          </Link>
         </header>
 
         {isLoading && !agentsProp ? (

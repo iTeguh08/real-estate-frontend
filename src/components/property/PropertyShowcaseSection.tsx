@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyShowcaseSectionProps {
-  property: Pick<PropertyDetail, 'title' | 'tagline' | 'showcaseImages' | 'imageUrl' | 'description'>;
+  property: Pick<PropertyDetail, 'title' | 'tagline' | 'layout1Media' | 'imageUrl' | 'description'>;
   onScheduleViewing?: () => void;
   embedded?: boolean;
 }
@@ -12,30 +12,31 @@ export function PropertyShowcaseSection({
   onScheduleViewing,
   embedded = false,
 }: PropertyShowcaseSectionProps) {
-  const { title, tagline, showcaseImages, imageUrl } = property;
-  const [primary, secondary] = showcaseImages;
+  const { title, tagline, layout1Media, imageUrl } = property;
+  const verticalUrl = layout1Media.featureVerticalUrl ?? imageUrl;
+  const squareUrl = layout1Media.featureSquareUrl ?? imageUrl;
 
   const content = (
     <div className="section-container relative grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16 xl:gap-20">
       <div className="relative mx-auto min-h-[380px] w-full max-w-lg lg:mx-0 lg:min-h-[480px] lg:max-w-none">
         <div className="relative z-[1] aspect-[3/4] w-[62%] overflow-hidden rounded-hz border-[5px] border-white shadow-lg">
           <img
-            src={primary?.url ?? imageUrl}
-            alt={primary?.alt ?? `${title} — interior`}
+            src={verticalUrl}
+            alt={`${title} — interior`}
             loading="lazy"
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="absolute top-[18%] right-0 z-[2] aspect-[3/4] w-[52%] overflow-hidden rounded-hz border-[5px] border-white shadow-lg">
+        <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] overflow-hidden rounded-hz border-[5px] border-white shadow-lg">
           <img
-            src={secondary?.url ?? imageUrl}
-            alt={secondary?.alt ?? `${title} — detail`}
+            src={squareUrl}
+            alt={`${title} — detail`}
             loading="lazy"
             className="h-full w-full object-cover"
           />
         </div>
         <div
-          className="absolute bottom-4 left-[8%] z-0 hidden h-32 w-32 rounded-hz border border-hz-border bg-white/60 lg:block"
+          className="absolute bottom-4 left-[8%] z-0 hidden h-32 w-32 rounded-hz border border-hz-border bg-hz-elevated/60 lg:block"
           aria-hidden="true"
         />
       </div>
@@ -57,7 +58,7 @@ export function PropertyShowcaseSection({
           type="button"
           variant="outline"
           onClick={onScheduleViewing}
-          className="mt-8 h-auto rounded-hz border-hz-dark bg-white/70 px-8 py-3 font-poppins text-sm font-semibold text-hz-dark backdrop-blur-sm hover:border-hz-primary hover:bg-white/80 hover:text-hz-primary"
+          className="mt-8 h-auto rounded-hz border-hz-dark bg-hz-elevated/70 px-8 py-3 font-poppins text-sm font-semibold text-hz-dark backdrop-blur-sm hover:border-hz-primary hover:bg-hz-elevated/80 hover:text-hz-primary"
         >
           Schedule a Viewing
         </Button>
@@ -76,7 +77,7 @@ export function PropertyShowcaseSection({
   return (
     <section
       aria-labelledby="property-showcase-heading"
-      className="relative overflow-hidden bg-[#F8F8F8] py-20 md:py-28"
+      className="relative overflow-hidden bg-hz-sunken py-20 md:py-28"
     >
       <img
         src={imageUrl}

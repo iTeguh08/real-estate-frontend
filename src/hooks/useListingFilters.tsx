@@ -16,6 +16,7 @@ import {
 import {
   DEFAULT_LISTING_FILTERS,
   type ListingFilters,
+  type PropertySort,
   type PropertyStatus,
   type PropertyType,
 } from '@/types';
@@ -29,6 +30,8 @@ interface ListingFiltersContextValue {
   setLocation: (location: string) => void;
   setPropertyType: (propertyType: PropertyType | '') => void;
   setStatus: (status: PropertyStatus | '') => void;
+  setSort: (sort: PropertySort | '') => void;
+  setPage: (page: number) => void;
   applySearch: (partial: Partial<ListingFilters>, options?: { resetOthers?: boolean }) => void;
   applyNavFilter: (partial: Partial<ListingFilters>) => void;
   clearFilters: () => void;
@@ -44,20 +47,28 @@ function isHomePath(pathname: string): boolean {
   return pathname === base || pathname === `${base}/`;
 }
 
+function isListingsPath(pathname: string): boolean {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const listingsPath = `${base}/listings`.replace(/\/+/g, '/');
+  return pathname === '/listings' || pathname === listingsPath;
+}
+
 export function ListingFiltersProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const onHome = isHomePath(location.pathname);
+  const onListings = isListingsPath(location.pathname);
+  const isListingsContextPath = onHome || onListings;
 
   const [filters, setFilters] = useState<ListingFilters>(() =>
-    onHome ? searchParamsToFilters(searchParams) : DEFAULT_LISTING_FILTERS
+    isListingsContextPath ? searchParamsToFilters(searchParams) : DEFAULT_LISTING_FILTERS
   );
   const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
 
   const syncUrl = useCallback(
     (next: ListingFilters) => {
-      if (!isHomePath(location.pathname)) return;
+      if (!isHomePath(location.pathname) && !isListingsPath(location.pathname)) return;
       const nextParams = filtersToSearchParams(next);
       if (nextParams.toString() !== searchParams.toString()) {
         setSearchParams(nextParams, { replace: true });
@@ -76,10 +87,10 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (!onHome) return;
+    if (!isListingsContextPath) return;
     const fromUrl = searchParamsToFilters(searchParams);
     setFilters((prev) => (filtersEqual(prev, fromUrl) ? prev : fromUrl));
-  }, [onHome, searchParams]);
+  }, [isListingsContextPath, searchParams]);
 
   const scrollToListings = useCallback(
     (intent: ListingFilters = filters) => {
@@ -87,8 +98,7 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
         const params = filtersToSearchParams(intent);
         const search = params.toString();
         navigate({
-          pathname: '/',
-          hash: '#listings',
+          pathname: '/listings',
           ...(search ? { search: `?${search}` } : {}),
         });
         return;
@@ -104,8 +114,8 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
     (partial: Partial<ListingFilters>, options?: { resetOthers?: boolean }) => {
       setFilters((prev) => {
         const next = options?.resetOthers
-          ? { ...DEFAULT_LISTING_FILTERS, ...partial }
-          : { ...prev, ...partial };
+          ? { ...DEFAULT_LISTING_FILTERS, ...partial, page: 1 }
+          : { ...prev, ...partial, page: partial.page ?? 1 };
         syncUrl(next);
         scrollToListings(next);
         return next;
@@ -116,14 +126,21 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
 
   const applyNavFilter = useCallback(
     (partial: Partial<ListingFilters>) => {
-      setFilters((prev) => {
-        const next = { ...prev, ...partial };
-        syncUrl(next);
-        scrollToListings(next);
-        return next;
+      const next: ListingFilters = {
+        ...DEFAULT_LISTING_FILTERS,
+        propertyType: (partial.propertyType as PropertyType | '') ?? '',
+        status: (partial.status as PropertyStatus | '') ?? '',
+        page: 1,
+      };
+      setFilters(next);
+      const params = filtersToSearchParams(next);
+      const search = params.toString();
+      navigate({
+        pathname: '/listings',
+        ...(search ? { search: `?${search}` } : {}),
       });
     },
-    [scrollToListings, syncUrl]
+    [navigate]
   );
 
   const setKeyword = useCallback(
@@ -149,13 +166,13 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
           beds: '',
           minPrice: '',
           maxPrice: '',
+          page: 1,
         };
         syncUrl(next);
-        scrollToListings(next);
         return next;
       });
     },
-    [scrollToListings, syncUrl]
+    [syncUrl]
   );
 
   const setStatus = useCallback(
@@ -165,10 +182,33 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
     [commitIntent, filters]
   );
 
+  const setSort = useCallback(
+    (sort: PropertySort | '') => {
+      setFilters((prev) => {
+        const next = { ...prev, sort, page: 1 };
+        syncUrl(next);
+        return next;
+      });
+    },
+    [syncUrl]
+  );
+
+  const setPage = useCallback(
+    (page: number) => {
+      setFilters((prev) => {
+        const next = { ...prev, page: Math.max(1, page) };
+        syncUrl(next);
+        scrollToListings(next);
+        return next;
+      });
+    },
+    [scrollToListings, syncUrl]
+  );
+
   const clearFilters = useCallback(() => {
     const next = DEFAULT_LISTING_FILTERS;
     setFilters(next);
-    if (isHomePath(location.pathname)) {
+    if (isHomePath(location.pathname) || isListingsPath(location.pathname)) {
       setSearchParams({}, { replace: true });
     }
   }, [location.pathname, setSearchParams]);
@@ -182,6 +222,8 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
       setLocation: setLocationFilter,
       setPropertyType,
       setStatus,
+      setSort,
+      setPage,
       applySearch,
       applyNavFilter,
       clearFilters,
@@ -194,6 +236,8 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
       setLocationFilter,
       setPropertyType,
       setStatus,
+      setSort,
+      setPage,
       applySearch,
       applyNavFilter,
       clearFilters,

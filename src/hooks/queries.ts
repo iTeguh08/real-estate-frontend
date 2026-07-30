@@ -1,17 +1,24 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { getAgentBySlug, getFeaturedAgents } from '@/services/agents.service';
+import { getAgentBySlug, getAgents, getFeaturedAgents } from '@/services/agents.service';
 import { getArticleBySlug, getArticles } from '@/services/articles.service';
+import { getAboutPage, getContactPage, getHomepage, getPrivacyPage } from '@/services/pages.service';
 import {
   getFeaturedProperties,
   getBestValueProperties,
   getPropertyBySlug,
   getPropertyDetailById,
   getPropertyDetailBySlug,
+  getPropertyTypeCounts,
   getRelatedProperties,
   searchProperties,
 } from '@/services/properties.service';
-import type { ListingFilters, PropertyDetail } from '@/types';
+import {
+  fetchMyListing,
+  fetchMyListings,
+} from '@/services/agent-listings.service';
+import { fetchMyPropertySubmissions } from '@/services/property-submissions.service';
+import type { ArticleCategory, ListingFilters, PropertyDetail } from '@/types';
 
 function intentQueryKey(intent: ListingFilters): Record<string, string> {
   return {
@@ -22,6 +29,10 @@ function intentQueryKey(intent: ListingFilters): Record<string, string> {
     beds: intent.beds,
     minPrice: intent.minPrice,
     maxPrice: intent.maxPrice,
+    agentSlug: intent.agentSlug,
+    sort: intent.sort,
+    page: String(intent.page),
+    perPage: String(intent.perPage),
   };
 }
 
@@ -36,6 +47,14 @@ export function usePropertySearchQuery(intent: ListingFilters) {
   return useQuery({
     queryKey: queryKeys.properties.search(intentQueryKey(intent)),
     queryFn: () => searchProperties(intent),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function usePropertyTypeCountsQuery() {
+  return useQuery({
+    queryKey: queryKeys.properties.typeCounts(),
+    queryFn: getPropertyTypeCounts,
   });
 }
 
@@ -85,6 +104,13 @@ export function useAgentsQuery() {
   });
 }
 
+export function useAgentsListQuery() {
+  return useQuery({
+    queryKey: queryKeys.agents.list(),
+    queryFn: getAgents,
+  });
+}
+
 export function useAgentQuery(slug: string | undefined) {
   return useQuery({
     queryKey: queryKeys.agents.detail(slug ?? ''),
@@ -93,10 +119,10 @@ export function useAgentQuery(slug: string | undefined) {
   });
 }
 
-export function useArticlesQuery() {
+export function useArticlesQuery(category?: ArticleCategory, tag?: string) {
   return useQuery({
-    queryKey: queryKeys.articles.list(),
-    queryFn: getArticles,
+    queryKey: queryKeys.articles.list(category, tag),
+    queryFn: () => getArticles(category, tag),
   });
 }
 
@@ -105,5 +131,57 @@ export function useArticleQuery(slug: string | undefined) {
     queryKey: queryKeys.articles.detail(slug ?? ''),
     queryFn: () => getArticleBySlug(slug!),
     enabled: Boolean(slug),
+  });
+}
+
+export function useAboutPageQuery() {
+  return useQuery({
+    queryKey: queryKeys.pages.about(),
+    queryFn: getAboutPage,
+  });
+}
+
+export function useContactPageQuery() {
+  return useQuery({
+    queryKey: queryKeys.pages.contact(),
+    queryFn: getContactPage,
+  });
+}
+
+export function useHomepageQuery() {
+  return useQuery({
+    queryKey: queryKeys.pages.homepage(),
+    queryFn: getHomepage,
+  });
+}
+
+export function usePrivacyPageQuery() {
+  return useQuery({
+    queryKey: queryKeys.pages.privacy(),
+    queryFn: getPrivacyPage,
+  });
+}
+
+export function useMyListingsQuery(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.myListings.list(),
+    queryFn: fetchMyListings,
+    enabled,
+  });
+}
+
+export function useMyPropertySubmissionsQuery(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.mySubmissions.list(),
+    queryFn: fetchMyPropertySubmissions,
+    enabled,
+  });
+}
+
+export function useMyListingQuery(id: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.myListings.detail(id ?? ''),
+    queryFn: () => fetchMyListing(id!),
+    enabled: Boolean(id) && enabled,
   });
 }

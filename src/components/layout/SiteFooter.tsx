@@ -7,8 +7,11 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NewsletterForm } from '@/components/layout/NewsletterForm';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { SITE_CONFIG } from '@/data/site-config';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { routes } from '@/lib/routes';
+import type { SiteConfig } from '@/services/site.service';
 
 type SocialIconProps = { className?: string };
 
@@ -20,34 +23,10 @@ function FacebookIcon({ className }: SocialIconProps) {
   );
 }
 
-function TwitterIcon({ className }: SocialIconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
-
-function LinkedinIcon({ className }: SocialIconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 114.127 0 2.063 2.063 0 01-2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-}
-
 function InstagramIcon({ className }: SocialIconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-    </svg>
-  );
-}
-
-function PinterestIcon({ className }: SocialIconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M12 2C6.48 2 2 6.48 2 12c0 4.16 2.51 7.73 6.11 9.28-.08-.74-.02-1.63.2-2.44.22-.94 1.48-6.32 1.48-6.32s-.38-.76-.38-1.88c0-1.76 1.02-3.08 2.29-3.08 1.08 0 1.6.81 1.6 1.78 0 1.08-.69 2.7-1.05 4.2-.3 1.78.64 3.23 1.9 3.23 2.28 0 3.82-2.93 3.82-6.4 0-2.64-1.78-4.6-5.08-4.6-3.7 0-6 2.76-6 5.86 0 1.16.34 1.99.88 2.56.1.12.11.22.08.34-.09.36-.28 1.14-.32 1.3-.05.2-.17.25-.4.15-1.49-.6-2.42-2.48-2.42-4 0-3.25 2.74-7.15 8.18-7.15 4.34 0 7.2 3.17 7.2 6.58 0 4.5-2.5 7.87-6.18 7.87-1.21 0-2.34-.67-2.73-1.46l-.74 2.98c-.27 1.05-1 2.36-1.49 3.16C9.57 21.8 10.76 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" />
     </svg>
   );
 }
@@ -72,27 +51,28 @@ const COMPANY_LINKS = [
   { label: 'Property For Rent', href: '#listings' },
   { label: 'Saved Listings', href: '/wishlist' },
   { label: 'Compare Properties', href: '/compare' },
-  { label: 'Our Agents', href: '#agents' },
+  { label: 'Our Agents', href: routes.agents },
 ] as const;
 
 const LEGAL_LINKS = [
   { label: 'Terms of Service', href: '#' },
-  { label: 'Privacy Policy', href: '#' },
+  { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Cookie Policy', href: '#' },
 ] as const;
 
-const SOCIAL_LINKS = [
-  { label: 'Facebook', href: '#', icon: FacebookIcon },
-  { label: 'Twitter', href: '#', icon: TwitterIcon },
-  { label: 'LinkedIn', href: '#', icon: LinkedinIcon },
-  { label: 'Instagram', href: '#', icon: InstagramIcon },
-  { label: 'Pinterest', href: '#', icon: PinterestIcon },
-  { label: 'YouTube', href: '#', icon: YoutubeIcon },
-] as const;
+function buildSocialLinks(footer: SiteConfig['footer']) {
+  const entries = [
+    { label: 'Facebook', href: footer.social.facebook, icon: FacebookIcon },
+    { label: 'Instagram', href: footer.social.instagram, icon: InstagramIcon },
+    { label: 'YouTube', href: footer.social.youtube, icon: YoutubeIcon },
+  ] as const;
+
+  return entries.filter((entry) => entry.href);
+}
 
 function FooterNavLink({ href, label }: { href: string; label: string }) {
   const className =
-    'font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white no-underline';
+    'font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg no-underline';
 
   if (href.startsWith('/')) {
     return (
@@ -126,7 +106,7 @@ function FooterLinkList({
 }) {
   return (
     <div>
-      <h3 className="mb-5 font-poppins text-base font-semibold text-white">{heading}</h3>
+      <h3 className="mb-5 font-poppins text-base font-semibold text-hz-footer-fg">{heading}</h3>
       <ul className="flex flex-col gap-3">
         {links.map((link) => (
           <li key={link.label}>
@@ -139,7 +119,14 @@ function FooterLinkList({
 }
 
 export function SiteFooter() {
-  const year = new Date().getFullYear();
+  const { data: siteConfig } = useSiteConfig();
+  const brand = siteConfig?.brand ?? SITE_CONFIG.brand;
+  const contact = siteConfig?.contact ?? SITE_CONFIG.contact;
+  const footer = siteConfig?.footer;
+  const socialLinks = footer ? buildSocialLinks(footer) : [];
+  const copyright =
+    footer?.copyright.replace('© 2026', `© ${new Date().getFullYear()}`) ??
+    `© ${new Date().getFullYear()} ${brand}. All Rights Reserved.`;
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -148,7 +135,7 @@ export function SiteFooter() {
   return (
     <footer
       id="contact"
-      className="relative w-full overflow-hidden bg-hz-dark text-white"
+      className="relative z-20 w-full overflow-hidden bg-hz-footer text-hz-footer-fg"
       aria-label="Site footer"
     >
       <div
@@ -156,78 +143,89 @@ export function SiteFooter() {
         aria-hidden="true"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(135deg, #ffffff 0px, #ffffff 1px, transparent 1px, transparent 48px)',
+            'repeating-linear-gradient(135deg, var(--hz-footer-fg) 0px, var(--hz-footer-fg) 0.5px, transparent 0.5px, transparent 48px)',
         }}
       />
+      <SectionAtmosphere
+        tone="dark"
+        intensity="quiet"
+        variant="edge"
+        side="left"
+        image="architecture-city"
+      />
 
-      <div className="relative section-container">
+      <div className="relative z-10 section-container">
 
         {/* Tier 1 — logo & social */}
-        <div className="flex flex-col gap-6 border-b border-white/10 py-10 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-6 border-b border-hz-footer-fg/10 py-10 sm:flex-row sm:items-center sm:justify-between">
           <Link to={routes.home} className="inline-flex items-center gap-2 no-underline">
             <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
               <Building2 size={15} strokeWidth={2} className="text-white" aria-hidden="true" />
             </div>
-            <span className="font-poppins text-[22px] font-bold tracking-tight text-white">
-              {SITE_CONFIG.brand}
+            <span className="font-poppins text-[22px] font-bold tracking-tight text-hz-footer-fg">
+              {brand}
             </span>
           </Link>
 
           <div className="flex flex-col gap-3 sm:items-end">
-            <p className="font-poppins text-sm font-medium text-white">Follow Us</p>
-            <div className="flex flex-wrap items-center gap-2">
-              {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-200 hover:bg-hz-primary"
-                >
-                  <Icon className="h-[15px] w-[15px] shrink-0" />
-                </a>
-              ))}
-            </div>
+            <p className="font-poppins text-sm font-medium text-hz-footer-fg">Follow Us</p>
+            {socialLinks.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {socialLinks.map(({ label, href, icon: Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-hz-footer-fg/10 text-hz-footer-fg transition-colors duration-200 hover:bg-hz-primary"
+                  >
+                    <Icon className="h-[15px] w-[15px] shrink-0" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Tier 2 — four columns */}
         <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div>
-            <p className="mb-6 max-w-[280px] font-poppins text-sm leading-relaxed text-white/65">
-              Specializes in providing high-class tours for those in need. Contact us for
-              all your luxury real estate needs.
+            <p className="mb-6 max-w-[280px] font-poppins text-sm leading-relaxed text-hz-footer-fg/65">
+              {footer?.description ??
+                'Your trusted partner in luxury real estate — connecting buyers, sellers, and renters with exceptional properties.'}
             </p>
             <ul className="flex flex-col gap-4">
               <li>
                 <a
                   href="#"
-                  className="group flex items-start gap-3 font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white"
+                  className="group flex items-start gap-3 font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg"
                 >
                   <MapPin
                     size={16}
                     strokeWidth={1.75}
-                    className="mt-0.5 shrink-0 text-white/80"
+                    className="mt-0.5 shrink-0 text-hz-footer-fg/80"
                     aria-hidden="true"
                   />
-                  <span>{SITE_CONFIG.contact.address}</span>
+                  <span>{contact.address}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href={SITE_CONFIG.contact.phoneHref}
-                  className="group flex items-center gap-3 font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white"
+                  href={contact.phoneHref}
+                  className="group flex items-center gap-3 font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg"
                 >
-                  <Phone size={16} strokeWidth={1.75} className="shrink-0 text-white/80" aria-hidden="true" />
-                  <span>{SITE_CONFIG.contact.phone}</span>
+                  <Phone size={16} strokeWidth={1.75} className="shrink-0 text-hz-footer-fg/80" aria-hidden="true" />
+                  <span>{contact.phone}</span>
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${SITE_CONFIG.contact.email}`}
-                  className="group flex items-center gap-3 font-poppins text-sm text-white/65 transition-colors duration-200 hover:text-white"
+                  href={`mailto:${contact.email}`}
+                  className="group flex items-center gap-3 font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg"
                 >
-                  <Mail size={16} strokeWidth={1.75} className="shrink-0 text-white/80" aria-hidden="true" />
-                  <span>{SITE_CONFIG.contact.email}</span>
+                  <Mail size={16} strokeWidth={1.75} className="shrink-0 text-hz-footer-fg/80" aria-hidden="true" />
+                  <span>{contact.email}</span>
                 </a>
               </li>
             </ul>
@@ -237,8 +235,8 @@ export function SiteFooter() {
           <FooterLinkList heading="Our Company" links={COMPANY_LINKS} />
 
           <div>
-            <h3 className="mb-5 font-poppins text-base font-semibold text-white">Newsletter</h3>
-            <p className="mb-5 font-poppins text-sm leading-relaxed text-white/65">
+            <h3 className="mb-5 font-poppins text-base font-semibold text-hz-footer-fg">Newsletter</h3>
+            <p className="mb-5 font-poppins text-sm leading-relaxed text-hz-footer-fg/65">
               Your Weekly/Monthly Dose of Knowledge and Inspiration
             </p>
             <NewsletterForm />
@@ -246,21 +244,29 @@ export function SiteFooter() {
         </div>
 
         {/* Tier 3 — copyright & legal */}
-        <div className="relative border-t border-white/10 py-6">
+        <div className="relative border-t border-hz-footer-fg/10 py-6">
           <div className="flex flex-col items-start justify-between gap-4 pr-14 md:flex-row md:items-center">
-            <p className="font-poppins text-xs text-white/50">
-              © {year} {SITE_CONFIG.brand}. All Rights Reserved.
-            </p>
+            <p className="font-poppins text-xs text-hz-footer-fg/50">{copyright}</p>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              {LEGAL_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="font-poppins text-xs text-white/50 transition-colors duration-200 hover:text-white"
-                >
-                  {link.label}
-                </a>
-              ))}
+              {LEGAL_LINKS.map((link) =>
+                link.href.startsWith('/') ? (
+                  <Link
+                    key={link.label}
+                    to={link.href}
+                    className="font-poppins text-xs text-hz-footer-fg/50 transition-colors duration-200 hover:text-hz-footer-fg"
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="font-poppins text-xs text-hz-footer-fg/50 transition-colors duration-200 hover:text-hz-footer-fg"
+                  >
+                    {link.label}
+                  </a>
+                )
+              )}
             </div>
           </div>
 
@@ -268,7 +274,7 @@ export function SiteFooter() {
             type="button"
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            className="absolute top-1/2 right-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-hz-dark transition-colors duration-200 hover:bg-white/90"
+            className="absolute top-1/2 right-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-hz-footer-fg/10 text-hz-footer-fg transition-colors duration-200 hover:bg-hz-primary hover:text-white"
           >
             <ArrowUp size={18} strokeWidth={2} />
           </button>

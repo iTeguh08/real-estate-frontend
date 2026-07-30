@@ -23,7 +23,7 @@ export function PropertyShowcasePage() {
   }
 
   return (
-    <main id="main-content" className="bg-white">
+    <main id="main-content" className="bg-hz-elevated">
       <PropertyShowcaseView property={property} />
     </main>
   );

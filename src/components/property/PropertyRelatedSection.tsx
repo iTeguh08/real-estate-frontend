@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { formatPropertyPrice } from '@/lib/format-property';
+import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import { routes } from '@/lib/routes';
 import type { Property } from '@/types';
 
@@ -21,7 +21,7 @@ export function PropertyRelatedSection({
   }
 
   return (
-    <section aria-labelledby="related-properties-heading" className="bg-white py-20 md:py-28">
+    <section aria-labelledby="related-properties-heading" className="bg-hz-page py-20 md:py-28">
       <div className="section-container">
         <div className="mb-12 text-center">
           <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
@@ -42,7 +42,7 @@ export function PropertyRelatedSection({
         >
           {related.map((property) => (
             <article key={property.id} role="listitem">
-              <Card className="h-full overflow-hidden border-hz-border bg-white p-0 shadow-sm transition-shadow duration-300 hover:shadow-md">
+              <Card className="h-full overflow-hidden border-hz-border bg-hz-elevated p-0 shadow-hz-sm transition-shadow duration-300 hover:shadow-hz-md">
                 <Link
                   to={routes.propertyById(property.id)}
                   className="group flex h-full flex-col no-underline"
@@ -50,7 +50,7 @@ export function PropertyRelatedSection({
                   <div className="aspect-[16/10] overflow-hidden bg-hz-bg-soft">
                     <img
                       src={property.imageUrl}
-                      alt={`${property.title} — ${property.location}`}
+                      alt={`${property.title} — ${formatPropertyLocation(property)}`}
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
@@ -63,7 +63,7 @@ export function PropertyRelatedSection({
                       {property.title}
                     </h3>
                     <p className="line-clamp-2 font-poppins text-sm leading-relaxed text-hz-muted">
-                      {property.location}
+                      {formatPropertyLocation(property)}
                     </p>
                     <p className="mt-auto pt-2 font-poppins text-base font-semibold text-hz-dark">
                       {formatPropertyPrice(property)}

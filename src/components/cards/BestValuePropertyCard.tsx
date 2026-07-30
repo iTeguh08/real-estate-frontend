@@ -1,15 +1,19 @@
+import { useNavigate } from 'react-router-dom';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, Eye, Heart, MapPin } from 'lucide-react';
 import { ImageActionButton } from '@/components/ui/image-action-button';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
-import { formatPerSqftPrice, statusLabel } from '@/lib/format-property';
+import { formatPerSqftPrice, formatPropertyLocation, statusLabel } from '@/lib/format-property';
+import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { PropertyWithAgent } from '@/types';
 
 interface BestValuePropertyCardProps {
   property: PropertyWithAgent;
   className?: string;
+  outerBorderClassName?: string;
+  /** Opens quick-view dialog (Eye icon only). Card click navigates to the full listing. */
   onSelect?: (property: PropertyWithAgent) => void;
 }
 
@@ -36,12 +40,14 @@ function SpecItem({
 export function BestValuePropertyCard({
   property,
   className,
+  outerBorderClassName = 'border-hz-border',
   onSelect,
 }: BestValuePropertyCardProps) {
+  const navigate = useNavigate();
   const {
     id,
+    slug,
     title,
-    location,
     status,
     type,
     specs,
@@ -49,11 +55,16 @@ export function BestValuePropertyCard({
     agent,
     isFeatured,
   } = property;
-  const { isWishlisted, toggleWishlist } = useWishlist();
-  const { isCompared, toggleCompare } = useCompare();
+  const locationLabel = formatPropertyLocation(property);
+  const { isWishlisted, toggleWishlist, isTogglingId: wishlistTogglingId } = useWishlist();
+  const { isCompared, toggleCompare, isTogglingId: compareTogglingId } = useCompare();
   const saved = isWishlisted(id);
   const compared = isCompared(id);
-  const isInteractive = Boolean(onSelect);
+  const detailPath = routes.property(slug);
+
+  const goToDetail = () => {
+    navigate(detailPath);
+  };
 
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -62,31 +73,28 @@ export function BestValuePropertyCard({
   return (
     <article
       className={cn(
-        'group flex h-full overflow-hidden rounded-hz border-[0.5px] border-hz-border bg-white',
-        'transition-all duration-300 hover:border-hz-primary/20 hover:shadow-md',
-        isInteractive &&
-          'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary/30 focus-visible:ring-offset-2',
+        'group flex h-full cursor-pointer overflow-hidden rounded-hz border bg-hz-elevated shadow-hz-sm',
+        outerBorderClassName,
+        'transition-[box-shadow,transform] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]',
+        'hover:-translate-y-0.5 hover:shadow-hz-elevated',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary/30 focus-visible:ring-offset-2',
         className
       )}
-      aria-label={`${title}, ${location}, ${formatPerSqftPrice(property)}`}
-      onClick={isInteractive ? () => onSelect?.(property) : undefined}
-      onKeyDown={
-        isInteractive
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelect?.(property);
-              }
-            }
-          : undefined
-      }
-      role={isInteractive ? 'button' : undefined}
-      tabIndex={isInteractive ? 0 : undefined}
+      aria-label={`${title}, ${locationLabel}, ${formatPerSqftPrice(property)}`}
+      onClick={goToDetail}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goToDetail();
+        }
+      }}
+      role="link"
+      tabIndex={0}
     >
       <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <img
           src={imageUrl}
-          alt={`${title} — ${location}`}
+          alt={`${title} — ${locationLabel}`}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
@@ -97,12 +105,7 @@ export function BestValuePropertyCard({
               Featured
             </span>
           )}
-          <span
-            className={cn(
-              'rounded-hz px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-white',
-              status === 'For Rent' ? 'bg-[#3D5A80]' : 'bg-[#2F4B7C]'
-            )}
-          >
+          <span className="rounded-hz bg-hz-inverse px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-hz-inverse-fg">
             {statusLabel(status)}
           </span>
         </div>
@@ -111,6 +114,8 @@ export function BestValuePropertyCard({
           <ImageActionButton
             size="sm"
             label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
+            active={saved}
+            loading={wishlistTogglingId === id}
             onClick={(e) => {
               stopPropagation(e);
               toggleWishlist(id);
@@ -126,6 +131,7 @@ export function BestValuePropertyCard({
             size="sm"
             label={compared ? `Remove ${title} from compare` : `Compare ${title}`}
             active={compared}
+            loading={compareTogglingId === id}
             onClick={(e) => {
               stopPropagation(e);
               toggleCompare(id);
@@ -133,20 +139,22 @@ export function BestValuePropertyCard({
           >
             <ArrowLeftRight size={14} strokeWidth={1.75} />
           </ImageActionButton>
-          <ImageActionButton
-            size="sm"
-            label={`Quick view ${title}`}
-            onClick={(e) => {
-              stopPropagation(e);
-              onSelect?.(property);
-            }}
-          >
-            <Eye size={14} strokeWidth={1.75} />
-          </ImageActionButton>
+          {onSelect && (
+            <ImageActionButton
+              size="sm"
+              label={`Quick view ${title}`}
+              onClick={(e) => {
+                stopPropagation(e);
+                onSelect(property);
+              }}
+            >
+              <Eye size={14} strokeWidth={1.75} />
+            </ImageActionButton>
+          )}
         </div>
 
         <div className="absolute bottom-2.5 left-2.5 z-10">
-          <span className="rounded-hz bg-white px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-hz-dark shadow-sm">
+          <span className="rounded-hz bg-hz-elevated px-2 py-0.5 font-poppins text-[9px] font-semibold uppercase tracking-wider text-hz-dark shadow-sm">
             {type}
           </span>
         </div>
@@ -161,15 +169,15 @@ export function BestValuePropertyCard({
             {title}
           </h3>
           <p
-            className="flex items-start gap-1 font-poppins text-xs leading-relaxed text-hz-muted sm:text-[13px]"
-            title={location}
+            className="flex items-start gap-1 font-poppins text-xs leading-relaxed text-hz-body sm:text-[13px]"
+            title={locationLabel}
           >
-            <MapPin size={12} strokeWidth={1.75} className="mt-0.5 shrink-0" aria-hidden="true" />
-            <span className="line-clamp-2">{location}</span>
+            <MapPin size={12} strokeWidth={1.75} className="mt-0.5 shrink-0 text-hz-muted" aria-hidden="true" />
+            <span className="line-clamp-2">{locationLabel}</span>
           </p>
         </div>
 
-        <div className="my-4 h-px w-full bg-hz-border" aria-hidden="true" />
+        <div className="my-3.5 h-[0.5px] w-full bg-hz-line/50" aria-hidden="true" />
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
           <SpecItem icon={<Bed size={16} weight="regular" />} value={specs.beds} />
@@ -181,7 +189,7 @@ export function BestValuePropertyCard({
           />
         </div>
 
-        <div className="my-4 h-px w-full bg-hz-border" aria-hidden="true" />
+        <div className="my-3.5 h-[0.5px] w-full bg-hz-line/50" aria-hidden="true" />
 
         <div className="mt-auto flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">

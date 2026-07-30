@@ -21,7 +21,11 @@ export interface Property {
   id: string;
   slug: string;
   title: string;
+  /** Composed display string from street, city, countryCode — e.g. "12 Willow St, New York (US)". */
   location: string;
+  street?: string | null;
+  city?: string | null;
+  countryCode?: string | null;
   price: number;
   currency: string;
   status: PropertyStatus;
@@ -40,14 +44,36 @@ export interface PropertyGalleryImage {
   alt: string;
 }
 
+/** Custom Layout 1 named media slots — see `lib/property-layout.ts` for placement/ratio docs. */
+export interface PropertyLayout1Media {
+  showcaseOneUrl: string | null;
+  showcaseTwoUrl: string | null;
+  showcaseThreeUrl: string | null;
+  featureVerticalUrl: string | null;
+  featureSquareUrl: string | null;
+  bannerUrl: string | null;
+}
+
+/** Custom Layout 2 named media slots — see `lib/property-layout.ts` for placement/ratio docs. */
+export interface PropertyLayout2Media {
+  splitVerticalUrl: string | null;
+  splitLandscapeUrl: string | null;
+  bannerUrl: string | null;
+  gridOneUrl: string | null;
+  gridTwoUrl: string | null;
+  gridThreeUrl: string | null;
+}
+
 export interface PropertyDetail extends Property {
   description: string;
   tagline: string;
+  /** Shared, unlimited-length "Explore every angle" gallery — same pool for both layouts. */
   gallery: PropertyGalleryImage[];
   features: string[];
   amenities: string[];
-  showcaseImages: PropertyGalleryImage[];
-  featureImageUrl: string;
+  /** Always present; only the slots matching `customLayout` are expected to be filled in. */
+  layout1Media: PropertyLayout1Media;
+  layout2Media: PropertyLayout2Media;
   relatedPropertyIds?: string[];
 }
 
@@ -102,6 +128,11 @@ export interface PropertyTypeFilter {
   icon: string;
 }
 
+export interface PropertyTypeCount {
+  type: PropertyType;
+  count: number;
+}
+
 // ─── SearchFilter ──────────────────────────────────────────────────────────
 
 export type SearchMode = 'Buy' | 'Rent' | 'Off Plan';
@@ -124,6 +155,11 @@ export interface ListingFilters {
   beds: string;
   minPrice: string;
   maxPrice: string;
+  /** Optional agent profile slug — filters listings by assigned agent. */
+  agentSlug: string;
+  sort: PropertySort | '';
+  page: number;
+  perPage: number;
 }
 
 export const DEFAULT_LISTING_FILTERS: ListingFilters = {
@@ -134,7 +170,13 @@ export const DEFAULT_LISTING_FILTERS: ListingFilters = {
   beds: '',
   minPrice: '',
   maxPrice: '',
+  agentSlug: '',
+  sort: '',
+  page: 1,
+  perPage: 12,
 };
+
+export const DEFAULT_LISTINGS_PER_PAGE = 12;
 
 /** Future GraphQL query variables (Laravel + MySQL). */
 export type PropertySort = 'PRICE_ASC' | 'PRICE_DESC' | 'NEWEST' | 'FEATURED';
@@ -147,12 +189,23 @@ export interface PropertySearchVariables {
   minBeds?: number;
   minPrice?: number;
   maxPrice?: number;
+  agentSlug?: string;
   sort?: PropertySort;
   page?: number;
   perPage?: number;
 }
 
+export interface PropertySearchResult {
+  items: Property[];
+  total: number;
+  page: number;
+  perPage: number;
+  lastPage: number;
+}
+
 // ─── Article ───────────────────────────────────────────────────────────────
+
+export type ArticleCategory = 'news' | 'blog';
 
 export interface Article {
   id: string;
@@ -160,7 +213,8 @@ export interface Article {
   title: string;
   excerpt: string;
   body?: string;
-  category: string;
+  category: ArticleCategory;
   publishedAt: string;
   imageUrl: string;
+  tags: string[];
 }

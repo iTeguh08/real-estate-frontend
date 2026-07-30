@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { formatPropertyPrice } from '@/lib/format-property';
+import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import type { Property } from '@/types';
 import { routes } from '@/lib/routes';
 
@@ -29,7 +29,7 @@ function DetailSpec({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-hz border border-hz-border bg-[#F8F8F8] px-3 py-2">
+    <div className="flex items-center gap-2 rounded-hz border border-hz-border bg-hz-sunken px-3 py-2">
       <span className="text-hz-dark/80" aria-hidden="true">
         {icon}
       </span>
@@ -58,14 +58,15 @@ export function PropertyDetailDialog({
 }
 
 function PropertyDetailBody({ property }: { property: Property }) {
-  const { title, location, status, type, specs, imageUrl } = property;
+  const { title, status, type, specs, imageUrl } = property;
+  const locationLabel = formatPropertyLocation(property);
 
   return (
     <>
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-hz bg-hz-bg-soft">
         <img
           src={imageUrl}
-          alt={`${title} — ${location}`}
+          alt={`${title} — ${locationLabel}`}
           className="h-full w-full object-cover"
         />
         <span className="absolute top-4 left-4 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
@@ -84,7 +85,7 @@ function PropertyDetailBody({ property }: { property: Property }) {
           <DialogDescription asChild>
             <p className="flex items-start gap-1.5 font-poppins text-sm leading-relaxed text-hz-muted">
               <MapPin size={14} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-              {location}
+              {locationLabel}
             </p>
           </DialogDescription>
         </DialogHeader>

@@ -1,4 +1,5 @@
 import { Blueprint, ChatsCircle, MapPin } from '@phosphor-icons/react';
+import { formatPropertyLocation } from '@/lib/format-property';
 import { cn } from '@/lib/utils';
 import type { PropertyDetail } from '@/types';
 
@@ -38,7 +39,7 @@ export function PropertyUtilityBar({
       className={
         isFloating
           ? 'absolute bottom-0 left-1/2 z-20 w-full max-w-3xl -translate-x-1/2 translate-y-[62%] px-5 md:translate-y-[73%]'
-          : 'border-y border-hz-border bg-white py-8 md:py-10'
+          : 'border-y border-hz-border bg-hz-elevated py-8 md:py-10'
       }
       aria-label="Property quick actions"
     >
@@ -60,8 +61,8 @@ export function PropertyUtilityBar({
               <span
                 className={
                   isFloating
-                    ? 'flex size-[78px] items-center justify-center rounded-hz border border-hz-border bg-white text-hz-dark shadow-md transition-colors duration-200 group-hover:border-hz-primary group-hover:text-hz-primary group-hover:shadow-lg md:aspect-square md:size-auto md:w-full md:transition-all md:group-hover:-translate-y-0.5'
-                    : 'flex size-14 items-center justify-center rounded-full border border-hz-border bg-[#F8F8F8] text-hz-dark transition-colors duration-200 group-hover:border-hz-primary group-hover:text-hz-primary'
+                    ? 'flex size-[78px] items-center justify-center rounded-hz border border-hz-border bg-hz-elevated text-hz-dark shadow-md transition-colors duration-200 group-hover:border-hz-primary group-hover:text-hz-primary group-hover:shadow-lg md:aspect-square md:size-auto md:w-full md:transition-all md:group-hover:-translate-y-0.5'
+                    : 'flex size-14 items-center justify-center rounded-full border border-hz-border bg-hz-sunken text-hz-dark transition-colors duration-200 group-hover:border-hz-primary group-hover:text-hz-primary'
                 }
               >
                 <Icon
@@ -78,7 +79,9 @@ export function PropertyUtilityBar({
         ))}
       </ul>
       {!isFloating && (
-        <p className="mt-6 text-center font-poppins text-xs text-hz-muted">{property.location}</p>
+        <p className="mt-6 text-center font-poppins text-xs text-hz-muted">
+          {formatPropertyLocation(property)}
+        </p>
       )}
     </div>
   );

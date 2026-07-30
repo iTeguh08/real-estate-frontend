@@ -27,7 +27,7 @@ export function PropertySpecsSection({
     <section
       aria-labelledby="property-specs-heading"
       className={cn(
-        'bg-[#F8F8F8] pb-20 md:pb-28',
+        'bg-hz-sunken pb-20 md:pb-28',
         reserveFloatingBarSpace ? 'pt-36 md:pt-40' : 'pt-20 md:pt-24'
       )}
     >
@@ -57,12 +57,12 @@ export function PropertySpecsSection({
               loading="lazy"
               className="h-full min-h-[360px] w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-hz-dark/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-hz-inverse/50 to-transparent" />
             <div className="absolute right-4 bottom-4 left-4 flex flex-wrap gap-2">
               <Badge className="rounded-hz border-none bg-hz-primary font-poppins text-[10px] uppercase tracking-wider text-white hover:bg-hz-primary">
                 {status}
               </Badge>
-              <Badge variant="outline" className="rounded-hz border-white/40 bg-white/10 font-poppins text-[10px] uppercase tracking-wider text-white">
+              <Badge variant="outline" className="rounded-hz border-white/40 bg-hz-elevated/10 font-poppins text-[10px] uppercase tracking-wider text-white">
                 {type}
               </Badge>
             </div>
@@ -89,7 +89,7 @@ export function PropertySpecsSection({
             </TabsList>
 
             <TabsContent value="specs">
-              <Card className="border-hz-border bg-white shadow-sm">
+              <Card className="border-hz-border bg-hz-elevated shadow-sm">
                 <CardHeader>
                   <CardTitle className="font-poppins text-base font-semibold text-hz-dark">
                     Core Specifications
@@ -131,7 +131,7 @@ export function PropertySpecsSection({
             </TabsContent>
 
             <TabsContent value="amenities">
-              <Card className="border-hz-border bg-white shadow-sm">
+              <Card className="border-hz-border bg-hz-elevated shadow-sm">
                 <CardHeader>
                   <CardTitle className="font-poppins text-base font-semibold text-hz-dark">
                     Included Amenities
@@ -142,7 +142,7 @@ export function PropertySpecsSection({
                     {amenities.map((amenity) => (
                       <li
                         key={amenity}
-                        className="rounded-hz border border-hz-border bg-[#F8F8F8] px-4 py-3 font-poppins text-sm text-hz-body"
+                        className="rounded-hz border border-hz-border bg-hz-sunken px-4 py-3 font-poppins text-sm text-hz-body"
                       >
                         {amenity}
                       </li>

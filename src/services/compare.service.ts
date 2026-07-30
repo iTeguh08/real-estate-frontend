@@ -3,6 +3,7 @@ import { getPropertiesByIds } from '@/services/properties.service';
 import type { Property } from '@/types';
 
 const STORAGE_KEY = 'homzen-compare';
+/** Must match backend CompareController::MAX_ITEMS. */
 export const MAX_COMPARE_ITEMS = 3;
 
 function readLocalCompare(): string[] {
@@ -10,32 +11,45 @@ function readLocalCompare(): string[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
+    return Array.isArray(parsed)
+      ? parsed
+          .filter((id): id is string | number => typeof id === 'string' || typeof id === 'number')
+          .map(String)
+      : [];
   } catch {
     return [];
   }
 }
 
 function writeLocalCompare(ids: string[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids.map(String)));
+}
+
+function normalizeIds(ids: unknown): string[] {
+  if (!Array.isArray(ids)) return [];
+  return ids
+    .filter((id): id is string | number => typeof id === 'string' || typeof id === 'number')
+    .map(String);
 }
 
 export async function getCompareIds(): Promise<string[]> {
   if (useMockData()) {
     return readLocalCompare();
   }
-  return apiFetch<string[]>('/compare');
+  return normalizeIds(await apiFetch<unknown[]>('/compare'));
 }
 
 export async function toggleCompareItem(
   propertyId: string
 ): Promise<{ ids: string[]; limited: boolean }> {
+  const id = String(propertyId);
+
   if (useMockData()) {
     await new Promise((resolve) => setTimeout(resolve, 150));
     const current = readLocalCompare();
 
-    if (current.includes(propertyId)) {
-      const next = current.filter((id) => id !== propertyId);
+    if (current.includes(id)) {
+      const next = current.filter((item) => item !== id);
       writeLocalCompare(next);
       return { ids: next, limited: false };
     }
@@ -44,23 +58,32 @@ export async function toggleCompareItem(
       return { ids: current, limited: true };
     }
 
-    const next = [...current, propertyId];
+    const next = [...current, id];
     writeLocalCompare(next);
     return { ids: next, limited: false };
   }
 
-  const result = await apiFetch<{ ids: string[]; limited: boolean }>(
-    `/compare/${propertyId}`,
-    { method: 'POST' }
-  );
-  return result;
+  const result = await apiFetch<{ ids: unknown[]; limited: boolean }>(`/compare/${id}`, {
+    method: 'POST',
+  });
+
+  return {
+    ids: normalizeIds(result.ids),
+    limited: Boolean(result.limited),
+  };
 }
 
 export async function getCompareProperties(ids: string[]): Promise<Property[]> {
+  const normalized = normalizeIds(ids);
+  if (normalized.length === 0) return [];
+
   if (useMockData()) {
-    return getPropertiesByIds(ids);
+    return getPropertiesByIds(normalized);
   }
-  return apiFetch<Property[]>(`/compare/properties?ids=${ids.join(',')}`);
+
+  return apiFetch<Property[]>(
+    `/compare/properties?ids=${encodeURIComponent(normalized.join(','))}`
+  );
 }
 
 export async function clearCompare(): Promise<string[]> {
@@ -68,5 +91,5 @@ export async function clearCompare(): Promise<string[]> {
     writeLocalCompare([]);
     return [];
   }
-  return apiFetch<string[]>('/compare', { method: 'DELETE' });
+  return normalizeIds(await apiFetch<unknown[]>('/compare', { method: 'DELETE' }));
 }

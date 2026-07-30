@@ -1,14 +1,9 @@
 import type { Property, PropertyCustomLayout } from '@/types';
 
 /**
- * Resolves which property detail template to render.
- *
- * The real source of truth will eventually be a CMS radio field
- * (`property.customLayout`) so an admin can pick "Custom Layout 1" or
- * "Custom Layout 2" per listing, defaulting to layout 1. That field doesn't
- * exist in the backend yet, so until then we infer `layout-2` for every
- * listing tagged with the "Villa" type badge. Once the CMS field ships,
- * delete the fallback below and read `property.customLayout` directly.
+ * Resolves which property detail template to render from CMS `customLayout`.
+ * Defaults to layout-1; Villa type still falls back to layout-2 only when the
+ * CMS field is empty (legacy rows).
  */
 export function resolvePropertyCustomLayout(
   property: Pick<Property, 'type' | 'customLayout'>

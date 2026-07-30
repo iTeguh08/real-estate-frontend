@@ -1,0 +1,123 @@
+import type { PropertyStatus, PropertyType } from '@/types';
+import { PROPERTY_TYPES } from '@/data/property-types';
+
+/** Shared submit + edit field definitions (labels / types / hints) — keep 1:1. */
+export const PROPERTY_FORM = {
+  title: {
+    id: 'property-title',
+    label: 'Property title',
+    type: 'text' as const,
+    hint: 'Public name shown on cards and the listing page.',
+    required: true,
+  },
+  type: {
+    id: 'property-type',
+    label: 'Property type',
+    type: 'select' as const,
+    hint: 'Used by search filters and type menus.',
+    options: PROPERTY_TYPES as readonly PropertyType[],
+  },
+  status: {
+    id: 'property-status',
+    label: 'Status',
+    type: 'select' as const,
+    hint: 'For rent listings show “/month” on the site.',
+    /** Submit / pending lead — no Sold yet. */
+    submitOptions: ['For Sale', 'For Rent', 'Off Plan'] as const satisfies readonly PropertyStatus[],
+    /** Approved listing may mark Sold. */
+    editOptions: ['For Sale', 'For Rent', 'Off Plan', 'Sold'] as const satisfies readonly PropertyStatus[],
+  },
+  location: {
+    id: 'property-location',
+    label: 'Location',
+    type: 'text' as const,
+    hint: 'Search or pin the exact spot on the map. Drag the pin if search is inexact.',
+    required: true,
+  },
+  street: {
+    id: 'property-street',
+    label: 'Street address',
+    type: 'text' as const,
+    hint: 'Street line only — city and country are separate.',
+    required: true,
+  },
+  city: {
+    id: 'property-city',
+    label: 'City',
+    type: 'text' as const,
+    hint: 'City or district name.',
+    required: true,
+  },
+  country: {
+    id: 'property-country',
+    label: 'Country',
+    type: 'select' as const,
+    hint: 'Country code used in filters and the composed address.',
+    options: ['ID', 'SG', 'MY', 'US', 'GB', 'EN', 'AE', 'AU', 'CA', 'FR'] as const,
+    required: true,
+  },
+  price: {
+    id: 'property-price',
+    label: 'Price (USD)',
+    type: 'number' as const,
+    hint: 'Sale price or monthly rent amount.',
+    required: true,
+  },
+  currency: {
+    id: 'property-currency',
+    label: 'Currency',
+    type: 'text' as const,
+    hint: 'Symbol shown beside the price (e.g. $).',
+  },
+  beds: {
+    id: 'property-beds',
+    label: 'Beds',
+    type: 'number' as const,
+    hint: 'Use 0 for offices or spaces without bedrooms.',
+  },
+  baths: {
+    id: 'property-baths',
+    label: 'Baths',
+    type: 'number' as const,
+    hint: 'Number of bathrooms.',
+  },
+  sqft: {
+    id: 'property-sqft',
+    label: 'Sqft',
+    type: 'number' as const,
+    hint: 'Interior floor area in square feet.',
+  },
+  garage: {
+    id: 'property-garage',
+    label: 'Garage',
+    type: 'number' as const,
+    hint: 'Optional. Leave empty if parking is not advertised.',
+  },
+  tagline: {
+    id: 'property-tagline',
+    label: 'Tagline',
+    type: 'text' as const,
+    hint: 'Short one-line hook under the hero (optional).',
+  },
+  imageUrl: {
+    id: 'property-image-url',
+    label: 'Cover image',
+    type: 'file' as const,
+    hint: 'Upload a photo (jpg/png/webp). Unsplash is only a public display fallback if empty.',
+  },
+  description: {
+    id: 'property-description',
+    label: 'Description',
+    type: 'textarea' as const,
+    hint: 'At least 20 characters before you can publish.',
+  },
+  attachment: {
+    id: 'property-attachment',
+    label: 'Supporting file',
+    type: 'file' as const,
+    hint: 'PDF or image, max 2MB.',
+    optionalLabel: '(optional)',
+    accept: '.pdf,.jpg,.jpeg,.png,.webp',
+    maxBytes: 2 * 1024 * 1024,
+  },
+} as const;

@@ -5,16 +5,22 @@ import { HomePage } from '@/pages/HomePage';
 import { PropertyDetailPage } from '@/pages/PropertyDetailPage';
 import { PropertyShowcasePage } from '@/pages/PropertyShowcasePage';
 import { BlogPage } from '@/pages/BlogPage';
-import { BlogArticlePage } from '@/pages/BlogArticlePage';
+import { ArticleDetailPage } from '@/pages/ArticleDetailPage';
+import { NewsPage } from '@/pages/NewsPage';
 import { ComparePage } from '@/pages/ComparePage';
 import { WishlistPage } from '@/pages/WishlistPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { SubmitPropertyPage } from '@/pages/SubmitPropertyPage';
 import { DashboardPage } from '@/pages/DashboardPage';
+import { MyListingsPage } from '@/pages/MyListingsPage';
+import { EditMyListingPage } from '@/pages/EditMyListingPage';
 import { AgentProfilePage } from '@/pages/AgentProfilePage';
+import { AgentsListingPage } from '@/pages/AgentsListingPage';
+import { PropertyListingsPage } from '@/pages/PropertyListingsPage';
 import { AboutUsPage } from '@/pages/AboutUsPage';
 import { ContactUsPage } from '@/pages/ContactUsPage';
+import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export default function App() {
@@ -24,10 +30,14 @@ export default function App() {
         <Routes>
           <Route element={<AppShell />}>
             <Route index element={<HomePage />} />
+            <Route path="listings" element={<PropertyListingsPage />} />
             <Route path="properties/:slug" element={<PropertyDetailPage />} />
             <Route path="property/:id" element={<PropertyShowcasePage />} />
+            <Route path="news" element={<NewsPage />} />
+            <Route path="news/:slug" element={<ArticleDetailPage />} />
             <Route path="blog" element={<BlogPage />} />
-            <Route path="blog/:slug" element={<BlogArticlePage />} />
+            <Route path="blog/:slug" element={<ArticleDetailPage />} />
+            <Route path="agents" element={<AgentsListingPage />} />
             <Route path="agents/:slug" element={<AgentProfilePage />} />
             <Route path="compare" element={<ComparePage />} />
             <Route path="wishlist" element={<WishlistPage />} />
@@ -36,7 +46,12 @@ export default function App() {
             <Route path="submit-property" element={<SubmitPropertyPage />} />
             <Route path="about" element={<AboutUsPage />} />
             <Route path="contact" element={<ContactUsPage />} />
+            <Route path="privacy" element={<PrivacyPolicyPage />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="dashboard/my-property" element={<MyListingsPage />} />
+            <Route path="dashboard/my-property/:id" element={<EditMyListingPage />} />
+            <Route path="dashboard/my-listings" element={<MyListingsPage />} />
+            <Route path="dashboard/my-listings/:id/edit" element={<EditMyListingPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

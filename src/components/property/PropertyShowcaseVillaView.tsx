@@ -18,12 +18,9 @@ export interface PropertyShowcaseVillaViewProps {
 }
 
 /**
- * Custom Layout 2 — the editorial "villa" template. Every section reuses the
- * exact copy, icons, colors, fonts and button actions from Custom Layout 1
- * (see `PropertyShowcaseView`'s classic view); only the position, grouping,
- * and shape of those pieces changes to match the reference layout. The
- * Specs/Amenities, Gallery, and Related sections are reused verbatim since
- * the reference doesn't call for a different shape there.
+ * Custom Layout 2 — the editorial "villa" template. Specs, Gallery
+ * ("Explore every angle"), and Related ("You may also like") match Layout 1;
+ * only hero / editorial / highlights / CTA change shape.
  */
 export function PropertyShowcaseVillaView({ property }: PropertyShowcaseVillaViewProps) {
   const { data: related = [] } = useRelatedPropertiesQuery(property);

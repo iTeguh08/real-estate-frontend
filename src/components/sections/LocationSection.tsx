@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
-import { routes } from '@/lib/routes';
+import { useHomepageQuery } from '@/hooks/queries';
 import type { Location } from '@/types';
 
 type LocationCardVariant = 'square' | 'wide';
@@ -13,20 +15,25 @@ const LOCATION_IMAGE_HEIGHT =
 interface LocationCardProps {
   location: Location;
   variant: LocationCardVariant;
+  lightSurface?: boolean;
 }
 
-function LocationCard({ location }: LocationCardProps) {
+function LocationCard({ location, lightSurface = false }: LocationCardProps) {
   const label = `${location.city}, ${location.country}`;
+  const locationQuery = location.city.trim();
 
   return (
     <Link
-      to={{ pathname: routes.home, hash: '#listings' }}
+      to={`/listings?location=${encodeURIComponent(locationQuery)}`}
       className="group block cursor-pointer no-underline"
       aria-label={`${label} — explore listings`}
     >
       <div
         className={cn(
-          'relative overflow-hidden rounded-hz bg-hz-bg-soft',
+          'relative overflow-hidden rounded-hz',
+          lightSurface
+            ? 'bg-hz-elevated shadow-hz-sm ring-1 ring-hz-border'
+            : 'bg-hz-footer-fg/5 ring-1 ring-hz-footer-fg/10',
           LOCATION_IMAGE_HEIGHT
         )}
       >
@@ -36,13 +43,30 @@ function LocationCard({ location }: LocationCardProps) {
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
+        <div
+          className={cn(
+            'pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-80',
+            lightSurface ? 'from-black/20' : 'from-hz-footer/35'
+          )}
+          aria-hidden="true"
+        />
       </div>
 
       <div className="mt-4 space-y-1.5">
-        <p className="font-poppins text-lg font-semibold leading-snug text-hz-dark transition-colors duration-200 group-hover:text-hz-primary md:text-xl">
+        <p
+          className={cn(
+            'font-poppins text-lg font-semibold leading-snug transition-colors duration-200 group-hover:text-hz-primary md:text-xl',
+            lightSurface ? 'text-hz-ink' : 'text-hz-footer-fg'
+          )}
+        >
           {label}
         </p>
-        <p className="font-poppins text-[13px] text-hz-muted">
+        <p
+          className={cn(
+            'font-poppins text-[13px]',
+            lightSurface ? 'text-hz-muted' : 'text-hz-footer-fg/55'
+          )}
+        >
           {location.propertiesCount.toLocaleString()} listings
         </p>
       </div>
@@ -53,6 +77,8 @@ function LocationCard({ location }: LocationCardProps) {
 interface LocationSectionProps {
   wideLocations?: Location[];
   squareLocations?: Location[];
+  eyebrow?: string;
+  title?: string;
 }
 
 function buildLocationRows(wideLocations: Location[], squareLocations: Location[]) {
@@ -80,19 +106,21 @@ function buildLocationSlides(wideLocations: Location[], squareLocations: Locatio
 function LocationRow({
   row,
   reverseOrder = false,
+  lightSurface = false,
 }: {
   row: ReturnType<typeof buildLocationRows>[number];
   reverseOrder?: boolean;
+  lightSurface?: boolean;
 }) {
   const wideCard = (
     <div className="col-span-2" role="listitem">
-      <LocationCard location={row.wide} variant="wide" />
+      <LocationCard location={row.wide} variant="wide" lightSurface={lightSurface} />
     </div>
   );
 
   const squareCards = row.squares.map((location) => (
     <div key={location.id} role="listitem">
-      <LocationCard location={location} variant="square" />
+      <LocationCard location={location} variant="square" lightSurface={lightSurface} />
     </div>
   ));
 
@@ -114,9 +142,41 @@ function LocationRow({
 }
 
 export function LocationSection({
-  wideLocations = WIDE_LOCATIONS,
-  squareLocations = SQUARE_LOCATIONS,
+  wideLocations: wideLocationsProp,
+  squareLocations: squareLocationsProp,
+  eyebrow: eyebrowProp,
+  title: titleProp,
 }: LocationSectionProps) {
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
+  const { data: homepage } = useHomepageQuery();
+  const cmsLocations = homepage?.locations;
+
+  const wideLocations: Location[] =
+    wideLocationsProp ??
+    cmsLocations?.wide.map((item) => ({
+      id: item.id,
+      city: item.city,
+      country: item.country,
+      propertiesCount: item.propertiesCount,
+      imageUrl: item.imageUrl,
+    })) ??
+    WIDE_LOCATIONS;
+
+  const squareLocations: Location[] =
+    squareLocationsProp ??
+    cmsLocations?.square.map((item) => ({
+      id: item.id,
+      city: item.city,
+      country: item.country,
+      propertiesCount: item.propertiesCount,
+      imageUrl: item.imageUrl,
+    })) ??
+    SQUARE_LOCATIONS;
+
+  const eyebrow = eyebrowProp ?? cmsLocations?.eyebrow ?? 'Explore Areas';
+  const title = titleProp ?? cmsLocations?.title ?? 'Our Location For You';
+
   const locationSlides = buildLocationSlides(wideLocations, squareLocations);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = locationSlides[activeIndex];
@@ -128,26 +188,47 @@ export function LocationSection({
   return (
     <section
       id="location"
-      className="w-full bg-white py-16 md:py-20"
+      className={cn(
+        'relative w-full overflow-hidden py-16 md:py-20',
+        isNavy ? 'bg-hz-footer' : 'bg-hz-page'
+      )}
       aria-labelledby="locations-heading"
     >
-      <div className="section-container">
+      <SectionAtmosphere
+        tone={isNavy ? 'dark' : 'light'}
+        surface={isNavy ? 'footer' : 'page'}
+        intensity="strong"
+        variant="edge"
+        side="left"
+        image={isNavy ? 'architecture' : 'location-light'}
+        photoOpacity={isNavy ? 0.55 : 0.05}
+        lightGlow="white"
+      />
+      <div className="section-container relative z-10">
         <div className="mb-12 flex flex-col items-center text-center">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
-            Explore Areas
+            {eyebrow}
           </p>
           <h2
             id="locations-heading"
-            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+            className={cn(
+              'font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] md:text-[36px]',
+              isNavy ? 'text-hz-footer-fg' : 'text-hz-ink'
+            )}
           >
-            Our Location For You
+            {title}
           </h2>
         </div>
 
         <div role="list" aria-label="Available locations">
           <div className="flex flex-col gap-9">
             {activeSlide.map((row, index) => (
-              <LocationRow key={row.wide.id} row={row} reverseOrder={index === 1} />
+              <LocationRow
+                key={row.wide.id}
+                row={row}
+                reverseOrder={index === 1}
+                lightSurface={!isNavy}
+              />
             ))}
           </div>
         </div>
@@ -165,7 +246,9 @@ export function LocationSection({
                   'h-2 w-2 rounded-full transition-colors duration-200',
                   activeIndex === index
                     ? 'bg-hz-primary'
-                    : 'bg-hz-border hover:bg-hz-muted'
+                    : isNavy
+                      ? 'bg-hz-footer-fg/25 hover:bg-hz-footer-fg/40'
+                      : 'bg-hz-line hover:bg-hz-muted/40'
                 )}
               />
             ))}

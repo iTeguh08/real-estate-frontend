@@ -1,12 +1,13 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, Loader2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCompare } from '@/hooks/useCompare';
 import { queryKeys } from '@/lib/query-keys';
-import { formatPropertyPrice } from '@/lib/format-property';
+import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import { routes } from '@/lib/routes';
-import { clearCompare, getCompareProperties } from '@/services/compare.service';
+import { clearCompare, getCompareProperties, MAX_COMPARE_ITEMS } from '@/services/compare.service';
 
 const ROWS = [
   { key: 'price', label: 'Price' },
@@ -19,8 +20,9 @@ const ROWS = [
 ] as const;
 
 export function ComparePage() {
-  const { compareIds, toggleCompare } = useCompare();
+  const { compareIds, toggleCompare, isTogglingId: compareTogglingId } = useCompare();
   const queryClient = useQueryClient();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const { data: properties = [], isLoading } = useQuery({
     queryKey: queryKeys.compare.properties(compareIds),
@@ -28,10 +30,24 @@ export function ComparePage() {
     enabled: compareIds.length > 0,
   });
 
+  const scrollByAmount = (direction: 'prev' | 'next') => {
+    if (scrollRef.current) {
+      const scrollAmount = 300;
+      scrollRef.current.scrollBy({
+        left: direction === 'next' ? scrollAmount : -scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   const clearMutation = useMutation({
     mutationFn: clearCompare,
-    onSuccess: () => {
-      queryClient.setQueryData(queryKeys.compare.all(), []);
+    onSuccess: (ids) => {
+      queryClient.setQueryData(queryKeys.compare.all(), ids);
+      queryClient.setQueryData(queryKeys.compare.limitNotice(), false);
+      void queryClient.invalidateQueries({
+        queryKey: [...queryKeys.compare.all(), 'properties'],
+      });
     },
   });
 
@@ -43,10 +59,10 @@ export function ComparePage() {
         </p>
         <h1 className="font-poppins text-3xl font-semibold text-hz-dark">No properties to compare</h1>
         <p className="mx-auto mt-4 max-w-md font-poppins text-sm leading-relaxed text-hz-muted">
-          Use the compare icon on any listing card to add up to 3 properties side by side.
+          Use the compare icon on any listing card to add up to {MAX_COMPARE_ITEMS} properties side by side.
         </p>
         <Link
-          to={{ pathname: routes.home, hash: 'listings' }}
+          to={routes.listings}
           className="mt-8 inline-flex items-center gap-2 rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white no-underline transition-colors hover:bg-hz-primary-hover"
         >
           <ArrowLeft size={16} />
@@ -57,12 +73,12 @@ export function ComparePage() {
   }
 
   return (
-    <main id="main-content" className="bg-white py-10 md:py-16">
+    <main id="main-content" className="bg-hz-elevated py-10 md:py-16">
       <div className="section-container">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <Link
-              to={{ pathname: routes.home, hash: 'listings' }}
+              to={routes.listings}
               className="mb-4 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors hover:text-hz-primary"
             >
               <ArrowLeft size={16} />
@@ -75,38 +91,66 @@ export function ComparePage() {
               Side-by-side view of your selected listings
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => clearMutation.mutate()}
-            disabled={clearMutation.isPending}
-            className="rounded-hz border border-hz-border px-4 py-2 font-poppins text-sm font-medium text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary disabled:opacity-60"
-          >
-            Clear All
-          </button>
+          <div className="flex items-center gap-3">
+            {compareIds.length > 3 && (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => scrollByAmount('prev')}
+                  className="flex h-9 w-9 items-center justify-center rounded-hz border border-hz-border text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollByAmount('next')}
+                  className="flex h-9 w-9 items-center justify-center rounded-hz border border-hz-border text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => clearMutation.mutate()}
+              disabled={clearMutation.isPending}
+              className="rounded-hz border border-hz-border px-4 py-2 font-poppins text-sm font-medium text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary disabled:opacity-60"
+            >
+              Clear All
+            </button>
+          </div>
         </div>
 
         {isLoading ? (
-          <div className="animate-pulse rounded-hz border border-hz-border bg-[#F8F8F8] p-8">
+          <div className="animate-pulse rounded-hz border border-hz-border bg-hz-sunken p-8">
             <div className="h-6 w-1/3 rounded-hz bg-hz-bg-soft" />
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-hz border border-hz-border bg-white shadow-sm">
-            <table className="w-full min-w-[640px] border-collapse font-poppins text-sm">
+          <div ref={scrollRef} className="overflow-x-auto scroll-smooth rounded-hz border border-hz-border bg-hz-elevated shadow-sm">
+            <table className="w-max min-w-full border-collapse font-poppins text-sm table-fixed">
               <thead>
                 <tr className="border-b border-hz-border">
-                  <th className="w-36 p-4 text-left text-xs font-semibold uppercase tracking-wider text-hz-muted">
+                  <th className="sticky left-0 z-20 w-36 min-w-[144px] border-r border-hz-border bg-hz-elevated p-4 text-left text-xs font-semibold uppercase tracking-wider text-hz-muted shadow-hz-sm">
                     Detail
                   </th>
                   {properties.map((property) => (
-                    <th key={property.id} className="min-w-[200px] p-4 text-left align-top">
+                    <th key={property.id} className="min-w-[280px] w-[300px] p-4 text-left align-top">
                       <div className="relative">
                         <button
                           type="button"
+                          disabled={compareTogglingId === property.id}
                           onClick={() => toggleCompare(property.id)}
-                          className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border border-hz-border bg-white text-hz-muted transition-colors hover:border-hz-primary hover:text-hz-primary"
+                          aria-busy={compareTogglingId === property.id}
+                          className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border border-hz-border bg-hz-elevated text-hz-muted transition-colors hover:border-hz-primary hover:text-hz-primary disabled:cursor-wait disabled:opacity-70"
                           aria-label={`Remove ${property.title} from compare`}
                         >
-                          <X size={14} />
+                          {compareTogglingId === property.id ? (
+                            <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+                          ) : (
+                            <X size={14} />
+                          )}
                         </button>
                         <div className="mb-3 aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
                           <img
@@ -129,13 +173,15 @@ export function ComparePage() {
               <tbody>
                 {ROWS.map((row) => (
                   <tr key={row.key} className="border-b border-hz-border last:border-b-0">
-                    <td className="p-4 font-medium text-hz-muted">{row.label}</td>
+                    <td className="sticky left-0 z-10 border-r border-hz-border bg-hz-elevated p-4 font-medium text-hz-muted shadow-hz-sm">
+                      {row.label}
+                    </td>
                     {properties.map((property) => (
                       <td key={`${property.id}-${row.key}`} className="p-4 text-hz-dark">
                         {row.key === 'price' && formatPropertyPrice(property)}
                         {row.key === 'status' && property.status}
                         {row.key === 'type' && property.type}
-                        {row.key === 'location' && property.location}
+                        {row.key === 'location' && formatPropertyLocation(property)}
                         {row.key === 'beds' && (
                           <span className="inline-flex items-center gap-1.5">
                             <Bed size={16} weight="fill" className="text-hz-muted" />

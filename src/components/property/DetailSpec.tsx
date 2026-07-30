@@ -8,7 +8,7 @@ export function DetailSpec({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-hz border border-hz-border bg-[#F8F8F8] px-3 py-2">
+    <div className="flex items-center gap-2 rounded-hz border border-hz-border bg-hz-sunken px-3 py-2">
       <span className="text-hz-dark/80" aria-hidden="true">
         {icon}
       </span>

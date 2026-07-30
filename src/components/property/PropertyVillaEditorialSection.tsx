@@ -11,7 +11,7 @@ export interface PropertyVillaEditorialSectionProps {
     | 'tagline'
     | 'specs'
     | 'type'
-    | 'showcaseImages'
+    | 'layout2Media'
     | 'imageUrl'
   >;
   onUtilityAction?: (actionId: PropertyVillaUtilityAction) => void;
@@ -30,7 +30,7 @@ function UtilityPillButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-hz border border-hz-border bg-white px-5 py-2.5 font-poppins text-sm font-medium text-hz-dark transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary sm:w-auto"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-hz border border-hz-border bg-hz-elevated px-5 py-2.5 font-poppins text-sm font-medium text-hz-dark transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary sm:w-auto"
     >
       {icon}
       {label}
@@ -42,10 +42,10 @@ function PortraitImage({ src, title }: { src: string; title: string }) {
   return (
     <div className="relative w-[min(78vw,240px)] shrink-0 sm:w-[260px] md:w-[290px] lg:w-[320px]">
       <div
-        className="absolute -top-3 -left-3 hidden h-[48%] w-[70%] bg-[#F8F8F8] lg:block"
+        className="absolute -top-3 -left-3 hidden h-[48%] w-[70%] bg-hz-sunken lg:block"
         aria-hidden="true"
       />
-      <div className="relative aspect-[3/5] overflow-hidden">
+      <div className="relative aspect-[3/4] overflow-hidden">
         <img
           src={src}
           alt={`${title} — property overview`}
@@ -80,24 +80,24 @@ function OverviewCopy({
       </p>
 
       <div className="relative z-10 mt-8 mb-4 grid grid-cols-2 gap-px overflow-hidden border border-hz-border bg-hz-border sm:grid-cols-4 lg:mb-8">
-        <div className="flex flex-col items-center gap-1 bg-white px-3 py-4 text-center">
+        <div className="flex flex-col items-center gap-1 bg-hz-elevated px-3 py-4 text-center">
           <Bed size={20} weight="fill" className="text-hz-dark" aria-hidden="true" />
           <span className="font-poppins text-base font-semibold text-hz-dark">{specs.beds}</span>
           <span className="font-poppins text-[10px] uppercase tracking-wider text-hz-muted">Beds</span>
         </div>
-        <div className="flex flex-col items-center gap-1 bg-white px-3 py-4 text-center">
+        <div className="flex flex-col items-center gap-1 bg-hz-elevated px-3 py-4 text-center">
           <Bathtub size={20} weight="fill" className="text-hz-dark" aria-hidden="true" />
           <span className="font-poppins text-base font-semibold text-hz-dark">{specs.baths}</span>
           <span className="font-poppins text-[10px] uppercase tracking-wider text-hz-muted">Baths</span>
         </div>
-        <div className="flex flex-col items-center gap-1 bg-white px-3 py-4 text-center">
+        <div className="flex flex-col items-center gap-1 bg-hz-elevated px-3 py-4 text-center">
           <ArrowsOut size={20} weight="fill" className="text-hz-dark" aria-hidden="true" />
           <span className="font-poppins text-base font-semibold text-hz-dark">
             {specs.sqft.toLocaleString()}
           </span>
           <span className="font-poppins text-[10px] uppercase tracking-wider text-hz-muted">Sq Ft</span>
         </div>
-        <div className="flex flex-col items-center gap-1 bg-white px-3 py-4 text-center">
+        <div className="flex flex-col items-center gap-1 bg-hz-elevated px-3 py-4 text-center">
           <span className="font-poppins text-base font-semibold text-hz-dark">{type}</span>
           <span className="font-poppins text-[10px] uppercase tracking-wider text-hz-muted">Type</span>
         </div>
@@ -116,7 +116,7 @@ function InteriorCopy({
   const { tagline } = property;
 
   return (
-    <div className="relative z-10 flex max-w-md flex-col justify-center bg-white pb-2 lg:pt-8 lg:pb-8">
+    <div className="relative z-10 flex max-w-md flex-col justify-center bg-hz-elevated pb-2 lg:pt-8 lg:pb-8">
       <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
         Interior &amp; Lifestyle
       </p>
@@ -147,7 +147,7 @@ function InteriorCopy({
 
 function LandscapeImage({ src, title }: { src: string; title: string }) {
   return (
-    <div className="relative z-0 aspect-[16/10] w-full overflow-hidden md:aspect-[3/2] lg:-mt-[6.5rem] lg:min-h-[300px] lg:w-full xl:-mt-[8rem] xl:min-h-[340px]">
+    <div className="relative z-0 aspect-video w-full overflow-hidden lg:-mt-[6.5rem] lg:min-h-[300px] lg:w-full xl:-mt-[8rem] xl:min-h-[340px]">
       <img
         src={src}
         alt={`${title} — landscape view`}
@@ -166,14 +166,14 @@ export function PropertyVillaEditorialSection({
   property,
   onUtilityAction,
 }: PropertyVillaEditorialSectionProps) {
-  const { title, showcaseImages, imageUrl } = property;
-  const portraitImage = showcaseImages[0]?.url ?? imageUrl;
-  const wideImage = showcaseImages[1]?.url ?? showcaseImages[0]?.url ?? imageUrl;
+  const { title, layout2Media, imageUrl } = property;
+  const portraitImage = layout2Media.splitVerticalUrl ?? imageUrl;
+  const wideImage = layout2Media.splitLandscapeUrl ?? imageUrl;
 
   return (
     <section
       aria-labelledby="property-villa-overview-heading"
-      className="overflow-visible bg-white pt-12 md:pt-16 lg:pb-8"
+      className="overflow-visible bg-hz-elevated pt-12 md:pt-16 lg:pb-8"
     >
       <div className={VILLA_EDITORIAL_GUTTERS}>
         {/* Mobile / tablet — stacked, no overlap */}

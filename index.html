@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
@@ -8,7 +8,7 @@
       name="description"
       content="Homzen — discover luxury homes, villas, and apartments for sale and rent. Browse featured listings, compare properties, and connect with expert agents."
     />
-    <meta name="theme-color" content="#E84040" />
+    <meta name="theme-color" content="#E07030" />
     <meta property="og:title" content="Homzen — Luxury Real Estate" />
     <meta
       property="og:description"
@@ -16,6 +16,16 @@
     />
     <meta property="og:type" content="website" />
     <title>Homzen — Luxury Real Estate</title>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('hz-theme');
+          if (t === 'navy' || t === 'light') {
+            document.documentElement.setAttribute('data-theme', t);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

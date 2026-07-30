@@ -19,7 +19,7 @@ const base = {
 export function BuyHomeIllustration({ className, strokeClassName }: IllustrationProps) {
   return (
     <svg viewBox="0 0 80 80" className={cn('h-full w-full', className)} aria-hidden="true">
-      <g className={cn('stroke-luxury-dark', strokeClassName)}>
+      <g className={cn('stroke-hz-ink', strokeClassName)}>
         {/* Roof */}
         <path {...base} d="M40 16 L60 32 H20 Z" />
         {/* Eaves */}
@@ -42,7 +42,7 @@ export function BuyHomeIllustration({ className, strokeClassName }: Illustration
         <path {...base} d="M32 48 V56 M48 48 V56" strokeWidth={0.95} opacity={0.7} />
         {/* Front door */}
         <path {...base} d="M36 55 V49 H44 V55" />
-        <circle {...base} cx="42" cy="52" r="0.8" fill="currentColor" stroke="none" className={cn('text-luxury-dark', strokeClassName)} />
+        <circle {...base} cx="42" cy="52" r="0.8" fill="currentColor" stroke="none" className={cn('text-hz-ink', strokeClassName)} />
         {/* Porch deck */}
         <path {...base} d="M32 56 H48" strokeWidth={0.85} opacity={0.45} />
         {/* Side shrubs — light sketch accents */}
@@ -57,7 +57,7 @@ export function BuyHomeIllustration({ className, strokeClassName }: Illustration
 export function RentHomeIllustration({ className, strokeClassName }: IllustrationProps) {
   return (
     <svg viewBox="0 0 80 80" className={cn('h-full w-full', className)} aria-hidden="true">
-      <g className={cn('stroke-luxury-dark', strokeClassName)}>
+      <g className={cn('stroke-hz-ink', strokeClassName)}>
         {/* Building shell */}
         <rect {...base} x="24" y="22" width="32" height="36" rx="1.5" />
         {/* Floor divisions */}
@@ -79,7 +79,7 @@ export function RentHomeIllustration({ className, strokeClassName }: Illustratio
 export function SellHomeIllustration({ className, strokeClassName }: IllustrationProps) {
   return (
     <svg viewBox="0 0 80 80" className={cn('h-full w-full', className)} aria-hidden="true">
-      <g className={cn('stroke-luxury-dark', strokeClassName)}>
+      <g className={cn('stroke-hz-ink', strokeClassName)}>
         {/* Document */}
         <rect {...base} x="22" y="18" width="36" height="44" rx="2" />
         {/* Folded corner */}

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeftRight } from 'lucide-react';
 import { useCompare } from '@/hooks/useCompare';
 import { MAX_COMPARE_ITEMS } from '@/services/compare.service';
@@ -6,14 +6,17 @@ import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 
 export function CompareBar() {
-  const { compareCount, lastLimited } = useCompare();
+  const { pathname } = useLocation();
+  const { compareCount, limitNotice } = useCompare();
 
-  if (compareCount === 0 && !lastLimited) return null;
+  // Already on the compare page — the bar's only job is to get you here.
+  if (pathname === routes.compare) return null;
+  if (compareCount === 0 && !limitNotice) return null;
 
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-90 border-t border-hz-border bg-white/95 px-5 py-3 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm',
+        'fixed bottom-0 left-0 right-0 z-90 border-t border-hz-border bg-hz-elevated/95 px-5 py-3 shadow-hz-md backdrop-blur-sm',
         'font-poppins'
       )}
       role="region"
@@ -28,7 +31,7 @@ export function CompareBar() {
             <p className="text-sm font-semibold text-hz-dark">
               {compareCount} of {MAX_COMPARE_ITEMS} properties selected
             </p>
-            {lastLimited && (
+            {limitNotice && (
               <p className="text-xs text-hz-primary" role="status">
                 Maximum {MAX_COMPARE_ITEMS} properties — remove one to add another.
               </p>

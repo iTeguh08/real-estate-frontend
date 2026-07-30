@@ -1,17 +1,63 @@
 import { ARTICLES } from '@/data/articles';
-import { apiFetch, useMockData } from '@/services/api-client';
-import type { Article } from '@/types';
+import { mergeArticleWithFallback, mergeArticlesWithFallback } from '@/lib/cms-merge';
+import { graphqlFetch, useMockData } from '@/services/graphql-client';
+import type { Article, ArticleCategory } from '@/types';
 
-export async function getArticles(): Promise<Article[]> {
+const ARTICLES_LIST_FIELDS = `
+  id
+  slug
+  title
+  excerpt
+  category
+  publishedAt
+  imageUrl
+  tags
+`;
+
+const ARTICLE_DETAIL_FIELDS = `
+  ${ARTICLES_LIST_FIELDS}
+  body
+`;
+
+export async function getArticles(category?: ArticleCategory, tag?: string): Promise<Article[]> {
   if (useMockData()) {
-    return ARTICLES;
+    return ARTICLES.filter((article) => {
+      if (category && article.category !== category) return false;
+      if (tag && !article.tags.includes(tag)) return false;
+      return true;
+    });
   }
-  return apiFetch<Article[]>('/articles');
+
+  const data = await graphqlFetch<{ articles: { items: Article[] } }>(
+    `query GetArticles($category: ArticleCategory, $tag: String) {
+      articles(category: $category, tag: $tag) {
+        items {
+          ${ARTICLES_LIST_FIELDS}
+        }
+      }
+    }`,
+    {
+      ...(category ? { category } : {}),
+      ...(tag ? { tag } : {}),
+    },
+  );
+
+  return mergeArticlesWithFallback(data.articles.items);
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
   if (useMockData()) {
-    return ARTICLES.find((a) => a.slug === slug) ?? null;
+    return ARTICLES.find((article) => article.slug === slug) ?? null;
   }
-  return apiFetch<Article>(`/articles/${slug}`);
+
+  const data = await graphqlFetch<{ article: Article | null }>(
+    `query GetArticle($slug: String!) {
+      article(slug: $slug) {
+        ${ARTICLE_DETAIL_FIELDS}
+      }
+    }`,
+    { slug },
+  );
+
+  return data.article ? mergeArticleWithFallback(data.article) : null;
 }

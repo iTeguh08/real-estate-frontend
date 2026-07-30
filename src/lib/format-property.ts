@@ -1,6 +1,24 @@
 import type { Property } from '@/types';
 
 type PriceFields = Pick<Property, 'price' | 'currency' | 'status'>;
+type LocationFields = Pick<Property, 'location' | 'street' | 'city' | 'countryCode'>;
+
+/** Prefer structured parts when present; fall back to composed `location` string. */
+export function formatPropertyLocation({
+  location,
+  street,
+  city,
+  countryCode,
+}: LocationFields): string {
+  const parts = [street, city].map((part) => part?.trim()).filter(Boolean) as string[];
+  const base = parts.join(', ');
+  const code = countryCode?.trim();
+
+  if (base && code) return `${base} (${code})`;
+  if (base) return base;
+  if (code) return `(${code})`;
+  return location;
+}
 
 export function formatPropertyPrice({ price, currency, status }: PriceFields): string {
   const amount = `${currency}${price.toLocaleString('en-US')}`;

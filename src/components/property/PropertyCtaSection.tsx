@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { formatPropertyPrice } from '@/lib/format-property';
+import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyCtaSectionProps {
@@ -14,17 +16,17 @@ export function PropertyCtaSection({
   onContactAgent,
 }: PropertyCtaSectionProps) {
   return (
-    <section aria-labelledby="property-cta-heading" className="bg-[#F8F8F8] py-20 md:py-28">
+    <section aria-labelledby="property-cta-heading" className="bg-hz-sunken py-20 md:py-28">
       <div className="section-container">
-        <div className="grid overflow-hidden rounded-hz border border-hz-border bg-white shadow-sm lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-sm lg:grid-cols-2">
           <div className="relative hidden min-h-[280px] lg:block">
             <img
-              src={property.featureImageUrl}
+              src={property.layout1Media.bannerUrl ?? property.imageUrl}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-hz-dark/30" aria-hidden="true" />
+            <div className="absolute inset-0 bg-hz-inverse/30" aria-hidden="true" />
           </div>
 
           <div className="flex flex-col justify-center px-8 py-12 md:px-12 md:py-16">
@@ -58,6 +60,15 @@ export function PropertyCtaSection({
                 Contact an Agent
               </Button>
             </div>
+            <p className="mt-5 font-poppins text-xs text-hz-muted">
+              Selling something similar?{' '}
+              <Link
+                to={`${routes.submitProperty}?property=${encodeURIComponent(property.slug)}`}
+                className="font-medium text-hz-primary no-underline hover:underline"
+              >
+                List your property
+              </Link>
+            </p>
           </div>
         </div>
       </div>

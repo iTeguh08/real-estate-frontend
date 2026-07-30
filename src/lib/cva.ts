@@ -19,7 +19,7 @@ export const luxuryButton = cva(
         ghost:
           'bg-transparent text-luxury-dark hover:bg-luxury-dark/6 rounded-hz',
         outline:
-          'border border-luxury-dark/20 bg-white text-luxury-dark rounded-hz hover:bg-luxury-dark hover:text-white',
+          'border border-luxury-dark/20 bg-hz-elevated text-luxury-dark rounded-hz hover:bg-luxury-dark hover:text-white',
         'outline-crimson':
           'border border-luxury-crimson text-luxury-crimson rounded-hz hover:bg-luxury-crimson hover:text-white',
       },
@@ -40,16 +40,16 @@ export type LuxuryButtonVariants = VariantProps<typeof luxuryButton>;
 // Core card shell used in FeaturedProperties and BestPropertyValue grids.
 export const propertyCard = cva(
   [
-    'group relative overflow-hidden bg-white',
+    'group relative overflow-hidden border border-hz-border bg-hz-elevated shadow-hz-sm',
     'transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]',
     'cursor-pointer',
   ],
   {
     variants: {
       variant: {
-        grid: 'rounded-hz shadow-sm hover:shadow-md hover:-translate-y-1',
-        list: 'rounded-hz shadow-sm hover:shadow-md flex flex-row',
-        featured: 'rounded-hz shadow-md hover:shadow-lg hover:-translate-y-1',
+        grid: 'rounded-hz hover:shadow-hz-md hover:-translate-y-1',
+        list: 'rounded-hz hover:shadow-hz-md flex flex-row',
+        featured: 'rounded-hz shadow-hz-md hover:shadow-hz-elevated hover:-translate-y-1',
       },
       size: {
         sm: 'max-w-[260px]',
@@ -71,7 +71,7 @@ export const statusBadge = cva(
     variants: {
       status: {
         'For Sale': 'bg-luxury-crimson text-white',
-        'For Rent': 'bg-luxury-dark text-white',
+        'For Rent': 'bg-hz-inverse text-hz-inverse-fg',
         'Off Plan': 'bg-amber-600 text-white',
         Sold: 'bg-gray-400 text-white',
       },
@@ -89,7 +89,7 @@ export type StatusBadgeVariants = VariantProps<typeof statusBadge>;
 // ─── "New" listing badge ────────────────────────────────────────────────────
 // Frosted ivory pill — distinct from status badges without loud amber/yellow.
 export const newBadge = cva(
-  'inline-flex items-center justify-center px-2.5 py-1 font-sans text-[10px] font-semibold uppercase leading-none tracking-[0.14em] rounded-hz bg-white/95 text-luxury-crimson shadow-sm ring-1 ring-white/40 backdrop-blur-sm'
+  'inline-flex items-center justify-center px-2.5 py-1 font-sans text-[10px] font-semibold uppercase leading-none tracking-[0.14em] rounded-hz bg-hz-elevated/95 text-luxury-crimson shadow-hz-sm ring-1 ring-hz-border/60 backdrop-blur-sm'
 );
 
 export type NewBadgeVariants = VariantProps<typeof newBadge>;
@@ -104,9 +104,9 @@ export const section = cva('w-full', {
       lg: 'py-24 md:py-32',
     },
     bg: {
-      cream: 'bg-[--color-luxury-cream]',
-      white: 'bg-white',
-      dark: 'bg-[--color-luxury-dark] text-white',
+      cream: 'bg-hz-page',
+      white: 'bg-hz-elevated',
+      dark: 'bg-hz-inverse text-hz-inverse-fg',
     },
   },
   defaultVariants: { spacing: 'md', bg: 'cream' },

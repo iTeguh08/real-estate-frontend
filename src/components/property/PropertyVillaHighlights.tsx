@@ -6,7 +6,7 @@ import type { PropertyDetail } from '@/types';
 export type PropertyVillaUtilityAction = 'plan' | 'inquire' | 'location';
 
 export interface PropertyVillaHighlightsProps {
-  property: Pick<PropertyDetail, 'title' | 'features' | 'featureImageUrl' | 'imageUrl'>;
+  property: Pick<PropertyDetail, 'title' | 'features' | 'layout2Media' | 'imageUrl'>;
   onUtilityAction?: (actionId: PropertyVillaUtilityAction) => void;
 }
 
@@ -23,7 +23,7 @@ function UtilityPillButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-hz border border-hz-border bg-white px-5 py-2.5 font-poppins text-sm font-medium text-hz-dark transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary sm:w-auto"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-hz border border-hz-border bg-hz-page px-5 py-2.5 font-poppins text-sm font-medium text-hz-ink transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary sm:w-auto"
     >
       {icon}
       {label}
@@ -31,16 +31,22 @@ function UtilityPillButton({
   );
 }
 
-/** Third editorial row — image left, key highlights right. */
+/**
+ * Layout 2 key highlights — soft recessed band (sunken) with elevated media.
+ * Uses Homzen semantic surfaces so light/dark contrast stays intentional.
+ */
 export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyVillaHighlightsProps) {
-  const { title, features, featureImageUrl, imageUrl } = property;
-  const bottomImage = featureImageUrl ?? imageUrl;
+  const { title, features, layout2Media, imageUrl } = property;
+  const bottomImage = layout2Media.bannerUrl ?? imageUrl;
 
   return (
-    <section aria-labelledby="property-villa-key-highlights-heading" className="bg-white pb-12 md:pb-16">
+    <section
+      aria-labelledby="property-villa-key-highlights-heading"
+      className="border-y border-hz-border bg-hz-sunken py-12 md:py-16"
+    >
       <div className={VILLA_EDITORIAL_GUTTERS}>
         <div className="grid items-center gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
-          <div className="aspect-[16/10] overflow-hidden md:aspect-[16/11]">
+          <div className="aspect-video overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
             <img
               src={bottomImage}
               alt={`${title} — featured exterior`}
@@ -55,7 +61,7 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
             </p>
             <h2
               id="property-villa-key-highlights-heading"
-              className="mt-3 font-poppins text-[clamp(1.5rem,3vw,2.25rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-hz-dark text-balance"
+              className="mt-3 font-poppins text-[clamp(1.5rem,3vw,2.25rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-hz-ink text-balance"
             >
               What makes this home stand out
             </h2>
@@ -67,12 +73,12 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
               {features.slice(0, 3).map((feature) => (
                 <li key={feature} className="flex items-start gap-3">
                   <span
-                    className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-hz bg-hz-primary/10 text-hz-primary"
+                    className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-hz-primary text-white"
                     aria-hidden="true"
                   >
                     <Check size={12} strokeWidth={2.5} />
                   </span>
-                  <span className="font-poppins text-sm leading-relaxed text-hz-body">{feature}</span>
+                  <span className="font-poppins text-sm leading-relaxed text-hz-ink">{feature}</span>
                 </li>
               ))}
             </ul>

@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToggleWishlistMutation } from '@/hooks/mutations';
 import { queryKeys } from '@/lib/query-keys';
@@ -12,16 +13,26 @@ export function useWishlist() {
 
   const toggleMutation = useToggleWishlistMutation();
 
-  const isWishlisted = (propertyId: string) => wishlistIds.includes(propertyId);
+  const isWishlisted = useCallback(
+    (propertyId: string) => wishlistIds.includes(String(propertyId)),
+    [wishlistIds],
+  );
 
-  const toggleWishlist = (propertyId: string) => {
-    toggleMutation.mutate(propertyId);
-  };
+  const toggleWishlist = useCallback(
+    (propertyId: string) => {
+      if (toggleMutation.isPending) return;
+      toggleMutation.mutate(String(propertyId));
+    },
+    [toggleMutation],
+  );
+
+  const isTogglingId = toggleMutation.isPending ? toggleMutation.variables : undefined;
 
   return {
     wishlistIds,
     isWishlisted,
     toggleWishlist,
     isToggling: toggleMutation.isPending,
+    isTogglingId,
   };
 }

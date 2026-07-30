@@ -21,7 +21,7 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
 
   return (
     <>
-      <section aria-labelledby="property-gallery-heading" className="bg-white py-20 md:py-28">
+      <section aria-labelledby="property-gallery-heading" className="bg-hz-elevated py-20 md:py-28">
         <div className="section-container">
           <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
             <div>

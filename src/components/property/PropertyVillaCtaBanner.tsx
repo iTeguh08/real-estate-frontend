@@ -1,9 +1,15 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { formatPropertyPrice } from '@/lib/format-property';
+import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyVillaCtaBannerProps {
-  property: Pick<PropertyDetail, 'title' | 'featureImageUrl' | 'price' | 'currency' | 'status'>;
+  property: Pick<
+    PropertyDetail,
+    'slug' | 'title' | 'layout2Media' | 'imageUrl' | 'price' | 'currency' | 'status'
+  >;
   onScheduleViewing?: () => void;
   onContactAgent?: () => void;
 }
@@ -20,29 +26,31 @@ export function PropertyVillaCtaBanner({
   onContactAgent,
 }: PropertyVillaCtaBannerProps) {
   return (
-    <section aria-labelledby="property-villa-cta-heading" className="bg-[#F8F8F8] py-16 md:py-24">
+    <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken py-16 md:py-24">
       <div className="section-container">
         <div className="grid overflow-hidden rounded-[1.75rem] shadow-xl lg:grid-cols-2">
           <div className="relative hidden min-h-[320px] lg:block">
             <img
-              src={property.featureImageUrl}
+              src={property.layout2Media.bannerUrl ?? property.imageUrl}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
 
-          <div className="flex flex-col justify-center bg-hz-dark px-8 py-14 md:px-14 md:py-16">
-            <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-white/65">
+          <div className="relative flex flex-col justify-center overflow-hidden bg-hz-footer px-8 py-14 md:px-14 md:py-16">
+            <SectionAtmosphere tone="dark" intensity="default" variant="edge" side="right" image="interior-dark" />
+            <div className="relative z-10">
+            <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-footer-fg/65">
               Ready to visit?
             </p>
             <h2
               id="property-villa-cta-heading"
-              className="mt-4 font-poppins text-[clamp(1.5rem,3vw,2.25rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-white text-balance"
+              className="mt-4 font-poppins text-[clamp(1.5rem,3vw,2.25rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-hz-footer-fg text-balance"
             >
               Schedule a private tour
             </h2>
-            <p className="mt-5 font-poppins text-sm leading-[1.7] text-white/75 text-pretty md:text-base">
+            <p className="mt-5 font-poppins text-sm leading-[1.7] text-hz-footer-fg/75 text-pretty md:text-base">
               Listed at {formatPropertyPrice(property)} — our team can arrange an in-person or
               virtual viewing of {property.title} at your convenience.
             </p>
@@ -58,10 +66,20 @@ export function PropertyVillaCtaBanner({
                 type="button"
                 variant="outline"
                 onClick={onContactAgent}
-                className="h-auto rounded-hz border-white/30 bg-transparent px-8 py-3 font-poppins text-sm font-medium text-white hover:border-white hover:bg-white/10 hover:text-white"
+                className="h-auto rounded-hz border-hz-footer-fg/30 bg-transparent px-8 py-3 font-poppins text-sm font-medium text-hz-footer-fg hover:border-hz-footer-fg hover:bg-hz-elevated/10 hover:text-hz-footer-fg"
               >
                 Contact an Agent
               </Button>
+            </div>
+            <p className="mt-5 font-poppins text-xs text-hz-footer-fg/55">
+              Selling something similar?{' '}
+              <Link
+                to={`${routes.submitProperty}?property=${encodeURIComponent(property.slug)}`}
+                className="font-medium text-hz-footer-fg no-underline hover:underline"
+              >
+                List your property
+              </Link>
+            </p>
             </div>
           </div>
         </div>

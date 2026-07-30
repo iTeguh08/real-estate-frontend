@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, Building2, ChevronDown, Heart, ArrowLeftRight } from 'lucide-react';
+import { Menu, Building2, ChevronDown, Heart, ArrowLeftRight, Moon, Sun } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { SITE_CONFIG } from '@/data/site-config';
+import { useSiteConfig } from '@/hooks/useSiteConfig';
 import {
   PAGES_NAV_GROUPS,
   PROPERTIES_NAV_GROUPS,
@@ -28,8 +30,8 @@ import { useActiveNav } from '@/hooks/useActiveNav';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCompare } from '@/hooks/useCompare';
+import { useAuth } from '@/hooks/useAuth';
 import { routes } from '@/lib/routes';
-import type { PropertyStatus, PropertyType } from '@/types';
 
 const navLinkClass = cn(
   'font-poppins text-[14px] font-medium no-underline transition-colors duration-200',
@@ -63,7 +65,7 @@ function navTriggerClasses(isActive: boolean) {
 
 function mobileNavLinkClasses(isActive: boolean) {
   return cn(
-    'border-b border-[#F0F0F0] py-3 font-poppins text-[15px] font-medium no-underline',
+    'border-b border-hz-border py-3 font-poppins text-[15px] font-medium no-underline',
     isActive
       ? 'text-hz-dark underline decoration-hz-primary decoration-2 underline-offset-4'
       : 'text-hz-body'
@@ -79,9 +81,13 @@ function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
     const mapping = PROPERTY_NAV_FILTER_MAP[label];
     if (mapping) {
       applyNavFilter({
-        propertyType: (mapping.propertyType as PropertyType | undefined) ?? '',
-        status: (mapping.status as PropertyStatus | undefined) ?? '',
+        propertyType: mapping.propertyType ?? '',
+        status: mapping.status ?? '',
       });
+      return;
+    }
+    if (label === 'Browse All Types') {
+      applyNavFilter({});
       return;
     }
     if (href.startsWith('#')) {
@@ -120,7 +126,7 @@ function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
                     }}
                     className={cn(
                       'block w-full rounded-hz px-2.5 py-2 no-underline transition-colors duration-200',
-                      'hover:bg-[#F8F8F8] hover:text-hz-primary'
+                      'hover:bg-hz-bg-soft hover:text-hz-primary'
                     )}
                   >
                     <span
@@ -168,7 +174,7 @@ function MobileNavGroup({
   const { checkNavItem } = useActiveNav();
 
   return (
-    <div className="border-b border-[#F0F0F0]">
+    <div className="border-b border-hz-border">
       <button
         type="button"
         onClick={onToggle}
@@ -205,9 +211,14 @@ function MobileNavGroup({
                         const mapping = PROPERTY_NAV_FILTER_MAP[item.label];
                         if (mapping) {
                           applyNavFilter({
-                            propertyType: (mapping.propertyType as PropertyType | undefined) ?? '',
-                            status: (mapping.status as PropertyStatus | undefined) ?? '',
+                            propertyType: mapping.propertyType ?? '',
+                            status: mapping.status ?? '',
                           });
+                          onNavigate();
+                          return;
+                        }
+                        if (item.label === 'Browse All Types') {
+                          applyNavFilter({});
                           onNavigate();
                           return;
                         }
@@ -237,12 +248,44 @@ function MobileNavGroup({
   );
 }
 
+function ThemeToggleButton({ className }: { className?: string }) {
+  const { theme, toggleTheme } = useTheme();
+  const isNavy = theme === 'navy';
+
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className={cn(
+        'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
+        'text-hz-body transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary',
+        className
+      )}
+      aria-label={isNavy ? 'Switch to light theme' : 'Switch to navy theme'}
+      title={isNavy ? 'Light theme' : 'Navy theme'}
+    >
+      {isNavy ? (
+        <Sun size={18} strokeWidth={1.75} aria-hidden="true" />
+      ) : (
+        <Moon size={18} strokeWidth={1.75} aria-hidden="true" />
+      )}
+    </button>
+  );
+}
+
 export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<'properties' | 'pages' | null>(null);
+  const { data: siteConfig } = useSiteConfig();
+  const brand = siteConfig?.brand ?? SITE_CONFIG.brand;
+  const tagline = siteConfig?.tagline ?? SITE_CONFIG.tagline;
   const { wishlistIds } = useWishlist();
   const { compareCount } = useCompare();
   const { isActive } = useActiveNav();
+  const { isAuthenticated, user } = useAuth();
+  const accountLabel = isAuthenticated
+    ? user?.name?.split(' ')[0] || 'Account'
+    : 'Login / Register';
 
   const closeMobile = () => {
     setMobileOpen(false);
@@ -250,15 +293,22 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-100 w-full bg-white font-poppins shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+    <header className="sticky top-0 z-100 w-full border-b border-hz-border/80 bg-hz-elevated/95 font-poppins shadow-hz-sm backdrop-blur-md">
       <div className="flex h-[76px] items-center justify-between px-6 max-md:px-5 max-lg:px-10 3xl:px-16">
         <Link to={routes.home} className="flex shrink-0 items-center gap-1.5 no-underline">
           <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
             <Building2 size={15} strokeWidth={2} className="text-white" aria-hidden="true" />
           </div>
-          <span className="font-poppins text-[22px] font-bold tracking-tight text-hz-dark">
-            {SITE_CONFIG.brand}
-          </span>
+          <div className="flex min-w-0 flex-col">
+            <span className="font-poppins text-[22px] font-bold leading-none tracking-tight text-hz-dark">
+              {brand}
+            </span>
+            {tagline ? (
+              <span className="mt-0.5 hidden font-poppins text-[10px] font-medium uppercase tracking-[0.14em] text-hz-muted sm:block">
+                {tagline}
+              </span>
+            ) : null}
+          </div>
         </Link>
 
         <NavigationMenu
@@ -278,7 +328,7 @@ export function SiteHeader() {
               <NavigationMenuTrigger className={navTriggerClasses(isActive('properties'))}>
                 Properties
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="left-1/2 w-auto -translate-x-1/2 rounded-hz border-[0.5px] border-[#E5E5E5] bg-white p-0 shadow-none ring-0 outline-none">
+              <NavigationMenuContent className="left-1/2 w-auto -translate-x-1/2 rounded-hz border border-hz-border bg-hz-elevated p-0 shadow-hz-md ring-0 outline-none">
                 <NavDropdownPanel groups={PROPERTIES_NAV_GROUPS} />
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -286,7 +336,7 @@ export function SiteHeader() {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                  to={{ pathname: routes.home, hash: '#listings' }}
+                  to={routes.listings}
                   className={navLinkClasses(isActive('listings'))}
                 >
                   Listings
@@ -298,27 +348,25 @@ export function SiteHeader() {
               <NavigationMenuTrigger className={navTriggerClasses(isActive('pages'))}>
                 Pages
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="left-1/2 w-auto -translate-x-1/2 rounded-hz border-[0.5px] border-[#E5E5E5] bg-white p-0 shadow-none ring-0 outline-none">
+              <NavigationMenuContent className="left-1/2 w-auto -translate-x-1/2 rounded-hz border border-hz-border bg-hz-elevated p-0 shadow-hz-md ring-0 outline-none">
                 <NavDropdownPanel groups={PAGES_NAV_GROUPS} />
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {SIMPLE_NAV_LINKS.slice(2).map((link) => {
-              const key = link.label.toLowerCase() as 'blog' | 'dashboard';
-              return (
+            {SIMPLE_NAV_LINKS.slice(2).map((link) => (
               <NavigationMenuItem key={link.label}>
                 <NavigationMenuLink asChild>
-                  <Link to={link.href} className={navLinkClasses(isActive(key))}>
+                  <Link to={link.href} className={navLinkClasses(isActive('blog'))}>
                     {link.label}
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
-            );
-            })}
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggleButton />
           <Link
             to={routes.compare}
             className={cn(
@@ -350,14 +398,14 @@ export function SiteHeader() {
             )}
           </Link>
           <Link
-            to={routes.login}
+            to={isAuthenticated ? routes.dashboard : routes.login}
             className={cn(
               'no-underline rounded-hz border border-hz-border bg-transparent px-5 py-[9px]',
-              'font-poppins text-[13px] font-medium text-[#333333]',
+              'font-poppins text-[13px] font-medium text-hz-dark',
               'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
             )}
           >
-            Login / Register
+            {accountLabel}
           </Link>
           <Link
             to={routes.submitProperty}
@@ -371,14 +419,17 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setMobileOpen(true)}
-          className="border-none bg-transparent p-2 text-hz-dark lg:hidden"
-          aria-label="Open menu"
-        >
-          <Menu size={22} strokeWidth={2} aria-hidden="true" />
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggleButton />
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="border-none bg-transparent p-2 text-hz-dark"
+            aria-label="Open menu"
+          >
+            <Menu size={22} strokeWidth={2} aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -410,7 +461,7 @@ export function SiteHeader() {
             />
 
             <Link
-              to={{ pathname: routes.home, hash: '#listings' }}
+              to={routes.listings}
               onClick={closeMobile}
               className={mobileNavLinkClasses(isActive('listings'))}
             >
@@ -426,19 +477,16 @@ export function SiteHeader() {
               onNavigate={closeMobile}
             />
 
-            {SIMPLE_NAV_LINKS.slice(2).map((link) => {
-              const key = link.label.toLowerCase() as 'blog' | 'dashboard';
-              return (
+            {SIMPLE_NAV_LINKS.slice(2).map((link) => (
               <Link
                 key={link.label}
                 to={link.href}
                 onClick={closeMobile}
-                className={mobileNavLinkClasses(isActive(key))}
+                className={mobileNavLinkClasses(isActive('blog'))}
               >
                 {link.label}
               </Link>
-            );
-            })}
+            ))}
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 px-4 pb-4">
@@ -475,15 +523,15 @@ export function SiteHeader() {
               </Link>
             </div>
             <Link
-              to={routes.login}
+              to={isAuthenticated ? routes.dashboard : routes.login}
               onClick={closeMobile}
               className={cn(
                 'w-full text-center no-underline rounded-hz border border-hz-border bg-transparent py-[10px]',
-                'font-poppins text-[13px] font-medium text-[#333333]',
+                'font-poppins text-[13px] font-medium text-hz-dark',
                 'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
               )}
             >
-              Login / Register
+              {accountLabel}
             </Link>
             <Link
               to={routes.submitProperty}

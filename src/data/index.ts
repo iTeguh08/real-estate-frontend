@@ -1,6 +1,6 @@
 export { SITE_CONFIG } from './site-config';
 export { FEATURED_PROPERTIES, BEST_VALUE_PROPERTIES } from './properties';
-export { PROPERTY_TYPE_ITEMS } from './property-types';
+export { PROPERTY_TYPES, PROPERTY_TYPE_ITEMS, TYPE_SELECT_OPTIONS } from './property-types';
 export { AGENTS } from './agents';
 export { TESTIMONIALS } from './testimonials';
 export { WIDE_LOCATIONS, SQUARE_LOCATIONS } from './locations';

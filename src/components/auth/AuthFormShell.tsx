@@ -1,5 +1,6 @@
 import type { FormEvent, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { cn } from '@/lib/utils';
 
 interface AuthFormShellProps {
@@ -18,13 +19,14 @@ export function AuthFormShell({
   footer,
 }: AuthFormShellProps) {
   return (
-    <main id="main-content" className="flex min-h-[calc(100vh-76px)] items-center bg-[#F8F8F8] py-12">
-      <div className="section-container w-full max-w-md">
-        <div className="rounded-hz border border-hz-border bg-white p-6 shadow-sm md:p-8">
+    <main id="main-content" className="relative flex min-h-[calc(100vh-76px)] items-center overflow-hidden bg-hz-sunken py-12">
+      <SectionAtmosphere tone="light" intensity="default" variant="ambient" side="left" image="interior-light" />
+      <div className="section-container relative z-10 w-full max-w-md">
+        <div className="rounded-hz border border-hz-border bg-hz-elevated p-6 shadow-hz-md md:p-8">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             {eyebrow}
           </p>
-          <h1 className="font-poppins text-2xl font-semibold text-hz-dark">{title}</h1>
+          <h1 className="font-poppins text-2xl font-semibold text-hz-ink">{title}</h1>
           <p className="mt-2 font-poppins text-sm leading-relaxed text-hz-muted">{description}</p>
 
           <div className="mt-8">{children}</div>
@@ -44,8 +46,13 @@ interface FormFieldProps {
   type?: string;
   value: string;
   onChange: (value: string) => void;
+  /** Visual / a11y hint only — forms should use `noValidate` and rely on API errors. */
   required?: boolean;
   autoComplete?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
+  hint?: string;
+  error?: string;
 }
 
 export function FormField({
@@ -56,7 +63,13 @@ export function FormField({
   onChange,
   required,
   autoComplete,
+  disabled,
+  readOnly,
+  hint,
+  error,
 }: FormFieldProps) {
+  const errorId = error ? `${id}-error` : undefined;
+
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="font-poppins text-sm font-medium text-hz-dark">
@@ -69,12 +82,25 @@ export function FormField({
         onChange={(e) => onChange(e.target.value)}
         required={required}
         autoComplete={autoComplete}
+        disabled={disabled}
+        readOnly={readOnly}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
         className={cn(
-          'h-11 w-full rounded-hz border border-hz-border bg-white px-3',
+          'h-11 w-full rounded-hz border px-3',
           'font-poppins text-sm text-hz-dark outline-none transition-colors',
-          'placeholder:text-hz-muted/60 focus:border-hz-primary/60'
+          'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
+          error ? 'border-hz-primary/70' : 'border-hz-border',
+          disabled || readOnly ? 'cursor-default bg-hz-bg-soft text-hz-dark' : 'bg-hz-elevated'
         )}
       />
+      {error ? (
+        <p id={errorId} className="font-poppins text-xs text-hz-primary" role="alert">
+          {error}
+        </p>
+      ) : hint ? (
+        <p className="font-poppins text-xs text-hz-muted">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -87,7 +113,7 @@ export function MockSubmitNotice({ message }: MockSubmitNoticeProps) {
   return (
     <p
       role="status"
-      className="rounded-hz border border-hz-border bg-[#F8F8F8] px-4 py-3 font-poppins text-sm text-hz-body"
+      className="rounded-hz border border-hz-border bg-hz-sunken px-4 py-3 font-poppins text-sm text-hz-body"
     >
       {message}
     </p>

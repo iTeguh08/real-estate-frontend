@@ -18,7 +18,7 @@ export function PropertyOverviewCanvas({
   const backgroundImage = getPropertyOverviewBackgroundImage(property);
 
   return (
-    <div className="relative overflow-hidden bg-white">
+    <div className="relative overflow-hidden bg-hz-elevated">
       <PropertyOverviewBackground imageUrl={backgroundImage} />
       <PropertyIntroduction property={property} embedded />
       <PropertyShowcaseSection

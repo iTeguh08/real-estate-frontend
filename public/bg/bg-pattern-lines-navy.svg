@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs>
+    <pattern id="navy-lines" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+      <line x1="0" y1="0" x2="0" y2="11" stroke="#FFFFFF" stroke-width="0.65" stroke-opacity="0.14" />
+    </pattern>
+  </defs>
+  <rect width="96" height="96" fill="url(#navy-lines)" />
+</svg>

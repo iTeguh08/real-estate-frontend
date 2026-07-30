@@ -1,16 +1,40 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { TestimonialCard } from '@/components/cards/TestimonialCard';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { TESTIMONIALS } from '@/data/testimonials';
+import { useHomepageQuery } from '@/hooks/queries';
 import type { Testimonial } from '@/types';
 
 interface WhatPeopleSaySectionProps {
   testimonials?: Testimonial[];
+  eyebrow?: string;
+  title?: string;
 }
 
 export function WhatPeopleSaySection({
-  testimonials = TESTIMONIALS,
+  testimonials: testimonialsProp,
+  eyebrow: eyebrowProp,
+  title: titleProp,
 }: WhatPeopleSaySectionProps) {
+  const { data: homepage } = useHomepageQuery();
+  const cmsTestimonials = homepage?.testimonials;
+
+  const testimonials: Testimonial[] =
+    testimonialsProp ??
+    cmsTestimonials?.items.map((item) => ({
+      id: item.id,
+      quote: item.quote,
+      author: item.author,
+      role: item.role,
+      avatarUrl: item.avatarUrl,
+      rating: item.rating,
+    })) ??
+    TESTIMONIALS;
+
+  const eyebrow = eyebrowProp ?? cmsTestimonials?.eyebrow ?? 'Client Stories';
+  const title = titleProp ?? cmsTestimonials?.title ?? 'What People Say';
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const visibleTestimonials = [
@@ -21,22 +45,29 @@ export function WhatPeopleSaySection({
   return (
     <section
       id="testimonials"
-      className="w-full bg-white"
+      className="relative w-full bg-hz-sunken"
       aria-labelledby="testimonials-heading"
     >
-      <div className="bg-hz-dark px-5 pb-44 pt-16 text-center md:px-10 md:pb-56 md:pt-20">
-        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-white">
-          Client Stories
+      <div className="relative z-0 isolate overflow-hidden bg-hz-footer px-5 pb-44 pt-16 text-center md:px-10 md:pb-56 md:pt-20">
+        <SectionAtmosphere
+          tone="dark"
+          intensity="strong"
+          variant="ambient"
+          side="right"
+          image="interior-dark"
+        />
+        <p className="relative z-10 mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+          {eyebrow}
         </p>
         <h2
           id="testimonials-heading"
-          className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-white md:text-[36px]"
+          className="relative z-10 font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg md:text-[36px]"
         >
-          What People Say
+          {title}
         </h2>
       </div>
 
-      <div className="section-container">
+      <div className="section-container relative z-20">
         <div
           className="-mt-32 grid grid-cols-1 gap-3 sm:grid-cols-2 md:-mt-40"
           role="list"

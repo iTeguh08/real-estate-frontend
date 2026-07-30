@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { useBestValuePropertiesQuery } from '@/hooks/queries';
@@ -9,7 +10,7 @@ import type { PropertyWithAgent } from '@/types';
 
 function BestValueCardSkeleton() {
   return (
-    <div className="flex h-full animate-pulse overflow-hidden rounded-hz border-[0.5px] border-hz-border bg-white">
+    <div className="flex h-full animate-pulse overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
       <div className="aspect-square w-[168px] shrink-0 bg-hz-bg-soft sm:w-[200px]" />
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />
@@ -34,10 +35,19 @@ export function BestPropertyValueSection({
   return (
     <section
       id="best-value"
-      className="w-full bg-[#F8F8F8] py-16 md:py-20"
+      className="relative w-full overflow-hidden bg-hz-sunken pb-16 pt-16 md:pb-20 md:pt-20"
       aria-labelledby="best-value-heading"
     >
-      <div className="section-container">
+      <SectionAtmosphere
+        tone="light"
+        surface="sunken"
+        intensity="default"
+        variant="dual"
+        side="right"
+        image="interior-light"
+        photoFade="exit-soft"
+      />
+      <div className="section-container relative z-10">
         <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -52,7 +62,7 @@ export function BestPropertyValueSection({
           </div>
 
           <Link
-            to={{ pathname: routes.home, hash: 'listings' }}
+            to={routes.listings}
             className={cn(
               'inline-flex shrink-0 items-center justify-center self-start sm:self-auto',
               'rounded-hz border-none bg-hz-primary px-6 py-2.5',

@@ -8,54 +8,62 @@
 - HEADINGS (H1, H2, H3, section titles, hero headline): 
   Font: 'Poppins' (sans-serif, NO SERIFS, font-sans)
   Weights: font-bold (700) or font-semibold (600)
-  Color: text-[#1A1A2E] (dark navy)
+  Color: `text-hz-ink` (light reference: #1A1A2E)
   Letter-spacing: -0.5px
   Line-height: 1.15 to 1.2 (tight, clean)
   
 - BODY TEXT (descriptions, property features, paragraph text):
   Font: 'Poppins' (sans-serif)
   Weights: font-regular (400) or font-medium (500)
-  Color: text-[#555555] (medium gray)
+  Color: `text-hz-body` (light reference: #555555)
   Line-height: 1.6 to 1.65 (breathing room)
 
 - UI TEXT (buttons, labels, tags, filters, prices, counts):
   Font: 'Poppins' (sans-serif)
   Weights: font-medium (500) or font-semibold (600)
-  Color: Varies by context (see COLOR PALETTE below)
+  Color: Varies by context (see COLOR TOKENS below)
   Font-size: 12px to 16px (crisp, precise)
 
 - SMALL TEXT (metadata, captions, helper text):
   Font: 'Poppins' (sans-serif)
   Weight: font-regular (400)
-  Color: text-[#717171] (muted gray)
+  Color: `text-hz-muted` (light reference: #717171)
   Size: 11px to 13px
 
-## COLOR PALETTE (Tailwind Config)
-Primary Background:
-  - bg-[#FFFFFF] (pure white) — section backgrounds
-  - bg-[#F8F8F8] (soft gray) — alternate sections
+## COLOR TOKENS (REQUIRED — use these, not raw hex in components)
+Runtime source of truth: `src/index.css` CSS variables → Tailwind `hz-*` classes.
 
-Accent / CTA Color:
-  - bg-[#E84040] or text-[#E84040] (coral-red) — ONLY for:
-    ✓ Primary action buttons (Find Properties, Submit Property, etc.)
-    ✓ Selected/active states (tabs, filters, badges)
-    ✓ Highlight text, urgency markers
-  - Hover: #CC3232 (darker coral)
-  - Do NOT over-use; reserve for primary emphasis only
+Surfaces:
+  - `bg-hz-page` — page canvas
+  - `bg-hz-elevated` — cards / elevated panels
+  - `bg-hz-sunken` — recessed / alternate sections
+  - `bg-hz-footer` + `text-hz-footer-fg` — always-dark band (#1D2A3A); use for footer / dark CTA headers (never flips in navy theme)
+  - Decorative depth: reuse `SectionAtmosphere` with real `image` props (`architecture` | `interior-dark` | `soft-left` | `aerial` | `interior-light`) from `public/bg/` — not gradients alone
 
-Text Colors:
-  - text-[#1A1A2E] (#1A1A2E) — headings, dark text
-  - text-[#555555] (#555555) — primary body text
-  - text-[#717171] (#717171) — secondary, labels, metadata
-  - text-[#AAAAAA] (#AAAAAA) — disabled, placeholder text, muted
+Text / chrome:
+  - `text-hz-ink` / `text-hz-dark` — headings, strong UI text
+  - `text-hz-body` — body copy
+  - `text-hz-muted` — metadata, captions
+  - `border-hz-border` / `border-hz-line` — dividers
 
-Borders & Dividers:
-  - border-[#E5E5E5] (light gray)
-  - Use subtle dividers; avoid harsh blacks
+Accent / CTA (NEVER theme-shifted):
+  - `bg-hz-primary` / `text-hz-primary` / `hover:bg-hz-primary-hover`
+  - Soft orange locked: oklch(0.64 0.19 45) / hover oklch(0.56 0.20 42) (~#E07030 / ~#C85E22)
+  - ONLY for primary CTAs, selected/active states, highlight text
+  - Do NOT replace brand orange with blue just because navy theme is active
 
-Backgrounds (Cards & Sections):
-  - bg-[#FFFFFF] for cards on white sections
-  - bg-[#F8F8F8] for subtle card backgrounds
+Light theme reference values (default `data-theme="light"`):
+  - Page/elevated ≈ warm off-white / white; sunken ≈ #F5F5F5
+  - Ink #1A1A2E, body #555555, muted #717171, line #E5E5E5
+
+## DUAL THEME (light | navy)
+- Mechanism: `html[data-theme="light|navy"]` remaps `--hz-*` (and luxury/paper/shadcn aliases). Components keep the same `hz-*` classes.
+- Default: **light** (Homzen baseline). Navy is opt-in via header toggle; persisted in `localStorage` key `hz-theme`.
+- Navy mental model: dark blue surfaces; light ink / body / muted / borders. Brand coral stays identical.
+- Do NOT sprinkle Tailwind `dark:` variants across components for theming.
+- Do NOT follow `prefers-color-scheme` automatically — this is a brand theme, not OS dark mode.
+- Third-party: Turnstile + Leaflet tiles + Sonner must follow `useTheme()` when theme-aware.
+- When adding colors, always use semantic tokens so both themes work.
 
 ## ICONOGRAPHY RULES (CRITICAL)
 Property Feature Icons (Beds, Baths, Sq Ft, Garage, Type, Location):
@@ -63,13 +71,13 @@ Property Feature Icons (Beds, Baths, Sq Ft, Garage, Type, Location):
   - SOURCE: Font Awesome 6 (solid weight), Phosphor Icons (fill weight), or custom SVG
   - Weight: Bold/Solid appearance, fill-based (not stroke-based)
   - Size: 18px to 28px (prominent, not delicate)
-  - Color: text-[#555555] or text-[#1A1A2E]
+  - Color: `text-hz-body` or `text-hz-ink` (theme-aware)
   - AVOID: Lucide React thin icons, stroke-based outlines (creates AI-slop look)
 
-System / Utility Icons (Arrows, Chevrons, Close, Hamburger, Search, Filter):
+System / Utility Icons (Arrows, Chevrons, Close, Hamburger, Search, Filter, Theme toggle):
   - Use Lucide React for these functional utilities ONLY
   - Stroke weight: stroke-[1.5] or stroke-[2]
-  - Color: text-[#555555] or text-[#1A1A2E]
+  - Color: `text-hz-body` or `text-hz-ink`
   - Size: 16px to 20px
 
 Icon + Text Spacing:
@@ -88,10 +96,10 @@ Container Max-Width:
   - Horizontal padding: px-20 (80px) on desktop, px-10 (40px) on tablet, px-5 (20px) on mobile
 
 Card Styling:
-  - bg-[#FFFFFF] with subtle shadow: shadow-sm (0 8px 40px rgba(0,0,0,0.10))
-  - Border-radius: rounded-xl (12px) or rounded-2xl (16px)
+  - `bg-hz-elevated` with `shadow-hz-sm` / `shadow-hz-md`
+  - Border-radius: rounded-xl (12px) or rounded-2xl (16px) or `rounded-hz`
   - Padding: p-6 (24px) for standard cards
-  - Border: Optional border-[#E5E5E5] (1px) for definition
+  - Border: Optional `border-hz-border` (1px) for definition
 
 Grid Layout (Property Cards, Feature Grid):
   - Desktop (1024px+): grid-cols-4 for standard cards
@@ -102,30 +110,30 @@ Grid Layout (Property Cards, Feature Grid):
 Hover States:
   - Subtle lift: hover:shadow-lg
   - Smooth transition: transition-all duration-300
-  - Text color shift: hover:text-[#E84040]
+  - Text color shift: hover:text-hz-primary
   - Keep refined, no aggressive transforms
 
 ## BUTTON STANDARDS
 Primary Button (CTA):
-  - bg-[#E84040], text-white
+  - `bg-hz-primary`, text-white
   - px-6 py-3 (24px × 12px)
   - font-poppins font-semibold text-sm
-  - rounded-lg, shadow-sm
-  - hover:bg-[#CC3232], transition-colors duration-200
+  - rounded-lg / rounded-hz, shadow-sm
+  - hover:bg-hz-primary-hover, transition-colors duration-200
 
 Secondary Button:
-  - bg-[#F8F8F8], text-[#1A1A2E]
+  - `bg-hz-sunken`, `text-hz-ink`
   - px-6 py-3
   - font-poppins font-medium text-sm
   - rounded-lg
-  - hover:bg-[#E5E5E5]
+  - hover: opacity/border via theme tokens
 
 Outline Button:
-  - border-1.5 border-[#E5E5E5], bg-transparent, text-[#333333]
+  - border border-hz-border, bg-transparent, `text-hz-ink`
   - px-6 py-3
   - font-poppins font-medium text-sm
   - rounded-lg
-  - hover:border-[#E84040], hover:text-[#E84040]
+  - hover:border-hz-primary, hover:text-hz-primary
 
 ## RESPONSIVE DESIGN
 - Mobile-First: Design for 375px, scale up
@@ -138,35 +146,39 @@ Outline Button:
 ## COMPONENT ARCHITECTURE
 - Use Tailwind Utility Classes exclusively
 - Leverage component reusability (Card, Button, Badge, IconLabel)
-- Map all colors to hex values (no arbitrary colors)
-- Use Next.js Image component for all property photos
+- Map colors through `hz-*` tokens (no arbitrary hex in components)
+- Use Next.js Image component for all property photos when applicable; otherwise optimized img
 - Implement lazy-loading for below-fold images
 
 ## STRICT DO's AND DON'Ts
 DO:
   ✓ Use 'Poppins' for ALL text (serif-free)
   ✓ Use bold/solid icons for property features (Font Awesome/Phosphor solid)
-  ✓ Apply bg-[#FFFFFF] and bg-[#F8F8F8] for sections
-  ✓ Use text-[#E84040] ONLY for primary CTAs and highlights
+  ✓ Apply `bg-hz-page` / `bg-hz-elevated` / `bg-hz-sunken` for sections
+  ✓ Use `text-hz-primary` / `bg-hz-primary` ONLY for primary CTAs and highlights
+  ✓ Keep soft orange brand color locked across light and navy themes
   ✓ Maintain generous section padding (py-20/py-16)
-  ✓ Soft shadows (shadow-sm) and rounded corners
+  ✓ Soft shadows (`shadow-hz-sm`) and rounded corners
   ✓ Test hover states on all interactive elements
   ✓ Keep icons bold, detailed, heavy-weight
+  ✓ Verify both themes when changing colors
 
 DON'T:
   ✗ Use serif fonts (no Cormorant Garamond, no Georgia)
-  ✗ Use pure black (#000000); use text-[#1A1A2E]
-  ✗ Over-use text-[#E84040]; reserve for primary emphasis
+  ✗ Use pure black (#000000); use `text-hz-ink`
+  ✗ Over-use coral; reserve for primary emphasis
+  ✗ Shift brand orange to blue in navy theme
+  ✗ Theme via mass `dark:` class edits or CSS invert filters
   ✗ Use thin-stroke icons on property cards (Lucide only for utilities)
   ✗ Create cramped layouts; prioritize breathing room
   ✗ Use harsh shadows or aggressive transforms
   ✗ Mix serif and sans-serif on same component
-  ✗ Use arbitrary Tailwind colors; stick to defined palette
+  ✗ Hardcode hex colors in components; stick to `hz-*` tokens
 
 ## DESIGN REFERENCES
-- Target Image: Homzen Landing Page (1:1 clone)
+- Target Image: Homzen Landing Page (1:1 clone) — light theme baseline
 - Primary Font: Poppins (NO serifs, all weights 400-700)
 - Icon Style: Bold, solid, detailed, intricate (heavy-weight appearance)
-- Primary Color: #E84040 (coral-red for CTAs only)
-- Background: #FFFFFF and #F8F8F8
-- Dark Text: #1A1A2E, Body: #555555, Muted: #717171
+- Primary Color: vibrant orange (oklch 0.64 0.19 45) for CTAs only — theme-locked
+- Themes: light (default) + navy (opt-in blue dark surfaces)
+- Tokens: `hz-page`, `hz-elevated`, `hz-sunken`, `hz-ink`, `hz-body`, `hz-muted`, `hz-line`, `hz-primary`
