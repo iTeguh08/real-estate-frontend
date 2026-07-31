@@ -1,5 +1,5 @@
-import { useState, useEffect, type FormEvent } from 'react';
-import { Search, LocateFixed, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
+import { Search, LocateFixed, SlidersHorizontal, ChevronDown, Loader2 } from 'lucide-react';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
@@ -16,12 +16,42 @@ type HeroTab = (typeof TABS)[number];
 
 const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES] as const;
 
+function useImageReady(src: string) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setReady(false);
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      if (!cancelled) setReady(true);
+    };
+    img.onerror = () => {
+      if (!cancelled) setReady(true);
+    };
+    img.src = src;
+    if (img.complete && img.naturalWidth > 0) {
+      setReady(true);
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  const markReady = useCallback(() => setReady(true), []);
+
+  return { ready, markReady };
+}
+
 export function HeroSection() {
   const { theme } = useTheme();
   const isLight = theme === 'light';
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
+  const heroSrc = hero?.backgroundImage ?? heroImage;
+  const { ready: heroReady, markReady: markHeroReady } = useImageReady(heroSrc);
+  const { ready: leftBgReady, markReady: markLeftBgReady } = useImageReady(LIGHT_HERO_LEFT_BG);
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
 
   const [activeTab, setActiveTab] = useState<HeroTab>('For Rent');
@@ -336,7 +366,11 @@ export function HeroSection() {
             alt=""
             width={1280}
             height={960}
-            className="absolute inset-0 h-full w-full object-cover object-left opacity-[0.2]"
+            onLoad={markLeftBgReady}
+            className={cn(
+              'absolute inset-0 h-full w-full object-cover object-left transition-opacity duration-500',
+              leftBgReady ? 'opacity-[0.2]' : 'opacity-0'
+            )}
             loading="eager"
             fetchPriority="high"
             decoding="async"
@@ -385,13 +419,35 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="relative order-1 lg:order-2 aspect-[1280/1103] w-full min-h-0 overflow-hidden lg:aspect-auto lg:h-full">
+        <div className="relative order-1 lg:order-2 aspect-[1280/1103] w-full min-h-0 overflow-hidden bg-hz-sunken lg:aspect-auto lg:h-full">
+          {!heroReady ? (
+            <div
+              className="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-3 bg-hz-sunken"
+              role="status"
+              aria-live="polite"
+              aria-label="Loading hero image"
+            >
+              <Loader2
+                size={32}
+                strokeWidth={1.5}
+                className="animate-spin text-hz-primary/45"
+                aria-hidden="true"
+              />
+              <p className="font-poppins text-[11px] font-medium tracking-[0.04em] text-hz-muted/60">
+                Loading photo…
+              </p>
+            </div>
+          ) : null}
           <img
-            src={hero?.backgroundImage ?? heroImage}
+            src={heroSrc}
             alt="Modern luxury residential home"
             width={1280}
             height={1103}
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            onLoad={markHeroReady}
+            className={cn(
+              'absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-500',
+              heroReady ? 'opacity-100' : 'opacity-0'
+            )}
             loading="eager"
             fetchPriority="high"
             decoding="async"

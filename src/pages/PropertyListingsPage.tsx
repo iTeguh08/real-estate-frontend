@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown, ChevronLeft, ChevronRight, Grid2X2, List, MapPin, SlidersHorizontal } from 'lucide-react';
 import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard';
 import { PropertyCard } from '@/components/cards/PropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { Slider } from '@/components/ui/slider';
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { useListingsAsideStickyTop } from '@/hooks/useListingsAsideStickyTop';
+import { useTheme } from '@/hooks/useTheme';
 import {
   useBestValuePropertiesQuery,
   useFeaturedPropertiesQuery,
@@ -113,6 +116,9 @@ function SelectField({
 }
 
 export function PropertyListingsPage() {
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
+  const asideRef = useRef<HTMLElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [gridColumns, setGridColumns] = useState<1 | 2 | 3>(2);
@@ -140,6 +146,10 @@ export function PropertyListingsPage() {
   const page = searchResult?.page ?? filters.page;
   const lastPage = searchResult?.lastPage ?? 1;
   const total = searchResult?.total ?? 0;
+  const asideStickyTop = useListingsAsideStickyTop(
+    asideRef,
+    `${properties.length}-${featuredSidebar.length}-${isLoading}`,
+  );
   const activeStatus = filters.status;
   const minPriceValue = parseListingPrice(filters.minPrice, LISTINGS_PRICE_MIN);
   const maxPriceValue = parseListingPrice(filters.maxPrice, LISTINGS_PRICE_MAX);
@@ -194,33 +204,60 @@ export function PropertyListingsPage() {
 
   return (
     <>
-      {/*
-        Fixed parallax canvas — real haze photo over midnight navy.
-        Footer (z-20+) paints over this so it never merges into the footer.
-      */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        aria-hidden="true"
-        style={{ backgroundColor: 'var(--hz-listings)' }}
-      />
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        aria-hidden="true"
-        style={{
-          backgroundImage: `url(${publicAsset('bg/bg-listings-haze.webp')})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          // Black stays invisible; soft white ovals keep their shape on navy
-          mixBlendMode: 'screen',
-          opacity: 0.85,
-        }}
-      />
-      <main id="main-content" className="relative z-[1] bg-transparent py-12 md:py-16">
-      <div className="section-container relative z-10">
+      {isNavy ? (
+        <>
+          {/*
+            Navy-only: fixed haze photo with screen blend over midnight canvas.
+            Footer (z-20+) paints over this so it never merges into the footer.
+          */}
+          <div
+            className="pointer-events-none fixed inset-0 z-0"
+            aria-hidden="true"
+            style={{ backgroundColor: 'var(--hz-listings)' }}
+          />
+          <div
+            className="pointer-events-none fixed inset-0 z-0"
+            aria-hidden="true"
+            style={{
+              backgroundImage: `url(${publicAsset('bg/bg-listings-haze.webp')})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              mixBlendMode: 'screen',
+              opacity: 0.85,
+            }}
+          />
+        </>
+      ) : null}
+      <main
+        id="main-content"
+        className={cn(
+          'relative z-[1] grid grid-cols-1 py-12 md:py-16',
+          isNavy ? 'bg-transparent' : 'bg-hz-listings'
+        )}
+      >
+        {!isNavy ? (
+          <SectionAtmosphere
+            tone="light"
+            surface="listings"
+            intensity="quiet"
+            variant="dual"
+            side="left"
+            image="listings-property"
+            lightGlow="white"
+            stickyViewport
+            photoOpacity={0.26}
+            photoScrimMix={48}
+          />
+        ) : null}
+      <div className="section-container relative z-10 col-start-1 row-start-1">
         <div className="grid gap-8 lg:grid-cols-[290px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="space-y-6">
-            <section className="rounded-hz bg-hz-sunken p-5 shadow-hz-sm">
+          <aside
+            ref={asideRef}
+            className="flex flex-col gap-6 lg:sticky lg:z-20 lg:self-start"
+            style={asideStickyTop !== undefined ? { top: asideStickyTop } : undefined}
+          >
+            <section className="rounded-hz bg-hz-listings-sidebar/75 p-5 shadow-hz-sm ring-1 ring-hz-listings-sidebar/30">
               <h1 className="font-poppins text-[30px] font-semibold text-hz-ink lg:hidden">
                 Property listing
               </h1>

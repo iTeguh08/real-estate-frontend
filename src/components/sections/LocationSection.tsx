@@ -1,7 +1,8 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { CarouselControls } from '@/components/ui/CarouselControls';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
 import { useHomepageQuery } from '@/hooks/queries';
@@ -178,7 +179,9 @@ export function LocationSection({
   const title = titleProp ?? cmsLocations?.title ?? 'Our Location For You';
 
   const locationSlides = buildLocationSlides(wideLocations, squareLocations);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const { activeIndex, setActiveIndex, goPrev, goNext, swipeHandlers } = useDotCarousel(
+    locationSlides.length
+  );
   const activeSlide = locationSlides[activeIndex];
 
   if (!activeSlide) {
@@ -220,7 +223,12 @@ export function LocationSection({
           </h2>
         </div>
 
-        <div role="list" aria-label="Available locations">
+        <div
+          role="list"
+          aria-label="Available locations"
+          className="touch-pan-y"
+          {...swipeHandlers}
+        >
           <div className="flex flex-col gap-9">
             {activeSlide.map((row, index) => (
               <LocationRow
@@ -233,27 +241,16 @@ export function LocationSection({
           </div>
         </div>
 
-        {locationSlides.length > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-2">
-            {locationSlides.map((slide, index) => (
-              <button
-                key={slide[0]?.wide.id ?? index}
-                type="button"
-                onClick={() => setActiveIndex(index)}
-                aria-label={`Go to location slide ${index + 1}`}
-                aria-current={activeIndex === index ? 'true' : undefined}
-                className={cn(
-                  'h-2 w-2 rounded-full transition-colors duration-200',
-                  activeIndex === index
-                    ? 'bg-hz-primary'
-                    : isNavy
-                      ? 'bg-hz-footer-fg/25 hover:bg-hz-footer-fg/40'
-                      : 'bg-hz-line hover:bg-hz-muted/40'
-                )}
-              />
-            ))}
-          </div>
-        )}
+        <CarouselControls
+          count={locationSlides.length}
+          activeIndex={activeIndex}
+          onSelect={setActiveIndex}
+          onPrev={goPrev}
+          onNext={goNext}
+          itemLabel="location slide"
+          tone={isNavy ? 'dark' : 'light'}
+          className="mt-8"
+        />
       </div>
     </section>
   );

@@ -5,7 +5,7 @@ import { publicAsset } from '@/lib/public-asset';
 type Side = 'left' | 'right';
 type Intensity = 'quiet' | 'default' | 'strong';
 type Tone = 'dark' | 'light' | 'soft';
-type Surface = 'footer' | 'deep' | 'page' | 'elevated' | 'sunken';
+type Surface = 'footer' | 'deep' | 'page' | 'elevated' | 'sunken' | 'listings';
 /** Light-surface glow hue — `sky` for soft bright blue (e.g. Expertise light theme). */
 type LightGlow = 'white' | 'sky';
 
@@ -18,6 +18,9 @@ export type AtmosphereImage =
   | 'aerial'
   | 'interior-light'
   | 'location-light'
+  | 'property'
+  | 'listings-property'
+  | 'footer-edge'
   | 'auto'
   | 'none';
 
@@ -47,8 +50,9 @@ interface SectionAtmosphereProps {
   /**
    * How the photo dissolves at vertical edges.
    * `exit-soft`: earlier bottom fade — smoother handoff into the next same-surface section.
+   * `hold`: keep the bottom opaque — for footers / glass bars that sit over the photo.
    */
-  photoFade?: 'balanced' | 'exit-soft';
+  photoFade?: 'balanced' | 'exit-soft' | 'hold';
   /** Light / soft tone only: white glow (default) or soft sky-blue wash. */
   lightGlow?: LightGlow;
   /** Radial glow washes (default) or tiled line-pattern image overlay. */
@@ -66,6 +70,9 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   aerial: 'bg/bg-light-aerial-soft.webp',
   'interior-light': 'bg/bg-light-interior-air-v2.webp',
   'location-light': 'bg/bg-light-location-atmosphere-v4.png',
+  property: 'bg/bg-hero-left-property-v1.webp',
+  'listings-property': 'bg/bg-light-listings-interior-v3.webp',
+  'footer-edge': 'bg/bg-light-footer-edge-v3.webp',
 };
 
 function resolveImage(tone: Tone, image: AtmosphereImage): Exclude<AtmosphereImage, 'auto'> {
@@ -204,14 +211,18 @@ export function SectionAtmosphere({
 
   const photoMask = isBareLocationPhoto
     ? 'linear-gradient(to right, transparent 0%, black 22%, black 100%)'
-    : photoFade === 'exit-soft'
-      ? 'linear-gradient(to bottom, transparent 0%, black 14%, black 58%, transparent 92%)'
-      : 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)';
+    : photoFade === 'hold'
+      ? 'linear-gradient(to bottom, transparent 0%, black 14%, black 100%)'
+      : photoFade === 'exit-soft'
+        ? 'linear-gradient(to bottom, transparent 0%, black 14%, black 58%, transparent 92%)'
+        : 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)';
   const scrimMask = isBareLocationPhoto
     ? 'linear-gradient(to right, transparent 0%, black 18%, black 100%)'
-    : photoFade === 'exit-soft'
-      ? 'linear-gradient(to bottom, transparent 0%, black 12%, black 62%, transparent 94%)'
-      : 'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)';
+    : photoFade === 'hold'
+      ? 'linear-gradient(to bottom, transparent 0%, black 12%, black 100%)'
+      : photoFade === 'exit-soft'
+        ? 'linear-gradient(to bottom, transparent 0%, black 12%, black 62%, transparent 94%)'
+        : 'linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)';
 
   const edgeStrength =
     intensity === 'quiet'
@@ -265,6 +276,7 @@ export function SectionAtmosphere({
     page: 'var(--hz-page)',
     elevated: 'var(--hz-elevated)',
     sunken: 'var(--hz-sunken)',
+    listings: 'var(--hz-listings)',
   };
   const scrimMix =
     isBareLocationPhoto

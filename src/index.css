@@ -39,6 +39,7 @@
     --color-hz-deep: var(--hz-deep);
     --color-hz-deep-fg: var(--hz-deep-fg);
     --color-hz-listings: var(--hz-listings);
+    --color-hz-listings-sidebar: var(--hz-listings-sidebar);
     /* Compatibility aliases */
     --color-hz-dark: var(--hz-ink);
     --color-hz-bg-soft: var(--hz-sunken);
@@ -122,8 +123,9 @@
     /* Always-dark bridge band (Latest News etc.) — darker than elevated, not footer clone */
     --hz-deep: #222f40;
     --hz-deep-fg: #ffffff;
-    /* Listings canvas — cool blue tint, still light enough for ink */
-    --hz-listings: color-mix(in oklch, #e8ecf2 82%, oklch(0.55 0.05 255) 18%);
+    /* Listings canvas — clean white (light); navy keeps midnight below */
+    --hz-listings: #ffffff;
+    --hz-listings-sidebar: #e9ede1;
     --hz-shadow-sm: 0 1px 2px rgb(26 26 46 / 0.06);
     --hz-shadow-md: 0 4px 16px rgb(26 26 46 / 0.08);
     --hz-shadow-elevated: 0 8px 28px rgb(26 26 46 / 0.1);
@@ -201,6 +203,7 @@ html[data-theme="navy"] {
     --hz-deep-fg: oklch(0.96 0.01 255);
     /* Midnight navy — near footer depth, soft blue still readable */
     --hz-listings: oklch(0.145 0.032 255);
+    --hz-listings-sidebar: oklch(0.24 0.04 150);
 
     --hz-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35);
     --hz-shadow-md: 0 4px 16px rgb(0 0 0 / 0.4);

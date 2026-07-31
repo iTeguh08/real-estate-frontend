@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
 import { TestimonialCard } from '@/components/cards/TestimonialCard';
+import { CarouselControls } from '@/components/ui/CarouselControls';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { TESTIMONIALS } from '@/data/testimonials';
 import { useHomepageQuery } from '@/hooks/queries';
 import type { Testimonial } from '@/types';
@@ -35,7 +35,9 @@ export function WhatPeopleSaySection({
   const eyebrow = eyebrowProp ?? cmsTestimonials?.eyebrow ?? 'Client Stories';
   const title = titleProp ?? cmsTestimonials?.title ?? 'What People Say';
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const { activeIndex, setActiveIndex, goPrev, goNext, swipeHandlers } = useDotCarousel(
+    testimonials.length
+  );
 
   const visibleTestimonials = [
     testimonials[activeIndex],
@@ -69,34 +71,32 @@ export function WhatPeopleSaySection({
 
       <div className="section-container relative z-20">
         <div
-          className="-mt-32 grid grid-cols-1 gap-3 sm:grid-cols-2 md:-mt-40"
-          role="list"
-          aria-label="Client testimonials"
+          className="-mt-32 touch-pan-y md:-mt-40"
+          {...swipeHandlers}
         >
-          {visibleTestimonials.map((testimonial) => (
-            <div key={testimonial.id} role="listitem" className="h-full">
-              <TestimonialCard testimonial={testimonial} />
-            </div>
-          ))}
+          <div
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+            role="list"
+            aria-label="Client testimonials"
+          >
+            {visibleTestimonials.map((testimonial) => (
+              <div key={testimonial.id} role="listitem" className="h-full">
+                <TestimonialCard testimonial={testimonial} />
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-center gap-2 pb-16 md:pb-20">
-          {testimonials.map((testimonial, index) => (
-            <button
-              key={testimonial.id}
-              type="button"
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Go to testimonial ${index + 1}`}
-              aria-current={activeIndex === index ? 'true' : undefined}
-              className={cn(
-                'h-2 w-2 rounded-full transition-colors duration-200',
-                activeIndex === index
-                  ? 'bg-hz-primary'
-                  : 'bg-hz-border hover:bg-hz-muted'
-              )}
-            />
-          ))}
-        </div>
+        <CarouselControls
+          count={testimonials.length}
+          activeIndex={activeIndex}
+          onSelect={setActiveIndex}
+          onPrev={goPrev}
+          onNext={goNext}
+          itemLabel="testimonial"
+          tone="light"
+          className="mt-8 pb-16 md:pb-20"
+        />
       </div>
     </section>
   );

@@ -5,12 +5,18 @@ import { useSubscribeNewsletterMutation } from '@/hooks/mutations';
 import { apiErrorMessage, getApiFieldErrors } from '@/lib/form-errors';
 import { cn } from '@/lib/utils';
 
-export function NewsletterForm() {
+interface NewsletterFormProps {
+  /** Match footer surface — light footer needs dark ink on elevated field. */
+  tone?: 'dark' | 'light';
+}
+
+export function NewsletterForm({ tone = 'dark' }: NewsletterFormProps) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [turnstileToken, setTurnstileToken] = useState('');
   const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
+  const isLight = tone === 'light';
 
   const subscribeMutation = useSubscribeNewsletterMutation();
 
@@ -60,11 +66,18 @@ export function NewsletterForm() {
             aria-invalid={status === 'error'}
             aria-describedby={message ? 'newsletter-status' : undefined}
             className={cn(
-              'h-12 w-full rounded-hz border bg-hz-elevated/5',
-              'pr-14 pl-4 font-poppins text-sm text-white placeholder:text-white/40',
-              'outline-none transition-colors duration-200',
-              'focus:border-hz-primary/60 focus:bg-hz-elevated/8',
-              status === 'error' ? 'border-hz-primary/70' : 'border-hz-footer-fg/15'
+              'h-12 w-full rounded-hz border pr-14 pl-4 font-poppins text-[14px] font-medium outline-none transition-colors duration-200',
+              isLight
+                ? cn(
+                    'bg-hz-sunken text-hz-ink placeholder:text-hz-muted shadow-hz-sm',
+                    'focus:border-hz-primary/50 focus:bg-hz-elevated',
+                    status === 'error' ? 'border-hz-primary/70' : 'border-hz-border'
+                  )
+                : cn(
+                    'bg-hz-elevated/10 text-hz-footer-fg placeholder:text-hz-footer-fg/45',
+                    'focus:border-hz-primary/60 focus:bg-hz-elevated/14',
+                    status === 'error' ? 'border-hz-primary/70' : 'border-hz-footer-fg/25'
+                  )
             )}
           />
           <button
@@ -86,7 +99,11 @@ export function NewsletterForm() {
           aria-live="polite"
           className={cn(
             'mt-3 font-poppins text-xs',
-            status === 'success' ? 'text-hz-footer-fg/80' : 'text-hz-primary'
+            status === 'success'
+              ? isLight
+                ? 'text-hz-body'
+                : 'text-hz-footer-fg/80'
+              : 'text-hz-primary'
           )}
         >
           {message}

@@ -10,7 +10,9 @@ import { NewsletterForm } from '@/components/layout/NewsletterForm';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { SITE_CONFIG } from '@/data/site-config';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useTheme } from '@/hooks/useTheme';
 import { routes } from '@/lib/routes';
+import { cn } from '@/lib/utils';
 import type { SiteConfig } from '@/services/site.service';
 
 type SocialIconProps = { className?: string };
@@ -70,9 +72,21 @@ function buildSocialLinks(footer: SiteConfig['footer']) {
   return entries.filter((entry) => entry.href);
 }
 
-function FooterNavLink({ href, label }: { href: string; label: string }) {
-  const className =
-    'font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg no-underline';
+function FooterNavLink({
+  href,
+  label,
+  isLight,
+}: {
+  href: string;
+  label: string;
+  isLight: boolean;
+}) {
+  const className = cn(
+    'inline-block font-poppins text-[14px] font-medium leading-snug no-underline transition-colors duration-200',
+    isLight
+      ? 'text-hz-ink/80 hover:text-hz-primary'
+      : 'text-hz-footer-fg/85 hover:text-hz-primary'
+  );
 
   if (href.startsWith('/')) {
     return (
@@ -100,17 +114,30 @@ function FooterNavLink({ href, label }: { href: string; label: string }) {
 function FooterLinkList({
   heading,
   links,
+  isLight,
 }: {
   heading: string;
   links: readonly { label: string; href: string }[];
+  isLight: boolean;
 }) {
   return (
     <div>
-      <h3 className="mb-5 font-poppins text-base font-semibold text-hz-footer-fg">{heading}</h3>
-      <ul className="flex flex-col gap-3">
+      <h3
+        className={cn(
+          'mb-1 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+          isLight ? 'text-hz-ink' : 'text-hz-footer-fg'
+        )}
+      >
+        {heading}
+      </h3>
+      <div
+        className="mb-5 h-0.5 w-8 rounded-full bg-hz-primary"
+        aria-hidden="true"
+      />
+      <ul className="flex flex-col gap-3.5">
         {links.map((link) => (
           <li key={link.label}>
-            <FooterNavLink href={link.href} label={link.label} />
+            <FooterNavLink href={link.href} label={link.label} isLight={isLight} />
           </li>
         ))}
       </ul>
@@ -119,6 +146,8 @@ function FooterLinkList({
 }
 
 export function SiteFooter() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const { data: siteConfig } = useSiteConfig();
   const brand = siteConfig?.brand ?? SITE_CONFIG.brand;
   const contact = siteConfig?.contact ?? SITE_CONFIG.contact;
@@ -132,45 +161,86 @@ export function SiteFooter() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const headingClass = isLight ? 'text-hz-ink' : 'text-hz-footer-fg';
+  const bodyClass = isLight
+    ? 'text-hz-ink/75'
+    : 'text-hz-footer-fg/85';
+  const bodyHoverClass = isLight
+    ? 'text-hz-ink/80 transition-colors duration-200 hover:text-hz-primary'
+    : 'text-hz-footer-fg/85 transition-colors duration-200 hover:text-hz-primary';
+  const iconClass = 'text-hz-primary';
+  const dividerClass = isLight ? 'border-hz-border' : 'border-hz-footer-fg/15';
+  const legalClass = isLight
+    ? 'text-hz-body transition-colors duration-200 hover:text-hz-primary'
+    : 'text-hz-footer-fg/70 transition-colors duration-200 hover:text-hz-primary';
+
   return (
     <footer
       id="contact"
-      className="relative z-20 w-full overflow-hidden bg-hz-footer text-hz-footer-fg"
+      className={cn(
+        'relative z-20 w-full overflow-hidden border-t-2 border-hz-primary/40',
+        isLight
+          ? 'bg-hz-elevated text-hz-ink shadow-[0_-12px_40px_rgb(26_26_46/0.06)]'
+          : 'bg-hz-footer text-hz-footer-fg shadow-[0_-12px_40px_rgb(0_0_0/0.25)]'
+      )}
       aria-label="Site footer"
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
-        aria-hidden="true"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(135deg, var(--hz-footer-fg) 0px, var(--hz-footer-fg) 0.5px, transparent 0.5px, transparent 48px)',
-        }}
-      />
+      {/* Edge-weighted photo — objects on sides, center clear for copy */}
       <SectionAtmosphere
-        tone="dark"
-        intensity="quiet"
-        variant="edge"
+        tone={isLight ? 'light' : 'dark'}
+        surface={isLight ? 'elevated' : 'footer'}
+        intensity={isLight ? 'strong' : 'quiet'}
+        variant="dual"
         side="left"
-        image="architecture-city"
+        image={isLight ? 'footer-edge' : 'architecture-city'}
+        photoOpacity={isLight ? 0.92 : 0.35}
+        photoScrimMix={isLight ? 40 : undefined}
+        photoFade="hold"
       />
 
       <div className="relative z-10 section-container">
-
-        {/* Tier 1 — logo & social */}
-        <div className="flex flex-col gap-6 border-b border-hz-footer-fg/10 py-10 sm:flex-row sm:items-center sm:justify-between">
-          <Link to={routes.home} className="inline-flex items-center gap-2 no-underline">
-            <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
-              <Building2 size={15} strokeWidth={2} className="text-white" aria-hidden="true" />
+        {/* Tier 1 — brand bar */}
+        <div
+          className={cn(
+            'flex flex-col gap-6 border-b py-11 sm:flex-row sm:items-center sm:justify-between',
+            dividerClass
+          )}
+        >
+          <Link to={routes.home} className="inline-flex items-center gap-3 no-underline">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-hz bg-hz-primary shadow-hz-sm">
+              <Building2 size={18} strokeWidth={2} className="text-white" aria-hidden="true" />
             </div>
-            <span className="font-poppins text-[22px] font-bold tracking-tight text-hz-footer-fg">
-              {brand}
-            </span>
+            <div>
+              <span
+                className={cn(
+                  'block font-poppins text-[24px] font-bold leading-none tracking-[-0.5px]',
+                  headingClass
+                )}
+              >
+                {brand}
+              </span>
+              <span
+                className={cn(
+                  'mt-1.5 block font-poppins text-[12px] font-medium tracking-[0.04em]',
+                  isLight ? 'text-hz-body' : 'text-hz-footer-fg/70'
+                )}
+              >
+                Luxury real estate
+              </span>
+            </div>
           </Link>
 
           <div className="flex flex-col gap-3 sm:items-end">
-            <p className="font-poppins text-sm font-medium text-hz-footer-fg">Follow Us</p>
+            <p
+              className={cn(
+                'font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+                headingClass
+              )}
+            >
+              Follow Us
+            </p>
             {socialLinks.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 {socialLinks.map(({ label, href, icon: Icon }) => (
                   <a
                     key={label}
@@ -178,9 +248,14 @@ export function SiteFooter() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-hz-footer-fg/10 text-hz-footer-fg transition-colors duration-200 hover:bg-hz-primary"
+                    className={cn(
+                      'flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 hover:bg-hz-primary hover:text-white hover:shadow-hz-sm',
+                      isLight
+                        ? 'bg-hz-sunken text-hz-ink ring-1 ring-hz-border'
+                        : 'bg-hz-footer-fg/12 text-hz-footer-fg ring-1 ring-hz-footer-fg/20'
+                    )}
                   >
-                    <Icon className="h-[15px] w-[15px] shrink-0" />
+                    <Icon className="h-4 w-4 shrink-0" />
                   </a>
                 ))}
               </div>
@@ -188,10 +263,24 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Tier 2 — four columns */}
-        <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {/* Tier 2 — columns */}
+        <div className="grid grid-cols-1 gap-11 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           <div>
-            <p className="mb-6 max-w-[280px] font-poppins text-sm leading-relaxed text-hz-footer-fg/65">
+            <h3
+              className={cn(
+                'mb-1 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+                headingClass
+              )}
+            >
+              About
+            </h3>
+            <div className="mb-5 h-0.5 w-8 rounded-full bg-hz-primary" aria-hidden="true" />
+            <p
+              className={cn(
+                'mb-7 max-w-[300px] font-poppins text-[14px] font-medium leading-[1.65]',
+                bodyClass
+              )}
+            >
               {footer?.description ??
                 'Your trusted partner in luxury real estate — connecting buyers, sellers, and renters with exceptional properties.'}
             </p>
@@ -199,61 +288,110 @@ export function SiteFooter() {
               <li>
                 <a
                   href="#"
-                  className="group flex items-start gap-3 font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg"
+                  className={cn(
+                    'group flex items-start gap-3 font-poppins text-[14px] font-medium',
+                    bodyHoverClass
+                  )}
                 >
-                  <MapPin
-                    size={16}
-                    strokeWidth={1.75}
-                    className="mt-0.5 shrink-0 text-hz-footer-fg/80"
-                    aria-hidden="true"
-                  />
-                  <span>{contact.address}</span>
+                  <span
+                    className={cn(
+                      'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-hz',
+                      isLight ? 'bg-hz-sunken' : 'bg-hz-footer-fg/10'
+                    )}
+                  >
+                    <MapPin size={15} strokeWidth={2} className={iconClass} aria-hidden="true" />
+                  </span>
+                  <span className="pt-1.5 leading-snug">{contact.address}</span>
                 </a>
               </li>
               <li>
                 <a
                   href={contact.phoneHref}
-                  className="group flex items-center gap-3 font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg"
+                  className={cn(
+                    'group flex items-center gap-3 font-poppins text-[14px] font-medium',
+                    bodyHoverClass
+                  )}
                 >
-                  <Phone size={16} strokeWidth={1.75} className="shrink-0 text-hz-footer-fg/80" aria-hidden="true" />
+                  <span
+                    className={cn(
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-hz',
+                      isLight ? 'bg-hz-sunken' : 'bg-hz-footer-fg/10'
+                    )}
+                  >
+                    <Phone size={15} strokeWidth={2} className={iconClass} aria-hidden="true" />
+                  </span>
                   <span>{contact.phone}</span>
                 </a>
               </li>
               <li>
                 <a
                   href={`mailto:${contact.email}`}
-                  className="group flex items-center gap-3 font-poppins text-sm text-hz-footer-fg/65 transition-colors duration-200 hover:text-hz-footer-fg"
+                  className={cn(
+                    'group flex items-center gap-3 font-poppins text-[14px] font-medium',
+                    bodyHoverClass
+                  )}
                 >
-                  <Mail size={16} strokeWidth={1.75} className="shrink-0 text-hz-footer-fg/80" aria-hidden="true" />
+                  <span
+                    className={cn(
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-hz',
+                      isLight ? 'bg-hz-sunken' : 'bg-hz-footer-fg/10'
+                    )}
+                  >
+                    <Mail size={15} strokeWidth={2} className={iconClass} aria-hidden="true" />
+                  </span>
                   <span>{contact.email}</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <FooterLinkList heading="Categories" links={CATEGORIES_LINKS} />
-          <FooterLinkList heading="Our Company" links={COMPANY_LINKS} />
+          <FooterLinkList heading="Categories" links={CATEGORIES_LINKS} isLight={isLight} />
+          <FooterLinkList heading="Our Company" links={COMPANY_LINKS} isLight={isLight} />
 
           <div>
-            <h3 className="mb-5 font-poppins text-base font-semibold text-hz-footer-fg">Newsletter</h3>
-            <p className="mb-5 font-poppins text-sm leading-relaxed text-hz-footer-fg/65">
-              Your Weekly/Monthly Dose of Knowledge and Inspiration
+            <h3
+              className={cn(
+                'mb-1 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+                headingClass
+              )}
+            >
+              Newsletter
+            </h3>
+            <div className="mb-5 h-0.5 w-8 rounded-full bg-hz-primary" aria-hidden="true" />
+            <p className={cn('mb-5 font-poppins text-[14px] font-medium leading-[1.65]', bodyClass)}>
+              Your weekly dose of market insight and inspiration.
             </p>
-            <NewsletterForm />
+            <NewsletterForm tone={isLight ? 'light' : 'dark'} />
           </div>
         </div>
+      </div>
 
-        {/* Tier 3 — copyright & legal */}
-        <div className="relative border-t border-hz-footer-fg/10 py-6">
+      {/* Tier 3 — legal bar sits above atmosphere, soft translucent fill */}
+      <div
+        className={cn(
+          'relative z-10 border-t',
+          isLight
+            ? 'border-hz-border/50 bg-hz-elevated/55'
+            : 'border-hz-footer-fg/15 bg-hz-footer/55'
+        )}
+      >
+        <div className="section-container relative py-7">
           <div className="flex flex-col items-start justify-between gap-4 pr-14 md:flex-row md:items-center">
-            <p className="font-poppins text-xs text-hz-footer-fg/50">{copyright}</p>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <p
+              className={cn(
+                'font-poppins text-[13px] font-medium',
+                isLight ? 'text-hz-body' : 'text-hz-footer-fg/75'
+              )}
+            >
+              {copyright}
+            </p>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {LEGAL_LINKS.map((link) =>
                 link.href.startsWith('/') ? (
                   <Link
                     key={link.label}
                     to={link.href}
-                    className="font-poppins text-xs text-hz-footer-fg/50 transition-colors duration-200 hover:text-hz-footer-fg"
+                    className={cn('font-poppins text-[13px] font-medium', legalClass)}
                   >
                     {link.label}
                   </Link>
@@ -261,7 +399,7 @@ export function SiteFooter() {
                   <a
                     key={link.label}
                     href={link.href}
-                    className="font-poppins text-xs text-hz-footer-fg/50 transition-colors duration-200 hover:text-hz-footer-fg"
+                    className={cn('font-poppins text-[13px] font-medium', legalClass)}
                   >
                     {link.label}
                   </a>
@@ -274,12 +412,16 @@ export function SiteFooter() {
             type="button"
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            className="absolute top-1/2 right-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-hz-footer-fg/10 text-hz-footer-fg transition-colors duration-200 hover:bg-hz-primary hover:text-white"
+            className={cn(
+              'absolute top-1/2 right-5 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-all duration-200 hover:bg-hz-primary hover:text-white hover:shadow-hz-md md:right-10 2xl:right-12 3xl:right-16',
+              isLight
+                ? 'bg-hz-elevated/80 text-hz-ink shadow-hz-sm ring-1 ring-hz-border'
+                : 'bg-hz-footer-fg/12 text-hz-footer-fg ring-1 ring-hz-footer-fg/20'
+            )}
           >
-            <ArrowUp size={18} strokeWidth={2} />
+            <ArrowUp size={18} strokeWidth={2.25} />
           </button>
         </div>
-
       </div>
     </footer>
   );
