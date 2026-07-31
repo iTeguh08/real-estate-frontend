@@ -6,6 +6,7 @@ import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { useBestValuePropertiesQuery } from '@/hooks/queries';
+import { useTheme } from '@/hooks/useTheme';
 import type { PropertyWithAgent } from '@/types';
 
 function BestValueCardSkeleton() {
@@ -28,6 +29,8 @@ interface BestPropertyValueSectionProps {
 export function BestPropertyValueSection({
   properties: propertiesProp,
 }: BestPropertyValueSectionProps) {
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
   const { data: fetchedProperties = [], isLoading, error } = useBestValuePropertiesQuery();
   const properties = propertiesProp ?? fetchedProperties;
   const [selectedProperty, setSelectedProperty] = useState<PropertyWithAgent | null>(null);
@@ -38,15 +41,30 @@ export function BestPropertyValueSection({
       className="relative w-full overflow-hidden bg-hz-sunken pb-16 pt-16 md:pb-20 md:pt-20"
       aria-labelledby="best-value-heading"
     >
-      <SectionAtmosphere
-        tone="light"
-        surface="sunken"
-        intensity="default"
-        variant="dual"
-        side="right"
-        image="interior-light"
-        photoFade="exit-soft"
-      />
+      {isNavy ? (
+        <SectionAtmosphere
+          tone="dark"
+          surface="sunken"
+          intensity="quiet"
+          variant="edge"
+          side="right"
+          image="architecture"
+          photoFade="exit-soft"
+          photoOpacity={0.4}
+        />
+      ) : (
+        <SectionAtmosphere
+          tone="light"
+          surface="sunken"
+          intensity="strong"
+          variant="dual"
+          side="left"
+          image="best-value"
+          photoFade="balanced"
+          photoOpacity={0.5}
+          photoScrimMix={30}
+        />
+      )}
       <div className="section-container relative z-10">
         <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>

@@ -63,12 +63,12 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
         lightGlow="white"
         washStyle="pattern"
         surface="elevated"
-        intensity="strong"
+        intensity="quiet"
         variant="dual"
         side="left"
         image="soft-left"
         stickyViewport
-        photoOpacity={0.5}
+        photoOpacity={0.4}
       />
       <div className="section-container relative z-10 col-start-1 row-start-1 py-16 md:py-20">
         <div className="mb-12 flex flex-col items-center justify-center text-center">

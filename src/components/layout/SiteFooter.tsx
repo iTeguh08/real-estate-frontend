@@ -178,10 +178,10 @@ export function SiteFooter() {
     <footer
       id="contact"
       className={cn(
-        'relative z-20 w-full overflow-hidden border-t-2 border-hz-primary/40',
+        'relative z-20 w-full overflow-hidden border-t-2',
         isLight
-          ? 'bg-hz-elevated text-hz-ink shadow-[0_-12px_40px_rgb(26_26_46/0.06)]'
-          : 'bg-hz-footer text-hz-footer-fg shadow-[0_-12px_40px_rgb(0_0_0/0.25)]'
+          ? 'border-hz-primary/40 bg-hz-elevated text-hz-ink shadow-[0_-12px_40px_rgb(26_26_46/0.06)]'
+          : 'border-hz-footer-fg/15 bg-hz-footer text-hz-footer-fg shadow-[0_-12px_40px_rgb(0_0_0/0.25)]'
       )}
       aria-label="Site footer"
     >

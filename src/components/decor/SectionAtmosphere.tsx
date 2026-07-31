@@ -21,6 +21,7 @@ export type AtmosphereImage =
   | 'property'
   | 'listings-property'
   | 'footer-edge'
+  | 'best-value'
   | 'auto'
   | 'none';
 
@@ -73,6 +74,7 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   property: 'bg/bg-hero-left-property-v1.webp',
   'listings-property': 'bg/bg-light-listings-interior-v3.webp',
   'footer-edge': 'bg/bg-light-footer-edge-v3.webp',
+  'best-value': 'bg/bg-light-best-value-edges-v2.webp',
 };
 
 function resolveImage(tone: Tone, image: AtmosphereImage): Exclude<AtmosphereImage, 'auto'> {
