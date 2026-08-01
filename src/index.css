@@ -293,6 +293,17 @@ html {
   @apply w-full max-w-7xl mx-auto px-5 md:px-10 2xl:max-w-[1680px] 2xl:px-12 3xl:max-w-[1920px] 3xl:px-16;
 }
 
+/**
+ * Skip style/layout/paint work for below-the-fold sections until they near
+ * the viewport. Reduces the amount of raster work the browser keeps ready
+ * during scroll. Do NOT apply to sections using SectionAtmosphere's
+ * `stickyViewport` — containment can interfere with sticky positioning.
+ */
+@utility section-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
 @layer utilities {
   .paper-note-surface {
     background-color: var(--color-paper-warm);

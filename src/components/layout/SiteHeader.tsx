@@ -293,7 +293,7 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-100 w-full border-b border-hz-border/80 bg-hz-elevated/95 font-poppins shadow-hz-sm backdrop-blur-md">
+    <header className="sticky top-0 z-100 w-full border-b border-hz-border/80 bg-hz-elevated font-poppins shadow-hz-sm">
       <div className="flex h-[76px] items-center justify-between px-6 max-md:px-5 max-lg:px-10 3xl:px-16">
         <Link to={routes.home} className="flex shrink-0 items-center gap-1.5 no-underline">
           <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">

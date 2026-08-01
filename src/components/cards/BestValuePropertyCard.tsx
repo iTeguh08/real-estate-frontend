@@ -5,6 +5,7 @@ import { ImageActionButton } from '@/components/ui/image-action-button';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPerSqftPrice, formatPropertyLocation, statusLabel } from '@/lib/format-property';
+import { sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { PropertyWithAgent } from '@/types';
@@ -93,10 +94,11 @@ export function BestValuePropertyCard({
     >
       <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <img
-          src={imageUrl}
+          src={sizedImage(imageUrl, 200)}
           alt={`${title} — ${locationLabel}`}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1">
@@ -194,8 +196,10 @@ export function BestValuePropertyCard({
         <div className="mt-auto flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
             <img
-              src={agent.avatarUrl}
+              src={sizedImage(agent.avatarUrl, 64)}
               alt={agent.name}
+              loading="lazy"
+              decoding="async"
               className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-hz-border"
             />
             <span className="truncate font-poppins text-xs font-medium text-hz-dark sm:text-[13px]">

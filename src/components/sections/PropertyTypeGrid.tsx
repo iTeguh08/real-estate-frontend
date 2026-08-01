@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { useTheme } from '@/hooks/useTheme';
 import { PROPERTY_TYPE_ITEMS } from '@/data/property-types';
 import { usePropertyTypeCountsQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
@@ -37,10 +38,11 @@ interface PropertyTypeCardProps {
   type: PropertyType;
   count: number;
   isActive: boolean;
+  isLight: boolean;
   onClick: () => void;
 }
 
-function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardProps) {
+function PropertyTypeCard({ type, count, isActive, isLight, onClick }: PropertyTypeCardProps) {
   const Illustration = ILLUSTRATIONS[type];
   const countLabel = count === 1 ? 'Property' : 'Properties';
 
@@ -55,11 +57,14 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
         'rounded-hz border-none px-4 py-4',
         'transition-all duration-300 cursor-pointer focus-visible:outline-none',
         isActive
-          ? 'bg-hz-primary text-white shadow-sm'
+          ? 'bg-hz-primary text-white shadow-hz-sm'
           : cn(
-              'bg-hz-sunken text-hz-dark',
-              'hover:bg-hz-primary/[0.07]',
-              'focus-visible:bg-hz-sunken focus-visible:ring-2 focus-visible:ring-hz-primary/20'
+              isLight
+                ? 'border border-hz-line bg-hz-elevated shadow-hz-md hover:border-hz-primary/40 hover:shadow-hz-elevated'
+                : 'bg-hz-sunken hover:bg-hz-primary/[0.07]',
+              'text-hz-dark',
+              'focus-visible:ring-2 focus-visible:ring-hz-primary/20',
+              !isLight && 'focus-visible:bg-hz-sunken'
             )
       )}
     >
@@ -68,17 +73,21 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
           className="flex h-full w-full items-center justify-center"
           iconClassName={cn(
             'h-[80px] w-[80px] max-w-none translate-y-0 object-contain transition-[filter,opacity] duration-300',
-            isActive ? 'hz-raster-icon-on-primary' : 'hz-raster-icon-muted'
+            isActive
+              ? 'hz-raster-icon-on-primary'
+              : isLight
+                ? 'hz-raster-icon-on-surface'
+                : 'hz-raster-icon-muted'
           )}
         />
       </div>
 
       <div className="flex w-full flex-col items-center gap-3 text-center">
-        <span className="font-poppins text-lg font-medium leading-none">{type}</span>
+        <span className="font-poppins text-lg font-semibold leading-none">{type}</span>
         <span
           className={cn(
             'font-poppins text-[12px] leading-none',
-            isActive ? 'text-white/80' : 'text-hz-muted'
+            isActive ? 'text-white/80' : isLight ? 'text-hz-body' : 'text-hz-muted'
           )}
         >
           {count > 0 ? `${count.toLocaleString()} ${countLabel}` : 'Explore'}
@@ -89,6 +98,8 @@ function PropertyTypeCard({ type, count, isActive, onClick }: PropertyTypeCardPr
 }
 
 export function PropertyTypeGrid() {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const { filters, setPropertyType } = useListingFilters();
   const { data: typeItems = PROPERTY_TYPE_ITEMS } = usePropertyTypeCountsQuery();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -225,6 +236,7 @@ export function PropertyTypeGrid() {
                   type={item.type}
                   count={item.count}
                   isActive={isCardActive(item.type)}
+                  isLight={isLight}
                   onClick={() =>
                     setPropertyType(filters.propertyType === item.type ? '' : item.type)
                   }

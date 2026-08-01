@@ -16,7 +16,7 @@ export function CompareBar() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-90 border-t border-hz-border bg-hz-elevated/95 px-5 py-3 shadow-hz-md backdrop-blur-sm',
+        'fixed bottom-0 left-0 right-0 z-90 border-t border-hz-border bg-hz-elevated px-5 py-3 shadow-hz-md',
         'font-poppins'
       )}
       role="region"

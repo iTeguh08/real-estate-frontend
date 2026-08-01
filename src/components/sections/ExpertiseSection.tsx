@@ -156,7 +156,7 @@ export function ExpertiseSection() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 rounded-hz border border-hz-border bg-hz-elevated/70 p-5 backdrop-blur-sm sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-hz-border sm:p-6">
+            <div className="grid grid-cols-2 gap-6 rounded-hz border border-hz-border bg-hz-elevated/95 p-5 sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-hz-border sm:p-6">
               {KEY_DIFFERENTIATORS.map((item) => (
                 <ExpertiseMetric key={item.label} value={item.value} label={item.label} />
               ))}

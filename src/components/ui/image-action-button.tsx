@@ -29,8 +29,8 @@ export function ImageActionButton({
       aria-pressed={active}
       aria-busy={loading}
       className={cn(
-        'flex cursor-pointer items-center justify-center rounded-full text-white backdrop-blur-[2px] transition-colors duration-200',
-        'bg-black/45 hover:bg-black/65',
+        'flex cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-200',
+        'bg-black/55 hover:bg-black/70',
         active && 'bg-hz-primary/90 hover:bg-hz-primary',
         loading && 'cursor-wait opacity-90',
         size === 'sm' ? 'h-8 w-8' : 'h-9 w-9'

@@ -8,8 +8,8 @@ import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { cn } from '@/lib/utils';
 import { hasSearchIntent } from '@/lib/search-intent';
 import { routes } from '@/lib/routes';
-import { useTheme } from '@/hooks/useTheme';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useTheme } from '@/hooks/useTheme';
 import { usePropertySearchQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import type { Property } from '@/types';
@@ -32,10 +32,10 @@ interface FeaturedPropertiesProps {
 }
 
 export function FeaturedProperties({ properties: propertiesProp }: FeaturedPropertiesProps) {
-  const { theme } = useTheme();
-  const isNavy = theme === 'navy';
   const { filters, clearFilters, setSort, setPage } = useListingFilters();
   const { data: siteConfig } = useSiteConfig();
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
   const brand = siteConfig?.brand ?? 'Homzen';
   const {
     data: searchResult,
@@ -66,9 +66,8 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
         intensity="quiet"
         variant="dual"
         side="left"
-        image="soft-left"
+        image="none"
         stickyViewport
-        photoOpacity={0.4}
       />
       <div className="section-container relative z-10 col-start-1 row-start-1 py-16 md:py-20">
         <div className="mb-12 flex flex-col items-center justify-center text-center">

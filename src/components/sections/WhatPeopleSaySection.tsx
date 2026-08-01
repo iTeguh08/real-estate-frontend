@@ -47,7 +47,7 @@ export function WhatPeopleSaySection({
   return (
     <section
       id="testimonials"
-      className="relative w-full bg-hz-sunken"
+      className="section-defer relative w-full bg-hz-sunken"
       aria-labelledby="testimonials-heading"
     >
       <div className="relative z-0 isolate overflow-hidden bg-hz-footer px-5 pb-44 pt-16 text-center md:px-10 md:pb-56 md:pt-20">

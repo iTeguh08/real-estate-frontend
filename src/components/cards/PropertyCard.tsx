@@ -7,6 +7,7 @@ import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
 import { propertyCard } from '@/lib/cva';
+import { sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { Property } from '@/types';
@@ -101,10 +102,11 @@ export function PropertyCard({
         )}
       >
         <img
-          src={imageUrl}
+          src={sizedImage(imageUrl, isListVariant ? 180 : 420)}
           alt={`${title} — ${locationLabel}`}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
         {/* Top-left — stacked status badges */}

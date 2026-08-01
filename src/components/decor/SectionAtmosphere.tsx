@@ -128,10 +128,10 @@ function lightWashColor(
 }
 
 const PATTERN_FILES = {
-  'light-sky': 'bg/bg-pattern-wash-light.png',
-  'light-white': 'bg/bg-pattern-wash-light.png',
-  dark: 'bg/bg-pattern-lines-navy.svg',
-  soft: 'bg/bg-pattern-wash-light.png',
+  'light-sky': 'bg/bg-pattern-wash-light.webp',
+  'light-white': 'bg/bg-pattern-wash-light.webp',
+  dark: 'bg/bg-pattern-wash-dark.jpg',
+  soft: 'bg/bg-pattern-wash-light.webp',
 } as const;
 
 function resolvePattern(tone: Tone, lightGlow: LightGlow): string {
@@ -146,8 +146,11 @@ function isCoverPattern(src: string): boolean {
   return /\.(png|webp|jpe?g)(\?|$)/i.test(src);
 }
 
-function patternOpacity(intensity: Intensity, cover: boolean): number {
+function patternOpacity(intensity: Intensity, cover: boolean, isDark = false): number {
   if (cover) {
+    if (isDark) {
+      return intensity === 'quiet' ? 0.36 : intensity === 'strong' ? 0.62 : 0.48;
+    }
     return intensity === 'quiet' ? 0.45 : intensity === 'strong' ? 0.78 : 0.62;
   }
   return intensity === 'quiet' ? 0.55 : intensity === 'strong' ? 0.92 : 0.75;
@@ -157,10 +160,11 @@ function patternLayerStyle(
   src: string,
   intensity: Intensity,
   side: Side,
+  isDark = false,
   tile = 96
 ): CSSProperties {
   const cover = isCoverPattern(src);
-  const opacity = patternOpacity(intensity, cover);
+  const opacity = patternOpacity(intensity, cover, isDark);
 
   if (cover) {
     return {
@@ -303,6 +307,10 @@ export function SectionAtmosphere({
           : 'absolute inset-0',
         className
       )}
+      // Promote the pinned atmosphere to its own compositor layer so the browser
+      // rasterizes the masked/gradient stack once and merely repositions it while
+      // scrolling, instead of recompositing every masked layer on each frame.
+      style={stickyViewport ? { transform: 'translateZ(0)', willChange: 'transform' } : undefined}
       aria-hidden="true"
     >
       {photoSrc ? (
@@ -361,12 +369,16 @@ export function SectionAtmosphere({
         style={
           washStyle === 'pattern' && patternSrc
             ? {
-                ...patternLayerStyle(patternSrc, intensity, side),
+                ...patternLayerStyle(patternSrc, intensity, side, isDark),
                 WebkitMaskImage: patternCover
-                  ? `linear-gradient(to ${oppositeEdge}, black 0%, black 42%, transparent 88%)`
+                  ? isDark
+                    ? `linear-gradient(to ${oppositeEdge}, black 0%, black 38%, transparent 82%)`
+                    : `linear-gradient(to ${oppositeEdge}, black 0%, black 42%, transparent 88%)`
                   : `radial-gradient(ellipse at ${primaryEdge}, black 0%, transparent 68%)`,
                 maskImage: patternCover
-                  ? `linear-gradient(to ${oppositeEdge}, black 0%, black 42%, transparent 88%)`
+                  ? isDark
+                    ? `linear-gradient(to ${oppositeEdge}, black 0%, black 38%, transparent 82%)`
+                    : `linear-gradient(to ${oppositeEdge}, black 0%, black 42%, transparent 88%)`
                   : `radial-gradient(ellipse at ${primaryEdge}, black 0%, transparent 68%)`,
               }
             : {
@@ -385,7 +397,7 @@ export function SectionAtmosphere({
           style={
             washStyle === 'pattern' && patternSrc && !patternCover
               ? {
-                  ...patternLayerStyle(patternSrc, intensity, side, 88),
+                  ...patternLayerStyle(patternSrc, intensity, side, isDark, 88),
                   WebkitMaskImage: `radial-gradient(ellipse at ${oppositeEdge}, black 0%, transparent 70%)`,
                   maskImage: `radial-gradient(ellipse at ${oppositeEdge}, black 0%, transparent 70%)`,
                 }
@@ -402,7 +414,7 @@ export function SectionAtmosphere({
           style={
             washStyle === 'pattern' && patternSrc && !patternCover
               ? {
-                  ...patternLayerStyle(patternSrc, intensity, side, 72),
+                  ...patternLayerStyle(patternSrc, intensity, side, isDark, 72),
                   WebkitMaskImage: `radial-gradient(circle at ${oppositeEdge === 'right' ? '88% 78%' : '12% 78%'}, black 0%, transparent 55%)`,
                   maskImage: `radial-gradient(circle at ${oppositeEdge === 'right' ? '88% 78%' : '12% 78%'}, black 0%, transparent 55%)`,
                 }
@@ -417,7 +429,7 @@ export function SectionAtmosphere({
           style={
             washStyle === 'pattern' && patternSrc && !patternCover
               ? {
-                  ...patternLayerStyle(patternSrc, intensity, side, 104),
+                  ...patternLayerStyle(patternSrc, intensity, side, isDark, 104),
                   WebkitMaskImage:
                     'radial-gradient(ellipse at 50% 0%, black 0%, black 28%, transparent 55%)',
                   maskImage:

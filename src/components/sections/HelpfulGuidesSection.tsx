@@ -20,7 +20,7 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
   return (
     <section
       id="news"
-      className="relative w-full overflow-hidden bg-hz-deep py-16 text-hz-deep-fg md:py-20"
+      className="section-defer relative w-full overflow-hidden bg-hz-deep py-16 text-hz-deep-fg md:py-20"
       aria-labelledby="news-heading"
     >
       <SectionAtmosphere

@@ -6,6 +6,7 @@ import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
 import { useHomepageQuery } from '@/hooks/queries';
+import { sizedImage } from '@/lib/image-url';
 import type { Location } from '@/types';
 
 type LocationCardVariant = 'square' | 'wide';
@@ -19,9 +20,10 @@ interface LocationCardProps {
   lightSurface?: boolean;
 }
 
-function LocationCard({ location, lightSurface = false }: LocationCardProps) {
+function LocationCard({ location, variant, lightSurface = false }: LocationCardProps) {
   const label = `${location.city}, ${location.country}`;
   const locationQuery = location.city.trim();
+  const displayWidth = variant === 'wide' ? 790 : 340;
 
   return (
     <Link
@@ -39,10 +41,11 @@ function LocationCard({ location, lightSurface = false }: LocationCardProps) {
         )}
       >
         <img
-          src={location.imageUrl}
+          src={sizedImage(location.imageUrl, displayWidth)}
           alt={label}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
         <div
           className={cn(
@@ -192,7 +195,7 @@ export function LocationSection({
     <section
       id="location"
       className={cn(
-        'relative w-full overflow-hidden py-16 md:py-20',
+        'section-defer relative w-full overflow-hidden py-16 md:py-20',
         isNavy ? 'bg-hz-footer' : 'bg-hz-page'
       )}
       aria-labelledby="locations-heading"

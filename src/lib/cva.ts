@@ -41,7 +41,11 @@ export type LuxuryButtonVariants = VariantProps<typeof luxuryButton>;
 export const propertyCard = cva(
   [
     'group relative overflow-hidden border border-hz-border bg-hz-elevated shadow-hz-sm',
-    'transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]',
+    // transform-only transition — box-shadow changes apply instantly instead
+    // of animating, since animated box-shadow is non-composited and forces a
+    // repaint on every frame it's in transit (expensive when many cards are
+    // hovered/scrolled past in a grid).
+    'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]',
     'cursor-pointer',
   ],
   {
@@ -89,7 +93,7 @@ export type StatusBadgeVariants = VariantProps<typeof statusBadge>;
 // ─── "New" listing badge ────────────────────────────────────────────────────
 // Frosted ivory pill — distinct from status badges without loud amber/yellow.
 export const newBadge = cva(
-  'inline-flex items-center justify-center px-2.5 py-1 font-sans text-[10px] font-semibold uppercase leading-none tracking-[0.14em] rounded-hz bg-hz-elevated/95 text-luxury-crimson shadow-hz-sm ring-1 ring-hz-border/60 backdrop-blur-sm'
+  'inline-flex items-center justify-center px-2.5 py-1 font-sans text-[10px] font-semibold uppercase leading-none tracking-[0.14em] rounded-hz bg-hz-elevated text-luxury-crimson shadow-hz-sm ring-1 ring-hz-border/60'
 );
 
 export type NewBadgeVariants = VariantProps<typeof newBadge>;

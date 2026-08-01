@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone } from 'lucide-react';
+import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import type { Agent } from '@/types';
@@ -21,11 +22,12 @@ export function AgentCard({ agent, className }: AgentCardProps) {
       >
         <div className="aspect-[16/10] overflow-hidden rounded-hz border border-hz-border">
           <img
-            src={avatarUrl}
+            src={sizedImage(avatarUrl, 340)}
             alt={name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-400 group-hover:scale-105"
             style={{ objectPosition: avatarObjectPosition }}
             loading="lazy"
+            decoding="async"
           />
         </div>
 

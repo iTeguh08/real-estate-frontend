@@ -38,7 +38,7 @@ export function BestPropertyValueSection({
   return (
     <section
       id="best-value"
-      className="relative w-full overflow-hidden bg-hz-sunken pb-16 pt-16 md:pb-20 md:pt-20"
+      className="section-defer relative w-full overflow-hidden bg-hz-sunken pb-16 pt-16 md:pb-20 md:pt-20"
       aria-labelledby="best-value-heading"
     >
       {isNavy ? (

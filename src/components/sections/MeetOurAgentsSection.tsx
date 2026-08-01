@@ -17,7 +17,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
   return (
     <section
       id="agents"
-      className="relative w-full overflow-hidden bg-hz-sunken pb-16 pt-12 md:pb-20 md:pt-14"
+      className="section-defer relative w-full overflow-hidden bg-hz-sunken pb-16 pt-12 md:pb-20 md:pt-14"
       aria-labelledby="agents-heading"
     >
       <SectionAtmosphere
