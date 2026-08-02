@@ -9,6 +9,9 @@ import { PROPERTY_FORM } from '@/data/property-form-fields';
 import { cn } from '@/lib/utils';
 import { reverseGeocode, searchLocations, type GeoSuggestion } from '@/services/geo.service';
 import { useTheme } from '@/hooks/useTheme';
+import type { LocationValue } from '@/components/forms/location-value';
+
+export type { LocationValue } from '@/components/forms/location-value';
 
 // Default Leaflet marker assets break under Vite bundling without this remap.
 const DefaultIcon = L.icon({
@@ -21,14 +24,6 @@ const DefaultIcon = L.icon({
   shadowSize: [41, 41],
 });
 L.Marker.prototype.options.icon = DefaultIcon;
-
-export interface LocationValue {
-  street: string;
-  city: string;
-  countryCode: string;
-  latitude: number | null;
-  longitude: number | null;
-}
 
 interface LocationPickerProps {
   value: LocationValue;

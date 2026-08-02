@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const bgDir = path.resolve(__dirname, '../public/bg');
-const backupDir = path.join(bgDir, '_original');
+  // BG optimize backups are local-only (see .gitignore `public/bg/_original/`).
+  const backupDir = path.join(bgDir, '_original');
 
 /** Atmosphere/decor photos are rendered at low opacity behind masks and
  * scrims (see SectionAtmosphere), so downscaling them is visually

@@ -1,22 +1,22 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeftRight } from 'lucide-react';
 import { useCompare } from '@/hooks/useCompare';
+import { useCompareBarVisible } from '@/hooks/useCompareBarVisible';
 import { MAX_COMPARE_ITEMS } from '@/services/compare.service';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 
 export function CompareBar() {
-  const { pathname } = useLocation();
+  const visible = useCompareBarVisible();
   const { compareCount, limitNotice } = useCompare();
 
-  // Already on the compare page — the bar's only job is to get you here.
-  if (pathname === routes.compare) return null;
-  if (compareCount === 0 && !limitNotice) return null;
+  if (!visible) return null;
 
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-90 border-t border-hz-border bg-hz-elevated px-5 py-3 shadow-hz-md',
+        // Below dialog (z-50) / sheet (z-200) so overlays always win if detection lags.
+        'fixed bottom-0 left-0 right-0 z-40 border-t border-hz-border bg-hz-elevated px-5 py-3 shadow-hz-md',
         'font-poppins'
       )}
       role="region"

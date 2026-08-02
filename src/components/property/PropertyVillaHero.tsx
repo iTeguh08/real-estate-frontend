@@ -49,7 +49,7 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
           {/* Background image */}
           <div className="absolute inset-0" aria-hidden="true">
             <img
-              src={sizedImage(imageUrl, 1280)}
+              src={sizedImage(imageUrl, 1100)}
               alt=""
               className="h-full w-full object-cover object-center"
               fetchPriority="high"

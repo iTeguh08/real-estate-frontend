@@ -3,6 +3,7 @@ import { Search, LocateFixed, SlidersHorizontal, ChevronDown, Loader2 } from 'lu
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
+import { sizedImage } from '@/lib/image-url';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useHomepageQuery } from '@/hooks/queries';
 import { useTheme } from '@/hooks/useTheme';
@@ -49,7 +50,7 @@ export function HeroSection() {
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
-  const heroSrc = hero?.backgroundImage ?? heroImage;
+  const heroSrc = sizedImage(hero?.backgroundImage ?? heroImage, 1100);
   const { ready: heroReady, markReady: markHeroReady } = useImageReady(heroSrc);
   const { ready: leftBgReady, markReady: markLeftBgReady } = useImageReady(LIGHT_HERO_LEFT_BG);
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
@@ -364,15 +365,15 @@ export function HeroSection() {
           <img
             src={LIGHT_HERO_LEFT_BG}
             alt=""
-            width={1280}
-            height={960}
+            width={960}
+            height={720}
             onLoad={markLeftBgReady}
             className={cn(
               'absolute inset-0 h-full w-full object-cover object-left transition-opacity duration-500',
               leftBgReady ? 'opacity-[0.2]' : 'opacity-0'
             )}
             loading="eager"
-            fetchPriority="high"
+            fetchPriority="low"
             decoding="async"
             style={{
               WebkitMaskImage:

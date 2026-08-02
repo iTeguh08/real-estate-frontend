@@ -12,6 +12,11 @@ node_modules
 dist-ssr
 *.local
 
+# BG optimize backups — local only, never ship
+public/bg/_original/
+dist/bg/_original/
+*:Zone.Identifier
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

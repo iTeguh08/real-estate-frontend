@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Pencil, SendHorizontal, EyeOff } from 'lucide-react';
 import { FormField } from '@/components/auth/AuthFormShell';
-import { LocationPicker, type LocationValue } from '@/components/forms/LocationPicker';
+import type { LocationValue } from '@/components/forms/location-value';
 import { PropertyMediaSlotField } from '@/components/property/PropertyMediaSlotField';
 import { PROPERTY_FORM } from '@/data/property-form-fields';
 import {
@@ -35,6 +35,10 @@ import {
 } from '@/services/agent-listings.service';
 import type { FieldErrors } from '@/services/api-client';
 import type { PropertyStatus, PropertyType } from '@/types';
+
+const LocationPicker = lazy(() =>
+  import('@/components/forms/LocationPicker').then((m) => ({ default: m.LocationPicker }))
+);
 
 type PageMode = 'view' | 'edit';
 
@@ -413,20 +417,26 @@ export function EditMyListingPage() {
               {PROPERTY_FORM.location.label}
             </p>
             <p className="font-poppins text-xs text-hz-muted">{PROPERTY_FORM.location.hint}</p>
-            <LocationPicker
-              value={location}
-              onChange={(next) => {
-                setLocation(next);
-                setFieldErrors((prev) => {
-                  let updated = prev;
-                  for (const key of ['street', 'city', 'country_code', 'latitude', 'longitude'] as const) {
-                    updated = clearFieldError(updated, key);
-                  }
-                  return updated;
-                });
-              }}
-              disabled={readOnly}
-            />
+            <Suspense
+              fallback={
+                <div className="h-[320px] animate-pulse rounded-hz border border-hz-border bg-hz-bg-soft" />
+              }
+            >
+              <LocationPicker
+                value={location}
+                onChange={(next) => {
+                  setLocation(next);
+                  setFieldErrors((prev) => {
+                    let updated = prev;
+                    for (const key of ['street', 'city', 'country_code', 'latitude', 'longitude'] as const) {
+                      updated = clearFieldError(updated, key);
+                    }
+                    return updated;
+                  });
+                }}
+                disabled={readOnly}
+              />
+            </Suspense>
             {locationError ? (
               <p className="font-poppins text-xs text-hz-primary" role="alert">
                 {locationError}

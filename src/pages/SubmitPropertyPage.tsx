@@ -1,10 +1,10 @@
-import { useCallback, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PROPERTY_FORM } from '@/data/property-form-fields';
 import { cn } from '@/lib/utils';
 import { FormField, MockSubmitNotice } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
-import { LocationPicker, type LocationValue } from '@/components/forms/LocationPicker';
+import type { LocationValue } from '@/components/forms/location-value';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useCancelPropertySubmissionMutation,
@@ -15,6 +15,10 @@ import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-
 import { routes } from '@/lib/routes';
 import type { FieldErrors } from '@/services/api-client';
 import type { PropertyStatus, PropertyType } from '@/types';
+
+const LocationPicker = lazy(() =>
+  import('@/components/forms/LocationPicker').then((m) => ({ default: m.LocationPicker }))
+);
 
 type PageMode = 'compose' | 'view';
 
@@ -299,20 +303,26 @@ export function SubmitPropertyPage() {
               {PROPERTY_FORM.location.label}
             </p>
             <p className="font-poppins text-xs text-hz-muted">{PROPERTY_FORM.location.hint}</p>
-            <LocationPicker
-              value={location}
-              onChange={(next) => {
-                setLocation(next);
-                setFieldErrors((prev) => {
-                  let updated = prev;
-                  for (const key of ['street', 'city', 'country_code', 'latitude', 'longitude'] as const) {
-                    updated = clearFieldError(updated, key);
-                  }
-                  return updated;
-                });
-              }}
-              disabled={readOnly}
-            />
+            <Suspense
+              fallback={
+                <div className="h-[320px] animate-pulse rounded-hz border border-hz-border bg-hz-bg-soft" />
+              }
+            >
+              <LocationPicker
+                value={location}
+                onChange={(next) => {
+                  setLocation(next);
+                  setFieldErrors((prev) => {
+                    let updated = prev;
+                    for (const key of ['street', 'city', 'country_code', 'latitude', 'longitude'] as const) {
+                      updated = clearFieldError(updated, key);
+                    }
+                    return updated;
+                  });
+                }}
+                disabled={readOnly}
+              />
+            </Suspense>
             {locationError ? (
               <p className="font-poppins text-xs text-hz-primary" role="alert">
                 {locationError}

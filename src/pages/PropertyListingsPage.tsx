@@ -221,7 +221,7 @@ export function PropertyListingsPage() {
       <main
         id="main-content"
         className={cn(
-          'relative z-[1] grid grid-cols-1 py-12 md:py-16',
+          'relative z-[1] grid grid-cols-1',
           isNavy ? 'bg-transparent' : 'bg-hz-listings'
         )}
       >
@@ -235,11 +235,12 @@ export function PropertyListingsPage() {
             image="listings-property"
             lightGlow="white"
             stickyViewport
+            photoFade="hold"
             photoOpacity={0.26}
             photoScrimMix={48}
           />
         ) : null}
-      <div className="section-container relative z-10 col-start-1 row-start-1">
+      <div className="section-container relative z-10 col-start-1 row-start-1 py-12 md:py-16">
         <div className="grid gap-8 lg:grid-cols-[290px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           <aside
             ref={asideRef}

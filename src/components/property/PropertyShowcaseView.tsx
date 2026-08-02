@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { lazy, Suspense, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { PropertyContactStrip } from '@/components/property/PropertyContactStrip';
@@ -9,12 +9,18 @@ import { PropertyGalleryGrid } from '@/components/property/PropertyGalleryGrid';
 import { PropertyInquiryDialogs } from '@/components/property/PropertyInquiryDialogs';
 import { PropertyOverviewCanvas } from '@/components/property/PropertyOverviewCanvas';
 import { PropertyRelatedSection } from '@/components/property/PropertyRelatedSection';
-import { PropertyShowcaseVillaView } from '@/components/property/PropertyShowcaseVillaView';
 import { PropertySpecsSection } from '@/components/property/PropertySpecsSection';
+import { PropertyShowcaseSkeleton } from '@/components/skeletons/PropertyShowcaseSkeleton';
 import { useRelatedPropertiesQuery } from '@/hooks/queries';
 import { resolvePropertyCustomLayout } from '@/lib/property-layout';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
+
+const PropertyShowcaseVillaView = lazy(() =>
+  import('@/components/property/PropertyShowcaseVillaView').then((m) => ({
+    default: m.PropertyShowcaseVillaView,
+  }))
+);
 
 export interface PropertyShowcaseViewProps {
   property: PropertyDetail;
@@ -28,7 +34,11 @@ export function PropertyShowcaseView({ property }: PropertyShowcaseViewProps) {
   const layout = resolvePropertyCustomLayout(property);
 
   if (layout === 'layout-2') {
-    return <PropertyShowcaseVillaView property={property} />;
+    return (
+      <Suspense fallback={<PropertyShowcaseSkeleton />}>
+        <PropertyShowcaseVillaView property={property} />
+      </Suspense>
+    );
   }
 
   return <PropertyShowcaseClassicView property={property} />;
@@ -93,7 +103,7 @@ function PropertyShowcaseClassicView({ property }: PropertyShowcaseViewProps) {
   );
 }
 
-export { PropertyShowcaseSkeleton } from '@/components/skeletons/PropertyShowcaseSkeleton';
+export { PropertyShowcaseSkeleton };
 
 export function PropertyShowcaseNotFound() {
   return (

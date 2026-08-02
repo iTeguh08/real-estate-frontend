@@ -1,19 +1,15 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteBrandingEffect } from '@/components/layout/SiteBrandingEffect';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { ScrollToHash } from '@/components/layout/ScrollToHash';
 import { AdvancedSearchSheet } from '@/components/search/AdvancedSearchSheet';
 import { CompareBar } from '@/components/compare/CompareBar';
-import { useCompare } from '@/hooks/useCompare';
+import { useCompareBarVisible } from '@/hooks/useCompareBarVisible';
 import { cn } from '@/lib/utils';
-import { routes } from '@/lib/routes';
 
 export function AppShell() {
-  const { pathname } = useLocation();
-  const { compareCount, limitNotice } = useCompare();
-  const showCompareBar =
-    pathname !== routes.compare && (compareCount > 0 || Boolean(limitNotice));
+  const showCompareBar = useCompareBarVisible();
 
   return (
     <div className="min-h-screen bg-hz-page">
@@ -27,10 +23,11 @@ export function AppShell() {
       <ScrollToHash />
       <SiteBrandingEffect />
       <SiteHeader />
+      {/* Spacer below footer so the fixed Compare bar doesn't cover footer chrome */}
       <div className={cn(showCompareBar && 'pb-[72px]')}>
         <Outlet />
+        <SiteFooter />
       </div>
-      <SiteFooter />
       <CompareBar />
       <AdvancedSearchSheet />
     </div>

@@ -9,7 +9,7 @@ export function PropertyOverviewBackground({ imageUrl }: PropertyOverviewBackgro
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
       <img
-        src={sizedImage(imageUrl, 1280)}
+        src={sizedImage(imageUrl, 720)}
         alt=""
         loading="lazy"
         decoding="async"

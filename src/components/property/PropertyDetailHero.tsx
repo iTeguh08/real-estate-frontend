@@ -45,7 +45,7 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
         <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
           <img
             key={activeUrl}
-            src={sizedImage(activeUrl, 1280)}
+            src={sizedImage(activeUrl, 1100)}
             alt=""
             className="h-full w-full object-cover"
             fetchPriority="high"
