@@ -147,7 +147,11 @@ export function PropertyCard({
               toggleCompare(id);
             }}
           >
-            <ArrowLeftRight size={16} strokeWidth={1.75} />
+            <ArrowLeftRight
+              size={16}
+              strokeWidth={1.75}
+              className={cn(compared && 'text-hz-primary')}
+            />
           </ImageActionButton>
           <ImageActionButton
             label={`Quick view ${title}`}

@@ -139,7 +139,11 @@ export function BestValuePropertyCard({
               toggleCompare(id);
             }}
           >
-            <ArrowLeftRight size={14} strokeWidth={1.75} />
+            <ArrowLeftRight
+              size={14}
+              strokeWidth={1.75}
+              className={cn(compared && 'text-hz-primary')}
+            />
           </ImageActionButton>
           {onSelect && (
             <ImageActionButton

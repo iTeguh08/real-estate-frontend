@@ -282,15 +282,13 @@ export function SiteFooter() {
                     bodyHoverClass
                   )}
                 >
-                  <span
-                    className={cn(
-                      'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-hz',
-                      isLight ? 'bg-hz-sunken' : 'bg-hz-footer-fg/10'
-                    )}
-                  >
-                    <MapPin size={15} strokeWidth={2} className={iconClass} aria-hidden="true" />
-                  </span>
-                  <span className="pt-1.5 leading-snug">{contact.address}</span>
+                  <MapPin
+                    size={18}
+                    strokeWidth={2}
+                    className={cn('mt-1 shrink-0', iconClass)}
+                    aria-hidden="true"
+                  />
+                  <span className="leading-snug">{contact.address}</span>
                 </a>
               </li>
               <li>
@@ -301,14 +299,7 @@ export function SiteFooter() {
                     bodyHoverClass
                   )}
                 >
-                  <span
-                    className={cn(
-                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-hz',
-                      isLight ? 'bg-hz-sunken' : 'bg-hz-footer-fg/10'
-                    )}
-                  >
-                    <Phone size={15} strokeWidth={2} className={iconClass} aria-hidden="true" />
-                  </span>
+                  <Phone size={18} strokeWidth={2} className={cn('shrink-0', iconClass)} aria-hidden="true" />
                   <span>{contact.phone}</span>
                 </a>
               </li>
@@ -320,14 +311,7 @@ export function SiteFooter() {
                     bodyHoverClass
                   )}
                 >
-                  <span
-                    className={cn(
-                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-hz',
-                      isLight ? 'bg-hz-sunken' : 'bg-hz-footer-fg/10'
-                    )}
-                  >
-                    <Mail size={15} strokeWidth={2} className={iconClass} aria-hidden="true" />
-                  </span>
+                  <Mail size={18} strokeWidth={2} className={cn('shrink-0', iconClass)} aria-hidden="true" />
                   <span>{contact.email}</span>
                 </a>
               </li>
