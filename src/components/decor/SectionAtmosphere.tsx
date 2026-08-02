@@ -22,6 +22,7 @@ export type AtmosphereImage =
   | 'listings-property'
   | 'footer-edge'
   | 'best-value'
+  | 'related-plants'
   | 'auto'
   | 'none';
 
@@ -70,11 +71,12 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   'soft-left': 'bg/bg-dark-soft-left-light.webp',
   aerial: 'bg/bg-light-aerial-soft.webp',
   'interior-light': 'bg/bg-light-interior-air-v2.webp',
-  'location-light': 'bg/bg-light-location-atmosphere-v4.png',
+  'location-light': 'bg/bg-light-location-atmosphere-v4.webp',
   property: 'bg/bg-hero-left-property-v1.webp',
   'listings-property': 'bg/bg-light-listings-interior-v3.webp',
   'footer-edge': 'bg/bg-light-footer-edge-v3.webp',
   'best-value': 'bg/bg-light-best-value-edges-v2.webp',
+  'related-plants': 'bg/bg-light-related-plants.webp',
 };
 
 function resolveImage(tone: Tone, image: AtmosphereImage): Exclude<AtmosphereImage, 'auto'> {
@@ -130,7 +132,7 @@ function lightWashColor(
 const PATTERN_FILES = {
   'light-sky': 'bg/bg-pattern-wash-light.webp',
   'light-white': 'bg/bg-pattern-wash-light.webp',
-  dark: 'bg/bg-pattern-wash-dark.jpg',
+  dark: 'bg/bg-pattern-wash-dark.webp',
   soft: 'bg/bg-pattern-wash-light.webp',
 } as const;
 
@@ -261,11 +263,14 @@ export function SectionAtmosphere({
       ? `radial-gradient(circle at ${oppositeEdge === 'right' ? '92% 18%' : '8% 18%'}, color-mix(in oklch, var(--hz-primary) 4%, transparent), transparent 50%)`
       : `radial-gradient(circle at ${oppositeEdge === 'right' ? '92% 18%' : '8% 18%'}, ${lightWashColor(lightGlow, 'accent', intensity, edgeStrength)}, transparent 55%)`;
 
-  const showOpposite = variant === 'dual' || variant === 'ambient';
-  const showAccent = variant === 'dual' || variant === 'ambient';
-  const showAmbient = variant === 'ambient';
   const patternSrc = washStyle === 'pattern' ? resolvePattern(tone, lightGlow) : null;
   const patternCover = patternSrc ? isCoverPattern(patternSrc) : false;
+  /** Pattern-only + cover + quiet: skip extra radial layers (Featured Listings). */
+  const leanPattern =
+    !photoSrc && washStyle === 'pattern' && patternCover && intensity === 'quiet';
+  const showOpposite = !leanPattern && (variant === 'dual' || variant === 'ambient');
+  const showAccent = !leanPattern && (variant === 'dual' || variant === 'ambient');
+  const showAmbient = variant === 'ambient';
 
   const objectPosition =
     resolvedImage === 'soft-left'
@@ -310,7 +315,15 @@ export function SectionAtmosphere({
       // Promote the pinned atmosphere to its own compositor layer so the browser
       // rasterizes the masked/gradient stack once and merely repositions it while
       // scrolling, instead of recompositing every masked layer on each frame.
-      style={stickyViewport ? { transform: 'translateZ(0)', willChange: 'transform' } : undefined}
+      style={
+        stickyViewport
+          ? {
+              transform: 'translateZ(0)',
+              willChange: 'transform',
+              contain: 'layout style paint',
+            }
+          : undefined
+      }
       aria-hidden="true"
     >
       {photoSrc ? (

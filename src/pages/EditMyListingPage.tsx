@@ -13,6 +13,7 @@ import {
   type CustomLayout,
   type MediaSlotField,
 } from '@/data/property-media-slots';
+import { EditListingSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useClearMyListingMediaMutation,
@@ -143,11 +144,7 @@ export function EditMyListingPage() {
   }
 
   if (authLoading || (isAuthenticated && isAgent && isLoading)) {
-    return (
-      <main id="main-content" className="section-container py-20 text-center">
-        <p className="font-poppins text-sm text-hz-muted">Loading property…</p>
-      </main>
-    );
+    return <EditListingSkeleton />;
   }
 
   if (!isAuthenticated || !user || !isAgent) {

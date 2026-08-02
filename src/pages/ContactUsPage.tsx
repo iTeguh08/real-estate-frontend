@@ -4,6 +4,7 @@ import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { FormField, MockSubmitNotice } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { CmsPageSkeleton } from '@/components/skeletons';
 import { useContactPageQuery } from '@/hooks/queries';
 import { useSubmitContactMutation } from '@/hooks/mutations';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -92,14 +93,7 @@ export function ContactUsPage() {
   };
 
   if (isLoading || !page) {
-    return (
-      <main id="main-content" className="section-container py-20">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 w-64 rounded-hz bg-hz-bg-soft" />
-          <div className="h-40 rounded-hz bg-hz-bg-soft" />
-        </div>
-      </main>
-    );
+    return <CmsPageSkeleton />;
   }
 
   return (
@@ -158,8 +152,19 @@ export function ContactUsPage() {
         </div>
       </section>
 
-      <section className="bg-hz-sunken pb-16 md:pb-20" aria-labelledby="contact-form-heading">
-        <div className="section-container">
+      <section
+        className="relative overflow-hidden bg-hz-sunken pb-16 md:pb-20"
+        aria-labelledby="contact-form-heading"
+      >
+        <SectionAtmosphere
+          tone="light"
+          surface="sunken"
+          intensity="quiet"
+          variant="dual"
+          side="right"
+          image="none"
+        />
+        <div className="section-container relative z-10">
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
             <div>
               <h2

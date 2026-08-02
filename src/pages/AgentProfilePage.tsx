@@ -1,13 +1,18 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Mail, Phone, ArrowLeft, Building2 } from 'lucide-react';
+import { Mail, Phone, ArrowLeft, Building2, UserRound } from 'lucide-react';
 import { PropertyCard } from '@/components/cards/PropertyCard';
+import { InquiryDialog } from '@/components/forms/InquiryDialog';
+import { AgentProfileSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
 import { useAgentQuery, usePropertySearchQuery } from '@/hooks/queries';
+import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { DEFAULT_LISTING_FILTERS } from '@/types';
 
 export function AgentProfilePage() {
   const { slug } = useParams<{ slug: string }>();
+  const [contactOpen, setContactOpen] = useState(false);
   const { data: agent, isLoading, isError } = useAgentQuery(slug);
   const { data: listingsResult, isLoading: listingsLoading } = usePropertySearchQuery({
     ...DEFAULT_LISTING_FILTERS,
@@ -18,15 +23,7 @@ export function AgentProfilePage() {
   });
 
   if (isLoading) {
-    return (
-      <main id="main-content" className="section-container py-16">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 w-48 rounded-hz bg-hz-bg-soft" />
-          <div className="aspect-[16/10] max-w-md rounded-hz bg-hz-bg-soft" />
-          <div className="h-6 w-2/3 rounded-hz bg-hz-bg-soft" />
-        </div>
-      </main>
-    );
+    return <AgentProfileSkeleton />;
   }
 
   if (isError || !agent) {
@@ -67,8 +64,9 @@ export function AgentProfilePage() {
           <div className="grid gap-0 md:grid-cols-[minmax(0,320px)_1fr]">
             <div className="relative aspect-[16/10] w-full bg-hz-bg-soft md:aspect-auto md:min-h-[320px]">
               <img
-                src={avatarUrl}
+                src={sizedImage(avatarUrl, 420)}
                 alt={name}
+                decoding="async"
                 className="h-full w-full object-cover"
                 style={{ objectPosition: avatarObjectPosition }}
               />
@@ -119,19 +117,51 @@ export function AgentProfilePage() {
                 )}
               </div>
 
-              <Link
-                to={`/listings?agent=${encodeURIComponent(agent.slug)}`}
-                className={cn(
-                  'inline-flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3 sm:w-auto',
-                  'font-poppins text-sm font-semibold text-white no-underline',
-                  'transition-colors duration-200 hover:bg-hz-primary-hover'
-                )}
-              >
-                View all listings
-              </Link>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setContactOpen(true)}
+                  className={cn(
+                    'inline-flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3 sm:w-auto',
+                    'font-poppins text-sm font-semibold text-white',
+                    'transition-colors duration-200 hover:bg-hz-primary-hover'
+                  )}
+                >
+                  Contact {name.split(' ')[0]}
+                </button>
+                <Link
+                  to={`/listings?agent=${encodeURIComponent(agent.slug)}`}
+                  className={cn(
+                    'inline-flex w-full items-center justify-center rounded-hz border border-hz-border bg-transparent px-6 py-3 sm:w-auto',
+                    'font-poppins text-sm font-medium text-hz-ink no-underline',
+                    'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
+                  )}
+                >
+                  View all listings
+                </Link>
+              </div>
             </div>
           </div>
         </div>
+
+        <InquiryDialog
+          open={contactOpen}
+          onOpenChange={setContactOpen}
+          mode="contact"
+          inquiryType="General Inquiry"
+          title={`Contact ${name}`}
+          description="Send a message to this advisor — our team will connect you shortly."
+          messagePlaceholder={`What would you like to discuss with ${name}?`}
+          submitLabel="Send Message"
+          successFallback="Your message has been sent. We’ll reply within 24 hours."
+          contextTitle={name}
+          contextSubtitle={role}
+          contextMeta={[`Agent: ${name}`, `Slug: ${agent.slug}`, role ? `Role: ${role}` : ''].filter(
+            Boolean
+          )}
+          idPrefix="agent-contact"
+          ContextIcon={UserRound}
+        />
 
         <section className="mt-12" aria-labelledby="agent-listings-heading">
           <div className="mb-6 flex items-end justify-between gap-4">
@@ -149,9 +179,9 @@ export function AgentProfilePage() {
           </div>
 
           {listingsLoading ? (
-            <div className="grid animate-pulse grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="aspect-[4/5] rounded-hz bg-hz-bg-soft" />
+                <PropertyCardSkeleton key={index} />
               ))}
             </div>
           ) : listings.length === 0 ? (

@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Award, Check, Target, Users, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { sizedImage } from '@/lib/image-url';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { CmsPageSkeleton } from '@/components/skeletons';
 import { useAboutPageQuery } from '@/hooks/queries';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { routes } from '@/lib/routes';
@@ -41,22 +43,16 @@ export function AboutUsPage() {
   const brand = siteConfig?.brand ?? 'Homzen';
 
   if (isLoading || !page) {
-    return (
-      <main id="main-content" className="section-container py-20">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 w-64 rounded-hz bg-hz-bg-soft" />
-          <div className="h-64 rounded-hz bg-hz-bg-soft" />
-        </div>
-      </main>
-    );
+    return <CmsPageSkeleton variant="about" />;
   }
 
   const { hero, stats, mission, services, timeline, cta } = page;
 
   return (
     <main id="main-content">
-      <section className="bg-hz-elevated py-16 md:py-20">
-        <div className="section-container">
+      <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20">
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" />
+        <div className="section-container relative z-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="max-w-xl">
               <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -93,10 +89,11 @@ export function AboutUsPage() {
 
             <div className="relative overflow-hidden rounded-2xl shadow-sm">
               <img
-                src={hero.image}
+                src={sizedImage(hero.image, 720)}
                 alt="Modern luxury home exterior"
                 className="aspect-[4/3] w-full object-cover"
                 loading="eager"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-hz-inverse/30 to-transparent" />
             </div>
@@ -114,8 +111,9 @@ export function AboutUsPage() {
         </div>
       </section>
 
-      <section className="bg-hz-elevated py-16 md:py-20" aria-labelledby="mission-heading">
-        <div className="section-container">
+      <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20" aria-labelledby="mission-heading">
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="dual" side="right" image="aerial" />
+        <div className="section-container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               {mission.eyebrow}
@@ -197,8 +195,9 @@ export function AboutUsPage() {
         </div>
       </section>
 
-      <section className="bg-hz-elevated py-16 md:py-20" aria-labelledby="timeline-heading">
-        <div className="section-container">
+      <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20" aria-labelledby="timeline-heading">
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" />
+        <div className="section-container relative z-10">
           <header className="mb-12 text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               {timeline.eyebrow}

@@ -1,4 +1,6 @@
-import { Bed, Bathtub, ArrowsOut, Blueprint, MapPin } from '@phosphor-icons/react';
+import { Bed, Bathtub, ArrowsOut, CalendarBlank, MapPin } from '@phosphor-icons/react';
+import { sizedImage } from '@/lib/image-url';
+import { formatPropertyLocation } from '@/lib/format-property';
 import { VILLA_EDITORIAL_GUTTERS } from '@/lib/property-layout';
 import type { PropertyDetail } from '@/types';
 import type { PropertyVillaUtilityAction } from '@/components/property/PropertyVillaHighlights';
@@ -13,6 +15,10 @@ export interface PropertyVillaEditorialSectionProps {
     | 'type'
     | 'layout2Media'
     | 'imageUrl'
+    | 'location'
+    | 'street'
+    | 'city'
+    | 'countryCode'
   >;
   onUtilityAction?: (actionId: PropertyVillaUtilityAction) => void;
 }
@@ -47,9 +53,10 @@ function PortraitImage({ src, title }: { src: string; title: string }) {
       />
       <div className="relative aspect-[3/4] overflow-hidden">
         <img
-          src={src}
+          src={sizedImage(src, 420)}
           alt={`${title} — property overview`}
           loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover"
         />
       </div>
@@ -110,10 +117,11 @@ function InteriorCopy({
   property,
   onUtilityAction,
 }: {
-  property: Pick<PropertyDetail, 'tagline'>;
+  property: Pick<PropertyDetail, 'tagline' | 'location' | 'street' | 'city' | 'countryCode'>;
   onUtilityAction?: (actionId: PropertyVillaUtilityAction) => void;
 }) {
   const { tagline } = property;
+  const canViewLocation = Boolean(formatPropertyLocation(property));
 
   return (
     <div className="relative z-10 flex max-w-md flex-col justify-center bg-hz-elevated pb-2 lg:pt-8 lg:pb-8">
@@ -131,15 +139,17 @@ function InteriorCopy({
       </p>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <UtilityPillButton
-          icon={<Blueprint size={16} weight="fill" aria-hidden="true" />}
-          label="Floor Plan"
-          onClick={() => onUtilityAction?.('plan')}
+          icon={<CalendarBlank size={16} weight="fill" aria-hidden="true" />}
+          label="Schedule a Viewing"
+          onClick={() => onUtilityAction?.('schedule')}
         />
-        <UtilityPillButton
-          icon={<MapPin size={16} weight="fill" aria-hidden="true" />}
-          label="View Location"
-          onClick={() => onUtilityAction?.('location')}
-        />
+        {canViewLocation ? (
+          <UtilityPillButton
+            icon={<MapPin size={16} weight="fill" aria-hidden="true" />}
+            label="View Location"
+            onClick={() => onUtilityAction?.('location')}
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -149,9 +159,10 @@ function LandscapeImage({ src, title }: { src: string; title: string }) {
   return (
     <div className="relative z-0 aspect-video w-full overflow-hidden lg:-mt-[6.5rem] lg:min-h-[300px] lg:w-full xl:-mt-[8rem] xl:min-h-[340px]">
       <img
-        src={src}
+        src={sizedImage(src, 900)}
         alt={`${title} — landscape view`}
         loading="lazy"
+        decoding="async"
         className="h-full w-full object-cover"
       />
     </div>
@@ -176,7 +187,6 @@ export function PropertyVillaEditorialSection({
       className="overflow-visible bg-hz-elevated pt-12 md:pt-16 lg:pb-8"
     >
       <div className={VILLA_EDITORIAL_GUTTERS}>
-        {/* Mobile / tablet — stacked, no overlap */}
         <div className="flex flex-col gap-12 lg:hidden">
           <PortraitImage src={portraitImage} title={title} />
           <OverviewCopy property={property} />
@@ -184,7 +194,6 @@ export function PropertyVillaEditorialSection({
           <LandscapeImage src={wideImage} title={title} />
         </div>
 
-        {/* Desktop — reference-style 2×2 grid */}
         <div className="hidden lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
           <PortraitImage src={portraitImage} title={title} />
           <OverviewCopy property={property} />

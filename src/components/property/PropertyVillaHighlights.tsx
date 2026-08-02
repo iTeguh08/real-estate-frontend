@@ -1,9 +1,10 @@
 import { ChatsCircle } from '@phosphor-icons/react';
 import { Check } from 'lucide-react';
+import { sizedImage } from '@/lib/image-url';
 import { VILLA_EDITORIAL_GUTTERS } from '@/lib/property-layout';
 import type { PropertyDetail } from '@/types';
 
-export type PropertyVillaUtilityAction = 'plan' | 'inquire' | 'location';
+export type PropertyVillaUtilityAction = 'schedule' | 'inquire' | 'location';
 
 export interface PropertyVillaHighlightsProps {
   property: Pick<PropertyDetail, 'title' | 'features' | 'layout2Media' | 'imageUrl'>;
@@ -42,15 +43,16 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
   return (
     <section
       aria-labelledby="property-villa-key-highlights-heading"
-      className="border-y border-hz-border bg-hz-sunken py-12 md:py-16"
+      className="bg-hz-sunken py-12 md:py-16"
     >
       <div className={VILLA_EDITORIAL_GUTTERS}>
         <div className="grid items-center gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
           <div className="aspect-video overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
             <img
-              src={bottomImage}
+              src={sizedImage(bottomImage, 640)}
               alt={`${title} — featured exterior`}
               loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           </div>
@@ -70,7 +72,7 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
               walk-through.
             </p>
             <ul className="mt-5 space-y-3" role="list">
-              {features.slice(0, 3).map((feature) => (
+              {features.map((feature) => (
                 <li key={feature} className="flex items-start gap-3">
                   <span
                     className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-hz-primary text-white"

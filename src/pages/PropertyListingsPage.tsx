@@ -5,6 +5,7 @@ import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard'
 import { PropertyCard } from '@/components/cards/PropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { BestValueCardSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
 import { Slider } from '@/components/ui/slider';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useListingsAsideStickyTop } from '@/hooks/useListingsAsideStickyTop';
@@ -19,6 +20,7 @@ import { formatPerSqftPrice } from '@/lib/format-property';
 import { filtersToSearchParams, searchParamsToFilters } from '@/lib/listing-filter-params';
 import { publicAsset } from '@/lib/public-asset';
 import { routes } from '@/lib/routes';
+import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { ListingFilters, Property, PropertySort, PropertyStatus, PropertyType, PropertyWithAgent } from '@/types';
 
@@ -56,7 +58,13 @@ function SidebarRecentProperty({ property }: { property: Property }) {
       to={routes.property(property.slug)}
       className="flex items-center gap-3 rounded-hz p-2 no-underline transition-colors hover:bg-hz-sunken"
     >
-      <img src={property.imageUrl} alt={property.title} className="h-[74px] w-[74px] rounded-hz object-cover" />
+      <img
+        src={sizedImage(property.imageUrl, 148)}
+        alt={property.title}
+        decoding="async"
+        loading="lazy"
+        className="h-[74px] w-[74px] rounded-hz object-cover"
+      />
       <div className="min-w-0">
         <p className="line-clamp-2 font-poppins text-[14px] font-semibold leading-snug text-hz-ink">
           {property.title}
@@ -67,25 +75,6 @@ function SidebarRecentProperty({ property }: { property: Property }) {
         <p className="mt-1 font-poppins text-[13px] font-semibold text-hz-ink">{formatPerSqftPrice(property)}</p>
       </div>
     </Link>
-  );
-}
-
-function ListingBestValueSkeleton() {
-  return (
-    <div className="flex h-full animate-pulse overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
-      <div className="aspect-square w-[168px] shrink-0 bg-hz-bg-soft sm:w-[200px]" />
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />
-        <div className="h-3 w-1/2 rounded-hz bg-hz-bg-soft" />
-        <div className="h-px w-full bg-hz-border" />
-        <div className="h-3 w-2/3 rounded-hz bg-hz-bg-soft" />
-        <div className="h-px w-full bg-hz-border" />
-        <div className="mt-auto flex items-center justify-between gap-3">
-          <div className="h-8 w-28 rounded-hz bg-hz-bg-soft" />
-          <div className="h-4 w-20 rounded-hz bg-hz-bg-soft" />
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -537,11 +526,13 @@ export function PropertyListingsPage() {
 
             {isLoading ? (
               <div className={listingGridClass}>
-                {Array.from({ length: filters.perPage }).map((_, index) => (
-                  gridColumns === 1
-                    ? <ListingBestValueSkeleton key={index} />
-                    : <div key={index} className="h-[390px] animate-pulse rounded-hz bg-hz-sunken" />
-                ))}
+                {Array.from({ length: filters.perPage }).map((_, index) =>
+                  gridColumns === 1 ? (
+                    <BestValueCardSkeleton key={index} />
+                  ) : (
+                    <PropertyCardSkeleton key={index} />
+                  )
+                )}
               </div>
             ) : properties.length === 0 ? (
               <div className="rounded-hz border border-hz-border bg-hz-sunken px-6 py-20 text-center">

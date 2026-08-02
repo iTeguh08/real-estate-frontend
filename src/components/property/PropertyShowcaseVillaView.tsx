@@ -11,6 +11,7 @@ import {
   type PropertyVillaUtilityAction,
 } from '@/components/property/PropertyVillaHighlights';
 import { useRelatedPropertiesQuery } from '@/hooks/queries';
+import { formatPropertyLocation } from '@/lib/format-property';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyShowcaseVillaViewProps {
@@ -18,9 +19,9 @@ export interface PropertyShowcaseVillaViewProps {
 }
 
 /**
- * Custom Layout 2 — the editorial "villa" template. Specs, Gallery
- * ("Explore every angle"), and Related ("You may also like") match Layout 1;
- * only hero / editorial / highlights / CTA change shape.
+ * Custom Layout 2 — the editorial "villa" template. Gallery, Specs, and Related
+ * match Layout 1 order (Gallery → Property Details → Schedule CTA); only hero /
+ * editorial / highlights / CTA shell change shape.
  */
 export function PropertyShowcaseVillaView({ property }: PropertyShowcaseVillaViewProps) {
   const { data: related = [] } = useRelatedPropertiesQuery(property);
@@ -30,23 +31,36 @@ export function PropertyShowcaseVillaView({ property }: PropertyShowcaseVillaVie
   const handleScheduleViewing = useCallback(() => setScheduleOpen(true), []);
   const handleContactAgent = useCallback(() => setContactOpen(true), []);
 
-  const handleUtilityAction = useCallback((actionId: PropertyVillaUtilityAction) => {
-    if (actionId === 'inquire') {
-      setContactOpen(true);
-      return;
-    }
-    if (actionId === 'plan') {
-      setScheduleOpen(true);
-    }
-  }, []);
+  const handleUtilityAction = useCallback(
+    (actionId: PropertyVillaUtilityAction) => {
+      if (actionId === 'inquire') {
+        setContactOpen(true);
+        return;
+      }
+      if (actionId === 'schedule') {
+        setScheduleOpen(true);
+        return;
+      }
+      if (actionId === 'location') {
+        const query = formatPropertyLocation(property);
+        if (!query) return;
+        window.open(
+          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,
+          '_blank',
+          'noopener,noreferrer'
+        );
+      }
+    },
+    [property]
+  );
 
   return (
     <>
       <PropertyVillaHero property={property} onScheduleViewing={handleScheduleViewing} />
       <PropertyVillaEditorialSection property={property} onUtilityAction={handleUtilityAction} />
       <PropertyVillaHighlights property={property} onUtilityAction={handleUtilityAction} />
-      <PropertySpecsSection property={property} reserveFloatingBarSpace={false} />
       <PropertyGalleryGrid images={property.gallery} title={property.title} />
+      <PropertySpecsSection property={property} />
       <PropertyVillaCtaBanner
         property={property}
         onScheduleViewing={handleScheduleViewing}

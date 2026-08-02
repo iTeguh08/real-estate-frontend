@@ -3,7 +3,8 @@ import { ArrowLeft, ArrowLeftRight, Heart, Loader2, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
-import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
+import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
+import { sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { VILLA_SECTION_GUTTERS } from '@/lib/property-layout';
@@ -44,14 +45,15 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
     <section aria-labelledby="property-villa-hero-heading" className="bg-hz-elevated">
       {/* Side gutters — image sits inside, not edge-to-edge */}
       <div className={VILLA_SECTION_GUTTERS}>
-        <div className="relative min-h-[min(78vh,720px)] overflow-hidden bg-hz-inverse md:min-h-[min78vh,800px)]">
+        <div className="relative min-h-[min(78vh,720px)] overflow-hidden bg-hz-inverse md:min-h-[min(78vh,800px)]">
           {/* Background image */}
           <div className="absolute inset-0" aria-hidden="true">
             <img
-              src={imageUrl}
+              src={sizedImage(imageUrl, 1280)}
               alt=""
               className="h-full w-full object-cover object-center"
               fetchPriority="high"
+              decoding="async"
             />
           </div>
 
@@ -112,7 +114,7 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
               </Link>
 
               <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
-                {type} · {status}
+                {type} · {statusLabel(status)}
               </p>
               <h1
                 id="property-villa-hero-heading"

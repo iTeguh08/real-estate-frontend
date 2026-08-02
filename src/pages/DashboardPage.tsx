@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { DashboardSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import { isAgentUser } from '@/lib/auth-roles';
 import { routes } from '@/lib/routes';
@@ -8,11 +9,7 @@ export function DashboardPage() {
   const isAgent = isAgentUser(user);
 
   if (isLoading) {
-    return (
-      <main id="main-content" className="section-container py-20 text-center">
-        <p className="font-poppins text-sm text-hz-muted">Loading your account…</p>
-      </main>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!isAuthenticated || !user) {

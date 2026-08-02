@@ -2,6 +2,7 @@ import { AGENTS } from '@/data/agents';
 import { ARTICLES } from '@/data/articles';
 import { enrichPropertyDetail } from '@/data/property-details';
 import { BEST_VALUE_PROPERTIES, FEATURED_PROPERTIES } from '@/data/properties';
+import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
 import type {
   Agent,
   Article,
@@ -29,7 +30,8 @@ function coalesce<T>(cms: T | null | undefined, fallback: T): T {
 }
 
 function hasGalleryImages(items: PropertyGalleryImage[] | undefined): boolean {
-  return Boolean(items?.some((item) => !isBlank(item.url)));
+  const filled = items?.filter((item) => !isBlank(item.url)) ?? [];
+  return filled.length >= PROPERTY_GALLERY_COUNT;
 }
 
 /** Field-by-field coalesce for the flat layout media objects — keeps whichever slots the CMS filled in, falls back per-slot otherwise. */

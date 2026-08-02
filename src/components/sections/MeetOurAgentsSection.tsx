@@ -4,6 +4,7 @@ import { AgentCard } from '@/components/cards/AgentCard';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useAgentsQuery } from '@/hooks/queries';
 import { routes } from '@/lib/routes';
+import { AgentCardSkeleton } from '@/components/skeletons';
 import type { Agent } from '@/types';
 
 interface MeetOurAgentsSectionProps {
@@ -51,10 +52,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
         {isLoading && !agentsProp ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-[16/10] rounded-hz bg-hz-bg-soft" />
-                <div className="mt-4 h-5 w-1/2 rounded-hz bg-hz-bg-soft" />
-              </div>
+              <AgentCardSkeleton key={i} />
             ))}
           </div>
         ) : (

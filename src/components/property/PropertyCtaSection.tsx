@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { formatPropertyPrice } from '@/lib/format-property';
+import { sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -16,26 +17,27 @@ export function PropertyCtaSection({
   onContactAgent,
 }: PropertyCtaSectionProps) {
   return (
-    <section aria-labelledby="property-cta-heading" className="bg-hz-sunken py-20 md:py-28">
+    <section aria-labelledby="property-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
       <div className="section-container">
-        <div className="grid overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-sm lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-hz bg-hz-elevated lg:grid-cols-2">
           <div className="relative hidden min-h-[280px] lg:block">
             <img
-              src={property.layout1Media.bannerUrl ?? property.imageUrl}
+              src={sizedImage(property.layout1Media.bannerUrl ?? property.imageUrl, 720)}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-hz-inverse/30" aria-hidden="true" />
           </div>
 
           <div className="flex flex-col justify-center px-8 py-12 md:px-12 md:py-16">
-            <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
+            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               Ready to visit?
             </p>
             <h2
               id="property-cta-heading"
-              className="mt-4 font-poppins text-[clamp(1.5rem,3vw,2.25rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-hz-dark text-balance"
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark text-balance md:text-[36px]"
             >
               Schedule a private tour
             </h2>

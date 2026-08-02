@@ -12,20 +12,8 @@ import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { useTheme } from '@/hooks/useTheme';
 import { usePropertySearchQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { PropertyCardSkeleton } from '@/components/skeletons';
 import type { Property } from '@/types';
-
-function PropertyCardSkeleton() {
-  return (
-    <div className="h-full animate-pulse rounded-hz border border-hz-border bg-hz-elevated">
-      <div className="aspect-[16/10] bg-hz-bg-soft" />
-      <div className="space-y-3 p-4">
-        <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />
-        <div className="h-3 w-1/2 rounded-hz bg-hz-bg-soft" />
-        <div className="h-3 w-full rounded-hz bg-hz-bg-soft" />
-      </div>
-    </div>
-  );
-}
 
 interface FeaturedPropertiesProps {
   properties?: Property[];
@@ -61,12 +49,15 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
       <SectionAtmosphere
         tone={isNavy ? 'dark' : 'light'}
         lightGlow="white"
-        washStyle="pattern"
+        washStyle={isNavy ? 'pattern' : 'gradient'}
         surface="elevated"
         intensity="quiet"
         variant="dual"
         side="left"
-        image="none"
+        image={isNavy ? 'none' : 'related-plants'}
+        photoOpacity={0.2}
+        photoScrimMix={62}
+        photoFade="exit-soft"
         stickyViewport
       />
       <div className="section-container relative z-10 col-start-1 row-start-1 py-16 md:py-20">

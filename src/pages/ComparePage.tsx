@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeft, Loader2, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CompareTableSkeleton } from '@/components/skeletons';
 import { useCompare } from '@/hooks/useCompare';
 import { queryKeys } from '@/lib/query-keys';
 import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
+import { sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { clearCompare, getCompareProperties, MAX_COMPARE_ITEMS } from '@/services/compare.service';
 
@@ -97,7 +99,7 @@ export function ComparePage() {
                 <button
                   type="button"
                   onClick={() => scrollByAmount('prev')}
-                  className="flex h-9 w-9 items-center justify-center rounded-hz border border-hz-border text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary"
+                  className="flex h-9 w-9 items-center justify-center border border-hz-border text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary"
                   aria-label="Scroll left"
                 >
                   <ChevronLeft size={16} />
@@ -105,7 +107,7 @@ export function ComparePage() {
                 <button
                   type="button"
                   onClick={() => scrollByAmount('next')}
-                  className="flex h-9 w-9 items-center justify-center rounded-hz border border-hz-border text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary"
+                  className="flex h-9 w-9 items-center justify-center border border-hz-border text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary"
                   aria-label="Scroll right"
                 >
                   <ChevronRight size={16} />
@@ -116,7 +118,7 @@ export function ComparePage() {
               type="button"
               onClick={() => clearMutation.mutate()}
               disabled={clearMutation.isPending}
-              className="rounded-hz border border-hz-border px-4 py-2 font-poppins text-sm font-medium text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary disabled:opacity-60"
+              className="border border-hz-border px-4 py-2 font-poppins text-sm font-medium text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary disabled:opacity-60"
             >
               Clear All
             </button>
@@ -124,26 +126,29 @@ export function ComparePage() {
         </div>
 
         {isLoading ? (
-          <div className="animate-pulse rounded-hz border border-hz-border bg-hz-sunken p-8">
-            <div className="h-6 w-1/3 rounded-hz bg-hz-bg-soft" />
-          </div>
+          <CompareTableSkeleton />
         ) : (
-          <div ref={scrollRef} className="overflow-x-auto scroll-smooth rounded-hz border border-hz-border bg-hz-elevated shadow-sm">
+          <div ref={scrollRef} className="overflow-x-auto scroll-smooth border border-hz-border bg-hz-elevated">
             <table className="w-max min-w-full border-collapse font-poppins text-sm table-fixed">
               <thead>
                 <tr className="border-b border-hz-border">
-                  <th className="sticky left-0 z-20 w-36 min-w-[144px] border-r border-hz-border bg-hz-elevated p-4 text-left text-xs font-semibold uppercase tracking-wider text-hz-muted shadow-hz-sm">
+                  <th className="sticky left-0 z-20 w-36 min-w-[144px] border-r border-hz-border bg-hz-elevated p-4 text-left text-xs font-semibold uppercase tracking-wider text-hz-muted">
                     Detail
                   </th>
-                  {properties.map((property) => (
-                    <th key={property.id} className="min-w-[280px] w-[300px] p-4 text-left align-top">
+                  {properties.map((property, index) => (
+                    <th
+                      key={property.id}
+                      className={`min-w-[280px] w-[300px] p-4 text-left align-top${
+                        index < properties.length - 1 ? ' border-r border-hz-border' : ''
+                      }`}
+                    >
                       <div className="relative">
                         <button
                           type="button"
                           disabled={compareTogglingId === property.id}
                           onClick={() => toggleCompare(property.id)}
                           aria-busy={compareTogglingId === property.id}
-                          className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border border-hz-border bg-hz-elevated text-hz-muted transition-colors hover:border-hz-primary hover:text-hz-primary disabled:cursor-wait disabled:opacity-70"
+                          className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center border border-hz-border bg-hz-elevated text-hz-muted transition-colors hover:border-hz-primary hover:text-hz-primary disabled:cursor-wait disabled:opacity-70"
                           aria-label={`Remove ${property.title} from compare`}
                         >
                           {compareTogglingId === property.id ? (
@@ -152,10 +157,12 @@ export function ComparePage() {
                             <X size={14} />
                           )}
                         </button>
-                        <div className="mb-3 aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
+                        <div className="mb-3 aspect-[16/10] overflow-hidden bg-hz-bg-soft">
                           <img
-                            src={property.imageUrl}
+                            src={sizedImage(property.imageUrl, 280)}
                             alt={property.title}
+                            loading="lazy"
+                            decoding="async"
                             className="h-full w-full object-cover"
                           />
                         </div>
@@ -173,11 +180,16 @@ export function ComparePage() {
               <tbody>
                 {ROWS.map((row) => (
                   <tr key={row.key} className="border-b border-hz-border last:border-b-0">
-                    <td className="sticky left-0 z-10 border-r border-hz-border bg-hz-elevated p-4 font-medium text-hz-muted shadow-hz-sm">
+                    <td className="sticky left-0 z-10 border-r border-hz-border bg-hz-elevated p-4 font-medium text-hz-muted">
                       {row.label}
                     </td>
-                    {properties.map((property) => (
-                      <td key={`${property.id}-${row.key}`} className="p-4 text-hz-dark">
+                    {properties.map((property, index) => (
+                      <td
+                        key={`${property.id}-${row.key}`}
+                        className={`p-4 text-hz-dark${
+                          index < properties.length - 1 ? ' border-r border-hz-border' : ''
+                        }`}
+                      >
                         {row.key === 'price' && formatPropertyPrice(property)}
                         {row.key === 'status' && property.status}
                         {row.key === 'type' && property.type}

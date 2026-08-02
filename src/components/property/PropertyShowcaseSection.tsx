@@ -1,67 +1,86 @@
-import { Button } from '@/components/ui/button';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { sizedImage } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyShowcaseSectionProps {
-  property: Pick<PropertyDetail, 'title' | 'tagline' | 'layout1Media' | 'imageUrl' | 'description'>;
-  onScheduleViewing?: () => void;
+  property: Pick<PropertyDetail, 'title' | 'layout1Media' | 'description' | 'features'>;
   embedded?: boolean;
 }
 
+/**
+ * Single visual essay for Layout 1 — collage + CMS-backed copy, no mid-scroll CTA.
+ */
 export function PropertyShowcaseSection({
   property,
-  onScheduleViewing,
   embedded = false,
 }: PropertyShowcaseSectionProps) {
-  const { title, tagline, layout1Media, imageUrl } = property;
-  const verticalUrl = layout1Media.featureVerticalUrl ?? imageUrl;
-  const squareUrl = layout1Media.featureSquareUrl ?? imageUrl;
+  const { title, layout1Media, description, features } = property;
+  const verticalUrl = layout1Media.featureVerticalUrl;
+  const squareUrl = layout1Media.featureSquareUrl;
+  const hasCollage = Boolean(verticalUrl && squareUrl && verticalUrl !== squareUrl);
+  const singleUrl = verticalUrl ?? squareUrl ?? null;
+
+  const lifestyleBody =
+    features.length > 0
+      ? features.slice(0, 3).join(' · ')
+      : description.length > 160
+        ? `${description.slice(0, 157).trim()}…`
+        : description;
 
   const content = (
     <div className="section-container relative grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16 xl:gap-20">
-      <div className="relative mx-auto min-h-[380px] w-full max-w-lg lg:mx-0 lg:min-h-[480px] lg:max-w-none">
-        <div className="relative z-[1] aspect-[3/4] w-[62%] overflow-hidden rounded-hz border-[5px] border-white shadow-lg">
-          <img
-            src={verticalUrl}
-            alt={`${title} — interior`}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] overflow-hidden rounded-hz border-[5px] border-white shadow-lg">
-          <img
-            src={squareUrl}
-            alt={`${title} — detail`}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div
-          className="absolute bottom-4 left-[8%] z-0 hidden h-32 w-32 rounded-hz border border-hz-border bg-hz-elevated/60 lg:block"
-          aria-hidden="true"
-        />
+      <div className="relative mx-auto min-h-[320px] w-full max-w-lg lg:mx-0 lg:min-h-[440px] lg:max-w-none">
+        {hasCollage ? (
+          <>
+            <div className="relative z-[1] aspect-[3/4] w-[62%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
+              <img
+                src={sizedImage(verticalUrl!, 420)}
+                alt={`${title} — interior`}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
+              <img
+                src={sizedImage(squareUrl!, 360)}
+                alt={`${title} — detail`}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </>
+        ) : singleUrl ? (
+          <div className="aspect-[4/5] w-full max-w-md overflow-hidden rounded-hz shadow-hz-md lg:max-w-none">
+            <img
+              src={sizedImage(singleUrl, 560)}
+              alt={`${title} — interior`}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="aspect-[4/5] w-full max-w-md overflow-hidden rounded-hz bg-hz-sunken lg:max-w-none" />
+        )}
       </div>
 
       <div className="lg:py-4">
-        <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           Interior &amp; Lifestyle
         </p>
         <h2
           id="property-showcase-heading"
-          className="mt-3 font-poppins text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-hz-dark text-balance"
+          className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark text-balance md:text-[36px]"
         >
-          Designed for everyday luxury
+          A closer look inside
         </h2>
-        <p className="mt-5 max-w-lg font-poppins text-base leading-[1.7] text-hz-body text-pretty md:text-[17px]">
-          {tagline}. Every room is arranged to maximize light, flow, and comfort.
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onScheduleViewing}
-          className="mt-8 h-auto rounded-hz border-hz-dark bg-hz-elevated/70 px-8 py-3 font-poppins text-sm font-semibold text-hz-dark backdrop-blur-sm hover:border-hz-primary hover:bg-hz-elevated/80 hover:text-hz-primary"
-        >
-          Schedule a Viewing
-        </Button>
+        {lifestyleBody ? (
+          <p className="mt-5 max-w-lg font-poppins text-sm leading-[1.65] text-hz-body text-pretty md:text-base">
+            {lifestyleBody}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -77,16 +96,17 @@ export function PropertyShowcaseSection({
   return (
     <section
       aria-labelledby="property-showcase-heading"
-      className="relative overflow-hidden bg-hz-sunken py-20 md:py-28"
+      className="relative overflow-hidden bg-hz-sunken py-16 md:py-20"
     >
-      <img
-        src={imageUrl}
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        className="pointer-events-none absolute -right-[10%] bottom-0 h-[80%] w-[55%] object-cover opacity-[0.06]"
+      <SectionAtmosphere
+        tone="light"
+        surface="sunken"
+        intensity="quiet"
+        variant="dual"
+        side="right"
+        image="interior-light"
       />
-      {content}
+      <div className="relative z-10">{content}</div>
     </section>
   );
 }

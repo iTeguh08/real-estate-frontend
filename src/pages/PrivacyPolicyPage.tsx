@@ -1,3 +1,4 @@
+import { CmsPageSkeleton } from '@/components/skeletons';
 import { usePrivacyPageQuery } from '@/hooks/queries';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { cn } from '@/lib/utils';
@@ -6,14 +7,7 @@ export function PrivacyPolicyPage() {
   const { data: page, isLoading } = usePrivacyPageQuery();
 
   if (isLoading || !page) {
-    return (
-      <main id="main-content" className="section-container py-20">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 w-64 rounded-hz bg-hz-bg-soft" />
-          <div className="h-40 rounded-hz bg-hz-bg-soft" />
-        </div>
-      </main>
-    );
+    return <CmsPageSkeleton />;
   }
 
   return (

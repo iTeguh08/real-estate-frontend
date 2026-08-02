@@ -101,10 +101,10 @@ function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
     <div className="grid gap-6 px-5 py-4 md:min-w-[640px] md:grid-cols-3">
       {groups.map((group) => (
         <div key={group.title} className="min-w-[180px]">
-          <p className="mb-3 font-poppins text-[11px] font-semibold uppercase tracking-[1.5px] text-hz-primary">
+          <p className="mb-3 border-b border-hz-border pb-2 font-poppins text-[11px] font-semibold uppercase tracking-[1.5px] text-hz-primary">
             {group.title}
           </p>
-          <ul className="space-y-0.5">
+          <ul className="divide-y divide-hz-border">
             {group.items.map((item) => {
               const itemActive = checkNavItem(item.href, item.label);
               return (
@@ -125,7 +125,7 @@ function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
                       handleNavClick(item.label, item.href);
                     }}
                     className={cn(
-                      'block w-full rounded-hz px-2.5 py-2 no-underline transition-colors duration-200',
+                      'block w-full rounded-hz px-2.5 py-2.5 no-underline transition-colors duration-200',
                       'hover:bg-hz-bg-soft hover:text-hz-primary'
                     )}
                   >

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ArticleCard } from '@/components/cards/ArticleCard';
+import { ArticleCardSkeleton } from '@/components/skeletons';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { ARTICLE_PREVIEW_COUNT } from '@/data/articles';
 import { SITE_CONFIG } from '@/data/site-config';
@@ -59,10 +60,7 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
         {isLoading && !articlesProp ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: ARTICLE_PREVIEW_COUNT }).map((_, i) => (
-              <div key={i} className="animate-pulse space-y-4">
-                <div className="aspect-[16/10] rounded-hz bg-hz-deep-fg/10" />
-                <div className="h-4 w-3/4 rounded-hz bg-hz-deep-fg/10" />
-              </div>
+              <ArticleCardSkeleton key={i} tone="dark" />
             ))}
           </div>
         ) : (

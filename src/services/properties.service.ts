@@ -35,7 +35,6 @@ const PROPERTY_DETAIL_FIELDS = `
   }
   layout2Media {
     splitVerticalUrl splitLandscapeUrl bannerUrl
-    gridOneUrl gridTwoUrl gridThreeUrl
   }
   relatedPropertyIds
 `;

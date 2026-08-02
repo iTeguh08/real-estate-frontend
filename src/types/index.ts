@@ -59,15 +59,12 @@ export interface PropertyLayout2Media {
   splitVerticalUrl: string | null;
   splitLandscapeUrl: string | null;
   bannerUrl: string | null;
-  gridOneUrl: string | null;
-  gridTwoUrl: string | null;
-  gridThreeUrl: string | null;
 }
 
 export interface PropertyDetail extends Property {
   description: string;
   tagline: string;
-  /** Shared, unlimited-length "Explore every angle" gallery — same pool for both layouts. */
+  /** Shared "Explore every angle" gallery — exactly 8 images (2×4-tile bento pages). */
   gallery: PropertyGalleryImage[];
   features: string[];
   amenities: string[];

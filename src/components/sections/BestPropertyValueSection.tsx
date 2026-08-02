@@ -7,20 +7,8 @@ import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { useBestValuePropertiesQuery } from '@/hooks/queries';
 import { useTheme } from '@/hooks/useTheme';
+import { BestValueCardSkeleton } from '@/components/skeletons';
 import type { PropertyWithAgent } from '@/types';
-
-function BestValueCardSkeleton() {
-  return (
-    <div className="flex h-full animate-pulse overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
-      <div className="aspect-square w-[168px] shrink-0 bg-hz-bg-soft sm:w-[200px]" />
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />
-        <div className="h-3 w-1/2 rounded-hz bg-hz-bg-soft" />
-        <div className="mt-auto h-4 w-1/3 rounded-hz bg-hz-bg-soft" />
-      </div>
-    </div>
-  );
-}
 
 interface BestPropertyValueSectionProps {
   properties?: PropertyWithAgent[];

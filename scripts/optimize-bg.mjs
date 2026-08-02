@@ -35,17 +35,17 @@ async function resizeWebpInPlace(file) {
   return { skipped: false, before, after };
 }
 
-async function convertPatternPngToWebp(pngFile) {
-  const webpFile = pngFile.replace(/\.png$/i, '.webp');
+async function convertRasterToWebp(rasterFile) {
+  const webpFile = rasterFile.replace(/\.(png|jpe?g)$/i, '.webp');
   if (existsSync(webpFile)) return { skipped: true };
 
-  backupOnce(pngFile);
-  const before = statSync(pngFile).size;
-  await sharp(pngFile).webp({ quality: 82, effort: 6 }).toFile(webpFile);
+  backupOnce(rasterFile);
+  const before = statSync(rasterFile).size;
+  await sharp(rasterFile).webp({ quality: 82, effort: 6 }).toFile(webpFile);
   const after = statSync(webpFile).size;
-  // Original stays backed up in _original/; remove the now-unused .png from
+  // Original stays backed up in _original/; remove the legacy raster from
   // public/bg so it isn't accidentally served.
-  unlinkSync(pngFile);
+  unlinkSync(rasterFile);
   return { skipped: false, before, after, renamedTo: path.basename(webpFile) };
 }
 
@@ -57,8 +57,8 @@ let totalAfter = 0;
 for (const entry of entries) {
   const file = path.join(bgDir, entry.name);
 
-  if (entry.name.toLowerCase().endsWith('.png')) {
-    const result = await convertPatternPngToWebp(file);
+  if (/\.(png|jpe?g)$/i.test(entry.name)) {
+    const result = await convertRasterToWebp(file);
     if (!result.skipped) {
       totalBefore += result.before;
       totalAfter += result.after;

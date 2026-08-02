@@ -124,16 +124,12 @@ function FooterLinkList({
     <div>
       <h3
         className={cn(
-          'mb-1 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+          'mb-4 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
           isLight ? 'text-hz-ink' : 'text-hz-footer-fg'
         )}
       >
         {heading}
       </h3>
-      <div
-        className="mb-5 h-0.5 w-8 rounded-full bg-hz-primary"
-        aria-hidden="true"
-      />
       <ul className="flex flex-col gap-3.5">
         {links.map((link) => (
           <li key={link.label}>
@@ -169,7 +165,6 @@ export function SiteFooter() {
     ? 'text-hz-ink/80 transition-colors duration-200 hover:text-hz-primary'
     : 'text-hz-footer-fg/85 transition-colors duration-200 hover:text-hz-primary';
   const iconClass = 'text-hz-primary';
-  const dividerClass = isLight ? 'border-hz-border' : 'border-hz-footer-fg/15';
   const legalClass = isLight
     ? 'text-hz-body transition-colors duration-200 hover:text-hz-primary'
     : 'text-hz-footer-fg/70 transition-colors duration-200 hover:text-hz-primary';
@@ -178,10 +173,10 @@ export function SiteFooter() {
     <footer
       id="contact"
       className={cn(
-        'relative z-20 w-full overflow-hidden border-t-2',
+        'relative z-20 w-full overflow-hidden',
         isLight
-          ? 'border-hz-primary/40 bg-hz-elevated text-hz-ink shadow-[0_-12px_40px_rgb(26_26_46/0.06)]'
-          : 'border-hz-footer-fg/15 bg-hz-footer text-hz-footer-fg shadow-[0_-12px_40px_rgb(0_0_0/0.25)]'
+          ? 'bg-hz-elevated text-hz-ink shadow-[0_-12px_40px_rgb(26_26_46/0.06)]'
+          : 'bg-hz-footer text-hz-footer-fg shadow-[0_-12px_40px_rgb(0_0_0/0.25)]'
       )}
       aria-label="Site footer"
     >
@@ -200,12 +195,7 @@ export function SiteFooter() {
 
       <div className="relative z-10 section-container">
         {/* Tier 1 — brand bar */}
-        <div
-          className={cn(
-            'flex flex-col gap-6 border-b py-11 sm:flex-row sm:items-center sm:justify-between',
-            dividerClass
-          )}
-        >
+        <div className="flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
           <Link to={routes.home} className="inline-flex items-center gap-3 no-underline">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-hz bg-hz-primary shadow-hz-sm">
               <Building2 size={18} strokeWidth={2} className="text-white" aria-hidden="true" />
@@ -264,17 +254,16 @@ export function SiteFooter() {
         </div>
 
         {/* Tier 2 — columns */}
-        <div className="grid grid-cols-1 gap-11 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+        <div className="grid grid-cols-1 gap-11 pt-2 pb-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           <div>
             <h3
               className={cn(
-                'mb-1 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+                'mb-4 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
                 headingClass
               )}
             >
               About
             </h3>
-            <div className="mb-5 h-0.5 w-8 rounded-full bg-hz-primary" aria-hidden="true" />
             <p
               className={cn(
                 'mb-7 max-w-[300px] font-poppins text-[14px] font-medium leading-[1.65]',
@@ -351,13 +340,12 @@ export function SiteFooter() {
           <div>
             <h3
               className={cn(
-                'mb-1 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
+                'mb-4 font-poppins text-[12px] font-semibold uppercase tracking-[0.14em]',
                 headingClass
               )}
             >
               Newsletter
             </h3>
-            <div className="mb-5 h-0.5 w-8 rounded-full bg-hz-primary" aria-hidden="true" />
             <p className={cn('mb-5 font-poppins text-[14px] font-medium leading-[1.65]', bodyClass)}>
               Your weekly dose of market insight and inspiration.
             </p>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { formatPropertyPrice } from '@/lib/format-property';
+import { sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -26,14 +27,15 @@ export function PropertyVillaCtaBanner({
   onContactAgent,
 }: PropertyVillaCtaBannerProps) {
   return (
-    <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken py-16 md:py-24">
+    <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
       <div className="section-container">
         <div className="grid overflow-hidden rounded-[1.75rem] shadow-xl lg:grid-cols-2">
           <div className="relative hidden min-h-[320px] lg:block">
             <img
-              src={property.layout2Media.bannerUrl ?? property.imageUrl}
+              src={sizedImage(property.layout2Media.bannerUrl ?? property.imageUrl, 720)}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover"
             />
           </div>

@@ -6,6 +6,8 @@ import {
   getArticleTagPath,
 } from '@/lib/articles';
 import { sanitizeHtml } from '@/lib/sanitize-html';
+import { sizedImage } from '@/lib/image-url';
+import { CmsPageSkeleton } from '@/components/skeletons';
 import { useArticleQuery } from '@/hooks/queries';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
@@ -19,17 +21,7 @@ export function ArticleDetailPage() {
   const { data: article, isLoading, isError } = useArticleQuery(slug);
 
   if (isLoading) {
-    return (
-      <main id="main-content" className="section-container max-w-3xl py-16">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 w-32 rounded-hz bg-hz-bg-soft" />
-          <div className="h-10 w-full rounded-hz bg-hz-bg-soft" />
-          <div className="aspect-[16/10] rounded-hz bg-hz-bg-soft" />
-          <div className="h-4 w-full rounded-hz bg-hz-bg-soft" />
-          <div className="h-4 w-5/6 rounded-hz bg-hz-bg-soft" />
-        </div>
-      </main>
-    );
+    return <CmsPageSkeleton variant="article" />;
   }
 
   if (isError || !article) {
@@ -86,8 +78,9 @@ export function ArticleDetailPage() {
 
         <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
           <img
-            src={article.imageUrl}
+            src={sizedImage(article.imageUrl, 900)}
             alt={article.title}
+            decoding="async"
             className="h-full w-full object-cover"
           />
         </div>

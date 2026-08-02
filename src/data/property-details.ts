@@ -1,4 +1,5 @@
 import type { Property, PropertyDetail, PropertyGalleryImage } from '@/types';
+import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
 
 const GALLERY_POOL = [
   'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=75',
@@ -7,10 +8,15 @@ const GALLERY_POOL = [
   'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1200&auto=format&fit=crop&q=75',
   'https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=1200&auto=format&fit=crop&q=75',
   'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1200&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1600573472592-401b489a3cdc?w=1200&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=1200&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1200&auto=format&fit=crop&q=75',
 ];
 
+/** Exactly {@link PROPERTY_GALLERY_COUNT} tiles for two identical 4-image bento pages. */
 function galleryFromSeed(seed: number, title: string): PropertyGalleryImage[] {
-  return [0, 1, 2, 3].map((offset) => {
+  return Array.from({ length: PROPERTY_GALLERY_COUNT }, (_, offset) => {
     const idx = (seed + offset) % GALLERY_POOL.length;
     return {
       id: `g-${seed}-${offset}`,
@@ -169,9 +175,9 @@ function seedFromId(id: string): number {
   return id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }
 
-/** Wraps around `mergedGallery` so every mock slot resolves to a real image. */
-function pickUrl(mergedGallery: PropertyGalleryImage[], index: number): string {
-  const item = mergedGallery[index % mergedGallery.length];
+/** Wraps around gallery so every mock slot resolves to a real image. */
+function pickUrl(gallery: PropertyGalleryImage[], index: number): string {
+  const item = gallery[index % gallery.length];
   return item!.url;
 }
 
@@ -179,11 +185,6 @@ export function enrichPropertyDetail(property: Property): PropertyDetail {
   const seed = seedFromId(property.id);
   const copy = DETAIL_COPY[property.id];
   const gallery = galleryFromSeed(seed, property.title);
-  const heroImage = property.imageUrl;
-  const mergedGallery: PropertyGalleryImage[] = [
-    { id: `${property.id}-hero`, url: heroImage, alt: `${property.title} — main exterior` },
-    ...gallery,
-  ];
 
   return {
     ...property,
@@ -191,22 +192,19 @@ export function enrichPropertyDetail(property: Property): PropertyDetail {
     description:
       copy?.description ??
       `Explore ${property.title} in ${property.location}. A ${property.type.toLowerCase()} offering ${property.specs.beds} bedrooms and ${property.specs.sqft.toLocaleString()} sq ft of living space.`,
-    gallery: mergedGallery,
+    gallery,
     layout1Media: {
-      showcaseOneUrl: pickUrl(mergedGallery, 1),
-      showcaseTwoUrl: pickUrl(mergedGallery, 2),
-      showcaseThreeUrl: pickUrl(mergedGallery, 3),
-      featureVerticalUrl: pickUrl(mergedGallery, 1),
-      featureSquareUrl: pickUrl(mergedGallery, 2),
-      bannerUrl: pickUrl(mergedGallery, 3),
+      showcaseOneUrl: pickUrl(gallery, 1),
+      showcaseTwoUrl: pickUrl(gallery, 2),
+      showcaseThreeUrl: pickUrl(gallery, 3),
+      featureVerticalUrl: pickUrl(gallery, 1),
+      featureSquareUrl: pickUrl(gallery, 2),
+      bannerUrl: pickUrl(gallery, 3),
     },
     layout2Media: {
-      splitVerticalUrl: pickUrl(mergedGallery, 1),
-      splitLandscapeUrl: pickUrl(mergedGallery, 2),
-      bannerUrl: pickUrl(mergedGallery, 3),
-      gridOneUrl: pickUrl(mergedGallery, 1),
-      gridTwoUrl: pickUrl(mergedGallery, 2),
-      gridThreeUrl: pickUrl(mergedGallery, 3),
+      splitVerticalUrl: pickUrl(gallery, 1),
+      splitLandscapeUrl: pickUrl(gallery, 2),
+      bannerUrl: pickUrl(gallery, 3),
     },
     features: copy?.features ?? [
       'Thoughtfully planned layout',

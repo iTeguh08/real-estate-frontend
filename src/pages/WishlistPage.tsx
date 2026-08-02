@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PropertyCardSkeleton } from '@/components/skeletons';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { PropertyCard } from '@/components/cards/PropertyCard';
@@ -57,14 +58,8 @@ export function WishlistPage() {
 
         {isLoading ? (
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: wishlistIds.length }).map((_, i) => (
-              <div key={i} className="h-full animate-pulse rounded-hz border border-hz-border bg-hz-elevated">
-                <div className="aspect-[16/10] bg-hz-bg-soft" />
-                <div className="space-y-3 p-4">
-                  <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />
-                  <div className="h-3 w-1/2 rounded-hz bg-hz-bg-soft" />
-                </div>
-              </div>
+            {Array.from({ length: wishlistIds.length || 4 }).map((_, i) => (
+              <PropertyCardSkeleton key={i} />
             ))}
           </div>
         ) : (

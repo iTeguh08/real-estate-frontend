@@ -8,24 +8,16 @@ import type { PropertyDetail } from '@/types';
 
 export interface PropertyOverviewCanvasProps {
   property: PropertyDetail;
-  onScheduleViewing?: () => void;
 }
 
-export function PropertyOverviewCanvas({
-  property,
-  onScheduleViewing,
-}: PropertyOverviewCanvasProps) {
+export function PropertyOverviewCanvas({ property }: PropertyOverviewCanvasProps) {
   const backgroundImage = getPropertyOverviewBackgroundImage(property);
 
   return (
     <div className="relative overflow-hidden bg-hz-elevated">
-      <PropertyOverviewBackground imageUrl={backgroundImage} />
+      {backgroundImage ? <PropertyOverviewBackground imageUrl={backgroundImage} /> : null}
       <PropertyIntroduction property={property} embedded />
-      <PropertyShowcaseSection
-        property={property}
-        onScheduleViewing={onScheduleViewing}
-        embedded
-      />
+      <PropertyShowcaseSection property={property} embedded />
     </div>
   );
 }

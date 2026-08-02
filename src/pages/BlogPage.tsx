@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArticleCard } from '@/components/cards/ArticleCard';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { ArticleCardSkeleton } from '@/components/skeletons';
 import { useArticlesQuery } from '@/hooks/queries';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { routes } from '@/lib/routes';
@@ -48,11 +49,7 @@ export function BlogPage() {
         ) : isLoading ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="animate-pulse space-y-4">
-                <div className="aspect-[16/10] rounded-hz bg-hz-bg-soft" />
-                <div className="h-4 w-3/4 rounded-hz bg-hz-bg-soft" />
-                <div className="h-3 w-full rounded-hz bg-hz-bg-soft" />
-              </div>
+              <ArticleCardSkeleton key={i} />
             ))}
           </div>
         ) : articles.length === 0 ? (

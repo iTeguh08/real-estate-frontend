@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { AgentCard } from '@/components/cards/AgentCard';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { AgentCardSkeleton } from '@/components/skeletons';
 import { useAgentsListQuery } from '@/hooks/queries';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { routes } from '@/lib/routes';
@@ -36,11 +37,7 @@ export function AgentsListingPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-[16/10] rounded-hz bg-hz-bg-soft" />
-                <div className="mt-4 h-5 w-1/2 rounded-hz bg-hz-bg-soft" />
-                <div className="mt-2 h-4 w-1/3 rounded-hz bg-hz-bg-soft" />
-              </div>
+              <AgentCardSkeleton key={i} />
             ))}
           </div>
         ) : (

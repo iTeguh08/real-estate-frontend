@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Eye, Trash2, X } from 'lucide-react';
+import { MyListingRowSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useCancelPropertySubmissionMutation,
@@ -182,7 +183,7 @@ export function MyListingsPage() {
         {isLoading ? (
           <div className="mt-10 space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-28 animate-pulse rounded-hz border border-hz-border bg-hz-bg-soft" />
+              <MyListingRowSkeleton key={i} />
             ))}
           </div>
         ) : isError ? (
