@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Eye, Trash2, X } from 'lucide-react';
-import { MyListingRowSkeleton } from '@/components/skeletons';
+import { MyListingRowSkeleton, DashboardSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useCancelPropertySubmissionMutation,
@@ -102,11 +102,7 @@ export function MyListingsPage() {
   }
 
   if (authLoading) {
-    return (
-      <main id="main-content" className="section-container py-20 text-center">
-        <p className="font-poppins text-sm text-hz-muted">Loading your account…</p>
-      </main>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!isAuthenticated || !user) {

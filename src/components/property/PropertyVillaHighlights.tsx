@@ -1,13 +1,14 @@
 import { ChatsCircle } from '@phosphor-icons/react';
 import { Check } from 'lucide-react';
-import { sizedImage } from '@/lib/image-url';
+import { MediaImage } from '@/components/ui/media-image';
+import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
 import { VILLA_EDITORIAL_GUTTERS } from '@/lib/property-layout';
 import type { PropertyDetail } from '@/types';
 
 export type PropertyVillaUtilityAction = 'schedule' | 'inquire' | 'location';
 
 export interface PropertyVillaHighlightsProps {
-  property: Pick<PropertyDetail, 'title' | 'features' | 'layout2Media' | 'imageUrl'>;
+  property: Pick<PropertyDetail, 'title' | 'features' | 'layout2Media' | 'imageUrl' | 'imageUrlOriginal'>;
   onUtilityAction?: (actionId: PropertyVillaUtilityAction) => void;
 }
 
@@ -37,8 +38,10 @@ function UtilityPillButton({
  * Uses Homzen semantic surfaces so light/dark contrast stays intentional.
  */
 export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyVillaHighlightsProps) {
-  const { title, features, layout2Media, imageUrl } = property;
-  const bottomImage = layout2Media.bannerUrl ?? imageUrl;
+  const { title, features, layout2Media } = property;
+  const bottomImage = layout2Media.bannerUrl
+    ? mediaOriginalUrl(layout2Media.bannerUrl, layout2Media.bannerUrlOriginal)
+    : propertyOriginalUrl(property);
 
   return (
     <section
@@ -47,13 +50,13 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
     >
       <div className={VILLA_EDITORIAL_GUTTERS}>
         <div className="grid items-center gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
-          <div className="aspect-video overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
-            <img
-              src={sizedImage(bottomImage, 640)}
+          <div className="relative aspect-video overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
+            <MediaImage
+              src={bottomImage}
               alt={`${title} — featured exterior`}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover"
+              className="object-cover"
             />
           </div>
 

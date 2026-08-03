@@ -21,20 +21,26 @@ const ALL_PROPERTIES: Property[] = [
 const PROPERTY_FIELDS = `
   id slug title location street city countryCode price currency status type
   specs { beds baths sqft garage }
-  imageUrl isFeatured isNew customLayout
+  imageUrl imageUrlOriginal isFeatured isNew customLayout
 `;
 
 const PROPERTY_DETAIL_FIELDS = `
   ${PROPERTY_FIELDS}
   description tagline
-  gallery { id url alt }
+  gallery { id url originalUrl alt }
   features amenities
   layout1Media {
-    showcaseOneUrl showcaseTwoUrl showcaseThreeUrl
-    featureVerticalUrl featureSquareUrl bannerUrl
+    showcaseOneUrl showcaseOneUrlOriginal
+    showcaseTwoUrl showcaseTwoUrlOriginal
+    showcaseThreeUrl showcaseThreeUrlOriginal
+    featureVerticalUrl featureVerticalUrlOriginal
+    featureSquareUrl featureSquareUrlOriginal
+    bannerUrl bannerUrlOriginal
   }
   layout2Media {
-    splitVerticalUrl splitLandscapeUrl bannerUrl
+    splitVerticalUrl splitVerticalUrlOriginal
+    splitLandscapeUrl splitLandscapeUrlOriginal
+    bannerUrl bannerUrlOriginal
   }
   relatedPropertyIds
 `;

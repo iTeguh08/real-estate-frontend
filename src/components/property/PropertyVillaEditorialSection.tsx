@@ -1,5 +1,6 @@
 import { Bed, Bathtub, ArrowsOut, CalendarBlank, MapPin } from '@phosphor-icons/react';
-import { sizedImage } from '@/lib/image-url';
+import { MediaImage } from '@/components/ui/media-image';
+import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
 import { formatPropertyLocation } from '@/lib/format-property';
 import { VILLA_EDITORIAL_GUTTERS } from '@/lib/property-layout';
 import type { PropertyDetail } from '@/types';
@@ -15,6 +16,7 @@ export interface PropertyVillaEditorialSectionProps {
     | 'type'
     | 'layout2Media'
     | 'imageUrl'
+    | 'imageUrlOriginal'
     | 'location'
     | 'street'
     | 'city'
@@ -52,12 +54,12 @@ function PortraitImage({ src, title }: { src: string; title: string }) {
         aria-hidden="true"
       />
       <div className="relative aspect-[3/4] overflow-hidden">
-        <img
-          src={sizedImage(src, 420)}
+        <MediaImage
+          src={src}
           alt={`${title} — property overview`}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover"
+          className="object-cover"
         />
       </div>
     </div>
@@ -158,12 +160,12 @@ function InteriorCopy({
 function LandscapeImage({ src, title }: { src: string; title: string }) {
   return (
     <div className="relative z-0 aspect-video w-full overflow-hidden lg:-mt-[6.5rem] lg:min-h-[300px] lg:w-full xl:-mt-[8rem] xl:min-h-[340px]">
-      <img
-        src={sizedImage(src, 900)}
+      <MediaImage
+        src={src}
         alt={`${title} — landscape view`}
         loading="lazy"
         decoding="async"
-        className="h-full w-full object-cover"
+        className="object-cover"
       />
     </div>
   );
@@ -177,9 +179,13 @@ export function PropertyVillaEditorialSection({
   property,
   onUtilityAction,
 }: PropertyVillaEditorialSectionProps) {
-  const { title, layout2Media, imageUrl } = property;
-  const portraitImage = layout2Media.splitVerticalUrl ?? imageUrl;
-  const wideImage = layout2Media.splitLandscapeUrl ?? imageUrl;
+  const { title, layout2Media } = property;
+  const portraitImage = layout2Media.splitVerticalUrl
+    ? mediaOriginalUrl(layout2Media.splitVerticalUrl, layout2Media.splitVerticalUrlOriginal)
+    : propertyOriginalUrl(property);
+  const wideImage = layout2Media.splitLandscapeUrl
+    ? mediaOriginalUrl(layout2Media.splitLandscapeUrl, layout2Media.splitLandscapeUrlOriginal)
+    : propertyOriginalUrl(property);
 
   return (
     <section

@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { MediaImage } from '@/components/ui/media-image';
 
 interface PropertyMediaSlotFieldProps {
   id: string;
@@ -44,11 +45,13 @@ export function PropertyMediaSlotField({
       </div>
 
       {previewUrl ? (
-        <img
-          src={previewUrl}
-          alt={label}
-          className="h-36 w-full rounded-hz object-cover ring-1 ring-hz-border"
-        />
+        <div className="relative h-36 overflow-hidden rounded-hz ring-1 ring-hz-border">
+          <MediaImage
+            src={previewUrl}
+            alt={label}
+            className="object-cover"
+          />
+        </div>
       ) : (
         <div className="flex h-36 items-center justify-center rounded-hz bg-hz-bg-soft ring-1 ring-dashed ring-hz-border">
           <p className="px-3 text-center font-poppins text-xs text-hz-muted">

@@ -53,7 +53,7 @@ export function PropertyIntroduction({ property, embedded = false }: PropertyInt
 
   if (embedded) {
     return (
-      <div className="relative pt-16 pb-10 md:pt-20 md:pb-12" aria-labelledby="property-intro-heading">
+      <div className="relative pt-12 pb-10 md:pt-16 md:pb-12" aria-labelledby="property-intro-heading">
         {content}
       </div>
     );

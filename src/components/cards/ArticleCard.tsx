@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getArticleCategoryLabel, getArticlePath, getArticleTagPath } from '@/lib/articles';
+import { MediaImage } from '@/components/ui/media-image';
 import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { Article } from '@/types';
@@ -28,12 +29,12 @@ export function ArticleCard({ article, className, tone = 'default' }: ArticleCar
           isDark ? 'bg-hz-deep-fg/10' : 'bg-hz-bg-soft'
         )}
       >
-        <img
+        <MediaImage
           src={sizedImage(imageUrl, 400)}
           alt=""
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          className="object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
         <span className="absolute bottom-3 left-3 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
           {categoryLabel}

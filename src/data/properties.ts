@@ -1,6 +1,16 @@
 import type { Property, PropertyWithAgent } from '@/types';
+import { originalImage } from '@/lib/image-url';
 
-export const FEATURED_PROPERTIES: Property[] = [
+function withCoverOriginal<T extends { imageUrl: string }>(
+  property: T,
+): T & { imageUrlOriginal: string } {
+  return {
+    ...property,
+    imageUrlOriginal: originalImage(property.imageUrl),
+  } as T & { imageUrlOriginal: string };
+}
+
+export const FEATURED_PROPERTIES: Property[] = ([
   {
     id: 'p1',
     slug: 'casa-lomas-de-machali',
@@ -12,7 +22,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Villa',
     specs: { beds: 3, baths: 2, sqft: 2400 },
     imageUrl:
-      'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -26,7 +36,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Studio',
     specs: { beds: 1, baths: 1, sqft: 480 },
     imageUrl:
-      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -40,7 +50,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Apartment',
     specs: { beds: 4, baths: 3, sqft: 1820 },
     imageUrl:
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -54,7 +64,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Office',
     specs: { beds: 0, baths: 2, sqft: 1520 },
     imageUrl:
-      'https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -68,7 +78,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Townhouse',
     specs: { beds: 4, baths: 3, sqft: 2100 },
     imageUrl:
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -82,7 +92,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Commercial',
     specs: { beds: 0, baths: 1, sqft: 3200 },
     imageUrl:
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -96,7 +106,7 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Villa',
     specs: { beds: 5, baths: 4, sqft: 4200 },
     imageUrl:
-      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
   {
@@ -110,12 +120,12 @@ export const FEATURED_PROPERTIES: Property[] = [
     type: 'Studio',
     specs: { beds: 1, baths: 1, sqft: 520 },
     imageUrl:
-      'https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=800&auto=format&fit=crop&q=70',
+      'https://images.unsplash.com/photo-1571939228382-b2f2b585ce15?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
   },
-];
+] satisfies Omit<Property, 'imageUrlOriginal'>[]).map(withCoverOriginal);
 
-export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = [
+export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = ([
   {
     id: 'bv1',
     slug: 'casa-lomas-brooklyn',
@@ -127,7 +137,7 @@ export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = [
     type: 'Villa',
     specs: { beds: 4, baths: 2, sqft: 1200 },
     imageUrl:
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
     agent: {
       id: 'a1',
@@ -147,7 +157,7 @@ export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = [
     type: 'Villa',
     specs: { beds: 3, baths: 2, sqft: 1850 },
     imageUrl:
-      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
     agent: {
       id: 'a2',
@@ -167,7 +177,7 @@ export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = [
     type: 'Townhouse',
     specs: { beds: 5, baths: 4, sqft: 3200 },
     imageUrl:
-      'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=800&auto=format&fit=crop&q=80',
     agent: {
       id: 'a3',
       name: 'Elena Rodriguez',
@@ -186,7 +196,7 @@ export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = [
     type: 'Apartment',
     specs: { beds: 2, baths: 2, sqft: 1450 },
     imageUrl:
-      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&auto=format&fit=crop&q=80',
     isFeatured: true,
     agent: {
       id: 'a4',
@@ -195,4 +205,4 @@ export const BEST_VALUE_PROPERTIES: PropertyWithAgent[] = [
         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80',
     },
   },
-];
+] satisfies Omit<PropertyWithAgent, 'imageUrlOriginal'>[]).map(withCoverOriginal);

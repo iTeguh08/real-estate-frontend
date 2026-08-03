@@ -2,10 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, Eye, Heart, MapPin } from 'lucide-react';
 import { ImageActionButton } from '@/components/ui/image-action-button';
+import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPerSqftPrice, formatPropertyLocation, statusLabel } from '@/lib/format-property';
-import { sizedImage } from '@/lib/image-url';
+import { propertyPreviewUrl, sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { PropertyWithAgent } from '@/types';
@@ -93,12 +94,12 @@ export function BestValuePropertyCard({
       tabIndex={0}
     >
       <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
-        <img
-          src={sizedImage(imageUrl, 200)}
+        <MediaImage
+          src={propertyPreviewUrl({ imageUrl }, 800)}
           alt={`${title} — ${locationLabel}`}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          className="object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
         <div className="absolute top-2.5 left-2.5 z-10 flex flex-col items-start gap-1">
@@ -199,13 +200,15 @@ export function BestValuePropertyCard({
 
         <div className="mt-auto flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <img
+          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-hz-border">
+            <MediaImage
               src={sizedImage(agent.avatarUrl, 64)}
               alt={agent.name}
               loading="lazy"
               decoding="async"
-              className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-hz-border"
+              className="object-cover"
             />
+          </div>
             <span className="truncate font-poppins text-xs font-medium text-hz-dark sm:text-[13px]">
               {agent.name}
             </span>

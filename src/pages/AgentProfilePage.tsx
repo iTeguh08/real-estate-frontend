@@ -4,6 +4,7 @@ import { Mail, Phone, ArrowLeft, Building2, UserRound } from 'lucide-react';
 import { PropertyCard } from '@/components/cards/PropertyCard';
 import { InquiryDialog } from '@/components/forms/InquiryDialog';
 import { AgentProfileSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
+import { MediaImage } from '@/components/ui/media-image';
 import { useAgentQuery, usePropertySearchQuery } from '@/hooks/queries';
 import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
@@ -63,11 +64,11 @@ export function AgentProfilePage() {
         <div className="overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-sm">
           <div className="grid gap-0 md:grid-cols-[minmax(0,320px)_1fr]">
             <div className="relative aspect-[16/10] w-full bg-hz-bg-soft md:aspect-auto md:min-h-[320px]">
-              <img
+              <MediaImage
                 src={sizedImage(avatarUrl, 420)}
                 alt={name}
                 decoding="async"
-                className="h-full w-full object-cover"
+                className="object-cover"
                 style={{ objectPosition: avatarObjectPosition }}
               />
             </div>

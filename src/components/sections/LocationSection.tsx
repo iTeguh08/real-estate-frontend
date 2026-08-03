@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { MediaImage } from '@/components/ui/media-image';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useTheme } from '@/hooks/useTheme';
@@ -40,12 +41,12 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
           LOCATION_IMAGE_HEIGHT
         )}
       >
-        <img
+        <MediaImage
           src={sizedImage(location.imageUrl, displayWidth)}
           alt={label}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          className="object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
         <div
           className={cn(
@@ -203,11 +204,13 @@ export function LocationSection({
       <SectionAtmosphere
         tone={isNavy ? 'dark' : 'light'}
         surface={isNavy ? 'footer' : 'page'}
-        intensity="strong"
-        variant="edge"
-        side="left"
-        image={isNavy ? 'architecture' : 'location-light'}
-        photoOpacity={isNavy ? 0.55 : 0.05}
+        intensity={isNavy ? 'quiet' : 'strong'}
+        variant="dual"
+        side={isNavy ? 'right' : 'left'}
+        image={isNavy ? 'location-edge-dark' : 'location-edge'}
+        photoOpacity={isNavy ? 0.42 : 0.88}
+        photoScrimMix={isNavy ? undefined : 42}
+        photoFade="exit-soft"
         lightGlow="white"
       />
       <div className="section-container relative z-10">

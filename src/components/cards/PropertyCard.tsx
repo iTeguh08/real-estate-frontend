@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, ArrowRight, Eye, Heart, MapPin } from 'lucide-react';
 import { ImageActionButton } from '@/components/ui/image-action-button';
+import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
 import { propertyCard } from '@/lib/cva';
-import { sizedImage } from '@/lib/image-url';
+import { propertyPreviewUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { Property } from '@/types';
@@ -101,12 +102,12 @@ export function PropertyCard({
           !isListVariant && 'aspect-[16/10]'
         )}
       >
-        <img
-          src={sizedImage(imageUrl, isListVariant ? 180 : 420)}
+        <MediaImage
+          src={propertyPreviewUrl({ imageUrl }, isListVariant ? 180 : 800)}
           alt={`${title} — ${locationLabel}`}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          className="object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />
 
         {/* Top-left — stacked status badges */}

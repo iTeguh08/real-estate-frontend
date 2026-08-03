@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
-import { sizedImage } from '@/lib/image-url';
+import { MediaImage } from '@/components/ui/media-image';
+import { propertyOriginalUrl } from '@/lib/image-url';
 import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import type { Property } from '@/types';
 import { routes } from '@/lib/routes';
@@ -59,17 +60,17 @@ export function PropertyDetailDialog({
 }
 
 function PropertyDetailBody({ property }: { property: Property }) {
-  const { title, status, type, specs, imageUrl } = property;
+  const { title, status, type, specs } = property;
   const locationLabel = formatPropertyLocation(property);
 
   return (
     <>
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-hz bg-hz-bg-soft">
-        <img
-          src={sizedImage(imageUrl, 640)}
+        <MediaImage
+          src={propertyOriginalUrl(property)}
           alt={`${title} — ${locationLabel}`}
           decoding="async"
-          className="h-full w-full object-cover"
+          className="object-cover"
         />
         <span className="absolute top-4 left-4 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
           {status}

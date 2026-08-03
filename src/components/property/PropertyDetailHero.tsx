@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { CalendarBlank } from '@phosphor-icons/react';
 import { Heart, ArrowLeftRight, Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
-import { sizedImage } from '@/lib/image-url';
+import { mediaOriginalUrl, propertyOriginalUrl, sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCompare } from '@/hooks/useCompare';
@@ -14,9 +15,15 @@ export interface PropertyDetailHeroProps {
   onScheduleViewing?: () => void;
 }
 
+type ShowcaseThumb = {
+  preview: string;
+  original: string;
+  alt: string;
+};
+
 /**
- * Custom Layout 1 hero. Cover starts from `imageUrl`; showcase thumbs swap the
- * active cover when present (interactive — not decorative dead chrome).
+ * Custom Layout 1 hero. Cover starts from original `imageUrlOriginal`;
+ * showcase thumbs use soft preview; swapping loads the matching original.
  */
 export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDetailHeroProps) {
   const { title, status, type, imageUrl, layout1Media, id } = property;
@@ -27,32 +34,52 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
   const saved = isWishlisted(id);
   const compared = isCompared(id);
 
-  const showcaseThumbs = [
-    { url: imageUrl, alt: `${title} — cover` },
-    { url: layout1Media.showcaseOneUrl, alt: `${title} — showcase 1` },
-    { url: layout1Media.showcaseTwoUrl, alt: `${title} — showcase 2` },
-    { url: layout1Media.showcaseThreeUrl, alt: `${title} — showcase 3` },
+  const coverOriginal = propertyOriginalUrl(property);
+
+  const showcaseThumbs: ShowcaseThumb[] = [
+    {
+      preview: imageUrl,
+      original: coverOriginal,
+      alt: `${title} — cover`,
+    },
+    {
+      preview: layout1Media.showcaseOneUrl ?? '',
+      original: mediaOriginalUrl(layout1Media.showcaseOneUrl, layout1Media.showcaseOneUrlOriginal),
+      alt: `${title} — showcase 1`,
+    },
+    {
+      preview: layout1Media.showcaseTwoUrl ?? '',
+      original: mediaOriginalUrl(layout1Media.showcaseTwoUrl, layout1Media.showcaseTwoUrlOriginal),
+      alt: `${title} — showcase 2`,
+    },
+    {
+      preview: layout1Media.showcaseThreeUrl ?? '',
+      original: mediaOriginalUrl(layout1Media.showcaseThreeUrl, layout1Media.showcaseThreeUrlOriginal),
+      alt: `${title} — showcase 3`,
+    },
   ].filter(
-    (thumb, index, list): thumb is { url: string; alt: string } =>
-      Boolean(thumb.url) && list.findIndex((t) => t.url === thumb.url) === index
+    (thumb, index, list) =>
+      Boolean(thumb.preview) &&
+      list.findIndex((t) => t.preview === thumb.preview) === index
   );
 
-  const [activeUrl, setActiveUrl] = useState(imageUrl);
+  const [activeOriginal, setActiveOriginal] = useState(coverOriginal);
 
   return (
     <section aria-labelledby="property-hero-heading" className="relative w-full">
       <div className="relative min-h-[min(72vh,680px)] w-full bg-hz-elevated md:min-h-[min(80vh,780px)]">
         <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          <img
-            key={activeUrl}
-            src={sizedImage(activeUrl, 1100)}
+          <MediaImage
+            key={activeOriginal}
+            src={activeOriginal}
             alt=""
-            className="h-full w-full object-cover"
             fetchPriority="high"
             decoding="async"
+            className="object-cover"
+            wrapperClassName="absolute inset-0 z-0"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-hz-inverse/65 via-hz-inverse/20 via-[42%] to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-b from-transparent via-hz-elevated/50 to-hz-elevated md:h-[42%] md:via-hz-elevated/45" />
+          <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-hz-inverse/65 via-hz-inverse/20 via-[42%] to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[52%] bg-gradient-to-b from-transparent via-hz-elevated/40 via-[40%] to-hz-elevated md:h-[48%]" />
         </div>
 
         <div className="section-container relative z-10 flex min-h-[inherit] flex-col justify-between pt-10 pb-28 md:pt-14 md:pb-32">
@@ -141,7 +168,7 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
       </div>
 
       {showcaseThumbs.length > 1 && (
-        <div className="section-container relative z-20 -mt-20 md:-mt-24">
+        <div className="section-container relative z-20 -mt-20 pb-6 md:-mt-24 md:pb-8">
           <div className="mx-auto max-w-4xl">
             <div
               className="grid gap-2.5 sm:gap-3"
@@ -149,14 +176,14 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
               role="list"
               aria-label="Property showcase photos"
             >
-              {showcaseThumbs.map((thumb) => {
-                const isActive = thumb.url === activeUrl;
+              {showcaseThumbs.map((thumb, index) => {
+                const isActive = thumb.original === activeOriginal;
                 return (
                   <button
-                    key={thumb.url}
+                    key={thumb.preview}
                     type="button"
                     role="listitem"
-                    onClick={() => setActiveUrl(thumb.url)}
+                    onClick={() => setActiveOriginal(thumb.original)}
                     aria-label={`Show ${thumb.alt}`}
                     aria-pressed={isActive}
                     aria-current={isActive ? 'true' : undefined}
@@ -165,16 +192,17 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary focus-visible:ring-offset-2'
                     )}
                   >
-                    <span className="relative block aspect-[5/4]">
-                      <img
-                        src={sizedImage(thumb.url, 360)}
+                    <span className="relative block aspect-[5/4] overflow-hidden rounded-hz">
+                      <MediaImage
+                        src={sizedImage(thumb.preview, 360)}
                         alt={thumb.alt}
                         loading="lazy"
                         decoding="async"
                         className={cn(
-                          'h-full w-full rounded-hz object-cover transition-opacity duration-300',
-                          isActive ? 'opacity-100' : 'opacity-45 hover:opacity-70'
+                          'object-cover transition-opacity duration-300',
+                          isActive ? 'opacity-100' : 'opacity-45 group-hover:opacity-70'
                         )}
+                        skeletonDelayMs={index * 80}
                       />
                     </span>
                   </button>

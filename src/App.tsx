@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
+import { PageLoader } from '@/components/skeletons';
 import { ListingFiltersProvider } from '@/hooks/useListingFilters';
 import { HomePage } from '@/pages/HomePage';
 
@@ -60,11 +61,7 @@ const NotFoundPage = lazy(() =>
 );
 
 function RouteFallback() {
-  return (
-    <div className="flex min-h-[40vh] items-center justify-center" role="status" aria-live="polite">
-      <span className="font-poppins text-sm text-hz-muted">Loading…</span>
-    </div>
-  );
+  return <PageLoader variant="route" />;
 }
 
 export default function App() {

@@ -58,6 +58,7 @@ export function mergePropertyWithFallback(cms: Property): Property {
     ...fallback,
     ...cms,
     imageUrl: coalesce(cms.imageUrl, fallback.imageUrl),
+    imageUrlOriginal: coalesce(cms.imageUrlOriginal, fallback.imageUrlOriginal),
     title: coalesce(cms.title, fallback.title),
     location: coalesce(cms.location, fallback.location),
     street: coalesce(cms.street, fallback.street),
@@ -110,11 +111,22 @@ export function mergePropertyDetailWithFallback(cms: PropertyDetail): PropertyDe
     ...cms,
     ...mergedBase,
     imageUrl: coalesce(cms.imageUrl, fallbackDetail.imageUrl),
+    imageUrlOriginal: coalesce(cms.imageUrlOriginal, fallbackDetail.imageUrlOriginal),
     description: coalesce(cms.description, fallbackDetail.description),
     tagline: coalesce(cms.tagline, fallbackDetail.tagline),
     features: cms.features?.length ? cms.features : fallbackDetail.features,
     amenities: cms.amenities?.length ? cms.amenities : fallbackDetail.amenities,
-    gallery: hasGalleryImages(cms.gallery) ? cms.gallery : fallbackDetail.gallery,
+    gallery: hasGalleryImages(cms.gallery)
+      ? cms.gallery.map((item, index) => {
+          const fb = fallbackDetail.gallery[index];
+          return {
+            ...item,
+            url: coalesce(item.url, fb?.url ?? item.url),
+            originalUrl: coalesce(item.originalUrl, fb?.originalUrl),
+            alt: coalesce(item.alt, fb?.alt ?? item.alt),
+          };
+        })
+      : fallbackDetail.gallery,
     layout1Media: coalesceMediaObject<PropertyLayout1Media>(cms.layout1Media, fallbackDetail.layout1Media),
     layout2Media: coalesceMediaObject<PropertyLayout2Media>(cms.layout2Media, fallbackDetail.layout2Media),
     relatedPropertyIds: cms.relatedPropertyIds?.length

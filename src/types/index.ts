@@ -31,7 +31,10 @@ export interface Property {
   status: PropertyStatus;
   type: PropertyType;
   specs: PropertySpecs;
+  /** Soft-resized preview for cards / thumbs. */
   imageUrl: string;
+  /** Full-resolution source for modal / detail / lightbox. */
+  imageUrlOriginal?: string;
   isFeatured?: boolean;
   isNew?: boolean;
   /** Not yet wired to the backend — see `resolvePropertyCustomLayout`. */
@@ -40,25 +43,37 @@ export interface Property {
 
 export interface PropertyGalleryImage {
   id: string;
+  /** Soft-resized preview for gallery tiles. */
   url: string;
+  /** Full-resolution source for lightbox enlarge. */
+  originalUrl?: string;
   alt: string;
 }
 
 /** Custom Layout 1 named media slots — see `lib/property-layout.ts` for placement/ratio docs. */
 export interface PropertyLayout1Media {
   showcaseOneUrl: string | null;
+  showcaseOneUrlOriginal?: string | null;
   showcaseTwoUrl: string | null;
+  showcaseTwoUrlOriginal?: string | null;
   showcaseThreeUrl: string | null;
+  showcaseThreeUrlOriginal?: string | null;
   featureVerticalUrl: string | null;
+  featureVerticalUrlOriginal?: string | null;
   featureSquareUrl: string | null;
+  featureSquareUrlOriginal?: string | null;
   bannerUrl: string | null;
+  bannerUrlOriginal?: string | null;
 }
 
 /** Custom Layout 2 named media slots — see `lib/property-layout.ts` for placement/ratio docs. */
 export interface PropertyLayout2Media {
   splitVerticalUrl: string | null;
+  splitVerticalUrlOriginal?: string | null;
   splitLandscapeUrl: string | null;
+  splitLandscapeUrlOriginal?: string | null;
   bannerUrl: string | null;
+  bannerUrlOriginal?: string | null;
 }
 
 export interface PropertyDetail extends Property {

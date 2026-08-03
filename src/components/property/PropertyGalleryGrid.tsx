@@ -8,12 +8,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { MediaImage } from '@/components/ui/media-image';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import {
   PROPERTY_GALLERY_COUNT,
   PROPERTY_GALLERY_PAGE_SIZE,
 } from '@/lib/property-gallery';
-import { sizedImage } from '@/lib/image-url';
+import { galleryOriginalUrl, galleryPreviewUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { PropertyGalleryImage } from '@/types';
 
@@ -54,12 +55,13 @@ function GalleryTile({
       )}
       aria-label={`Open gallery image: ${image.alt}`}
     >
-      <img
-        src={sizedImage(image.url, imageSize)}
+      <MediaImage
+        src={galleryPreviewUrl(image, imageSize)}
         alt={image.alt}
         loading="lazy"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        className="absolute inset-0 object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        wrapperClassName="absolute inset-0"
       />
     </button>
   );
@@ -206,11 +208,12 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
               <DialogDescription>Expanded gallery view for {title}</DialogDescription>
             </DialogHeader>
             <div className="relative overflow-hidden rounded-hz bg-hz-inverse shadow-hz-md">
-              <img
-                src={sizedImage(selected.url, 1200)}
+              <MediaImage
+                src={galleryOriginalUrl(selected)}
                 alt={selected.alt}
                 decoding="async"
-                className="block h-auto max-h-[min(70vh,620px)] w-auto max-w-[min(92vw,880px)] object-contain"
+                wrapperClassName="flex min-h-[200px] items-center justify-center"
+                className="h-auto max-h-[min(70vh,620px)] w-auto max-w-[min(92vw,880px)] object-contain"
               />
               {images.length > 1 ? (
                 <>

@@ -1,4 +1,5 @@
 import { Star } from '@phosphor-icons/react';
+import { MediaImage } from '@/components/ui/media-image';
 import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { Testimonial } from '@/types';
@@ -37,13 +38,15 @@ export function TestimonialCard({ testimonial, className }: TestimonialCardProps
       </blockquote>
 
       <footer className="mt-6 flex items-center gap-3 border-t border-hz-border pt-5">
-        <img
-          src={sizedImage(avatarUrl, 80)}
-          alt={author}
-          className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-hz-border"
-          loading="lazy"
-          decoding="async"
-        />
+        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-hz-border">
+          <MediaImage
+            src={sizedImage(avatarUrl, 80)}
+            alt={author}
+            loading="lazy"
+            decoding="async"
+            className="object-cover"
+          />
+        </div>
         <div className="min-w-0">
           <cite className="not-italic">
             <p className="truncate font-poppins text-sm font-semibold text-hz-dark sm:text-[15px]">

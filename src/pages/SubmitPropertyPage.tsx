@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { FormField, MockSubmitNotice } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
 import type { LocationValue } from '@/components/forms/location-value';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useCancelPropertySubmissionMutation,
@@ -305,7 +306,7 @@ export function SubmitPropertyPage() {
             <p className="font-poppins text-xs text-hz-muted">{PROPERTY_FORM.location.hint}</p>
             <Suspense
               fallback={
-                <div className="h-[320px] animate-pulse rounded-hz border border-hz-border bg-hz-bg-soft" />
+                <Skeleton className="h-[320px] w-full rounded-hz border border-hz-border" />
               }
             >
               <LocationPicker

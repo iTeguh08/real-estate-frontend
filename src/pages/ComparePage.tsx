@@ -4,10 +4,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeft, Loader2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CompareTableSkeleton } from '@/components/skeletons';
+import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { queryKeys } from '@/lib/query-keys';
 import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
-import { sizedImage } from '@/lib/image-url';
+import { propertyPreviewUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { clearCompare, getCompareProperties, MAX_COMPARE_ITEMS } from '@/services/compare.service';
 
@@ -157,13 +158,13 @@ export function ComparePage() {
                             <X size={14} />
                           )}
                         </button>
-                        <div className="mb-3 aspect-[16/10] overflow-hidden bg-hz-bg-soft">
-                          <img
-                            src={sizedImage(property.imageUrl, 280)}
+                        <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-hz-bg-soft">
+                          <MediaImage
+                            src={propertyPreviewUrl(property, 280)}
                             alt={property.title}
                             loading="lazy"
                             decoding="async"
-                            className="h-full w-full object-cover"
+                            className="object-cover"
                           />
                         </div>
                         <Link

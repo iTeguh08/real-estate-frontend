@@ -6,6 +6,7 @@ import { PropertyCard } from '@/components/cards/PropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { BestValueCardSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
+import { MediaImage } from '@/components/ui/media-image';
 import { Slider } from '@/components/ui/slider';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useListingsAsideStickyTop } from '@/hooks/useListingsAsideStickyTop';
@@ -20,7 +21,7 @@ import { formatPerSqftPrice } from '@/lib/format-property';
 import { filtersToSearchParams, searchParamsToFilters } from '@/lib/listing-filter-params';
 import { publicAsset } from '@/lib/public-asset';
 import { routes } from '@/lib/routes';
-import { sizedImage } from '@/lib/image-url';
+import { propertyPreviewUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { ListingFilters, Property, PropertySort, PropertyStatus, PropertyType, PropertyWithAgent } from '@/types';
 
@@ -58,13 +59,15 @@ function SidebarRecentProperty({ property }: { property: Property }) {
       to={routes.property(property.slug)}
       className="flex items-center gap-3 rounded-hz p-2 no-underline transition-colors hover:bg-hz-sunken"
     >
-      <img
-        src={sizedImage(property.imageUrl, 148)}
-        alt={property.title}
-        decoding="async"
-        loading="lazy"
-        className="h-[74px] w-[74px] rounded-hz object-cover"
-      />
+      <div className="relative h-[74px] w-[74px] shrink-0 overflow-hidden rounded-hz">
+        <MediaImage
+          src={propertyPreviewUrl(property, 148)}
+          alt={property.title}
+          decoding="async"
+          loading="lazy"
+          className="object-cover"
+        />
+      </div>
       <div className="min-w-0">
         <p className="line-clamp-2 font-poppins text-[14px] font-semibold leading-snug text-hz-ink">
           {property.title}
@@ -232,12 +235,12 @@ export function PropertyListingsPage() {
             intensity="quiet"
             variant="dual"
             side="left"
-            image="listings-property"
+            image="related-plants"
             lightGlow="white"
             stickyViewport
             photoFade="hold"
-            photoOpacity={0.26}
-            photoScrimMix={48}
+            photoOpacity={0.22}
+            photoScrimMix={52}
           />
         ) : null}
       <div className="section-container relative z-10 col-start-1 row-start-1 py-12 md:py-16">
@@ -247,7 +250,14 @@ export function PropertyListingsPage() {
             className="flex flex-col gap-6 lg:sticky lg:z-20 lg:self-start"
             style={asideStickyTop !== undefined ? { top: asideStickyTop } : undefined}
           >
-            <section className="rounded-hz bg-hz-listings-sidebar/75 p-5 shadow-hz-sm ring-1 ring-hz-listings-sidebar/30">
+            <section
+              className={cn(
+                'rounded-hz p-5 shadow-hz-sm',
+                isNavy
+                  ? 'bg-hz-listings-sidebar ring-1 ring-hz-line/45'
+                  : 'bg-hz-listings-sidebar/75 ring-1 ring-hz-listings-sidebar/30'
+              )}
+            >
               <h1 className="font-poppins text-[30px] font-semibold text-hz-ink lg:hidden">
                 Property listing
               </h1>

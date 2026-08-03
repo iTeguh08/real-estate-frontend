@@ -1,15 +1,18 @@
 import { Check } from 'lucide-react';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
-import { sizedImage } from '@/lib/image-url';
+import { MediaImage } from '@/components/ui/media-image';
+import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyFeaturesBlockProps {
-  property: Pick<PropertyDetail, 'title' | 'features' | 'layout1Media' | 'imageUrl'>;
+  property: Pick<PropertyDetail, 'title' | 'features' | 'layout1Media' | 'imageUrl' | 'imageUrlOriginal'>;
 }
 
 export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) {
-  const { title, features, layout1Media, imageUrl } = property;
-  const bannerUrl = layout1Media.bannerUrl ?? imageUrl;
+  const { title, features, layout1Media } = property;
+  const bannerUrl = layout1Media.bannerUrl
+    ? mediaOriginalUrl(layout1Media.bannerUrl, layout1Media.bannerUrlOriginal)
+    : propertyOriginalUrl(property);
 
   return (
     <section
@@ -61,12 +64,12 @@ export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) 
 
         <div className="relative">
           <div className="relative aspect-[5/4] w-full overflow-hidden border-hz-elevated/90 shadow-2xl lg:aspect-[4/3]">
-            <img
-              src={sizedImage(bannerUrl, 720)}
+            <MediaImage
+              src={bannerUrl}
               alt={`${title} — featured interior`}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover"
+              className="object-cover"
             />
           </div>
         </div>

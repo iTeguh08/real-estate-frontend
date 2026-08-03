@@ -1,5 +1,6 @@
 import type { Property, PropertyDetail, PropertyGalleryImage } from '@/types';
 import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
+import { originalImage, sizedImage } from '@/lib/image-url';
 
 const GALLERY_POOL = [
   'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&auto=format&fit=crop&q=75',
@@ -18,9 +19,11 @@ const GALLERY_POOL = [
 function galleryFromSeed(seed: number, title: string): PropertyGalleryImage[] {
   return Array.from({ length: PROPERTY_GALLERY_COUNT }, (_, offset) => {
     const idx = (seed + offset) % GALLERY_POOL.length;
+    const source = GALLERY_POOL[idx]!;
     return {
       id: `g-${seed}-${offset}`,
-      url: GALLERY_POOL[idx]!,
+      url: sizedImage(source, 800),
+      originalUrl: originalImage(source),
       alt: `${title} — gallery view ${offset + 1}`,
     };
   });
@@ -176,15 +179,17 @@ function seedFromId(id: string): number {
 }
 
 /** Wraps around gallery so every mock slot resolves to a real image. */
-function pickUrl(gallery: PropertyGalleryImage[], index: number): string {
-  const item = gallery[index % gallery.length];
-  return item!.url;
+function pickGallery(gallery: PropertyGalleryImage[], index: number): PropertyGalleryImage {
+  return gallery[index % gallery.length]!;
 }
 
 export function enrichPropertyDetail(property: Property): PropertyDetail {
   const seed = seedFromId(property.id);
   const copy = DETAIL_COPY[property.id];
   const gallery = galleryFromSeed(seed, property.title);
+  const g1 = pickGallery(gallery, 1);
+  const g2 = pickGallery(gallery, 2);
+  const g3 = pickGallery(gallery, 3);
 
   return {
     ...property,
@@ -194,17 +199,26 @@ export function enrichPropertyDetail(property: Property): PropertyDetail {
       `Explore ${property.title} in ${property.location}. A ${property.type.toLowerCase()} offering ${property.specs.beds} bedrooms and ${property.specs.sqft.toLocaleString()} sq ft of living space.`,
     gallery,
     layout1Media: {
-      showcaseOneUrl: pickUrl(gallery, 1),
-      showcaseTwoUrl: pickUrl(gallery, 2),
-      showcaseThreeUrl: pickUrl(gallery, 3),
-      featureVerticalUrl: pickUrl(gallery, 1),
-      featureSquareUrl: pickUrl(gallery, 2),
-      bannerUrl: pickUrl(gallery, 3),
+      showcaseOneUrl: g1.url,
+      showcaseOneUrlOriginal: g1.originalUrl ?? null,
+      showcaseTwoUrl: g2.url,
+      showcaseTwoUrlOriginal: g2.originalUrl ?? null,
+      showcaseThreeUrl: g3.url,
+      showcaseThreeUrlOriginal: g3.originalUrl ?? null,
+      featureVerticalUrl: g1.url,
+      featureVerticalUrlOriginal: g1.originalUrl ?? null,
+      featureSquareUrl: g2.url,
+      featureSquareUrlOriginal: g2.originalUrl ?? null,
+      bannerUrl: g3.url,
+      bannerUrlOriginal: g3.originalUrl ?? null,
     },
     layout2Media: {
-      splitVerticalUrl: pickUrl(gallery, 1),
-      splitLandscapeUrl: pickUrl(gallery, 2),
-      bannerUrl: pickUrl(gallery, 3),
+      splitVerticalUrl: g1.url,
+      splitVerticalUrlOriginal: g1.originalUrl ?? null,
+      splitLandscapeUrl: g2.url,
+      splitLandscapeUrlOriginal: g2.originalUrl ?? null,
+      bannerUrl: g3.url,
+      bannerUrlOriginal: g3.originalUrl ?? null,
     },
     features: copy?.features ?? [
       'Thoughtfully planned layout',

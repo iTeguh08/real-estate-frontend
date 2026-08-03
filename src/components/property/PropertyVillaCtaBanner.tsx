@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
-import { sizedImage } from '@/lib/image-url';
+import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyVillaCtaBannerProps {
   property: Pick<
     PropertyDetail,
-    'slug' | 'title' | 'layout2Media' | 'imageUrl' | 'price' | 'currency' | 'status'
+    'slug' | 'title' | 'layout2Media' | 'imageUrl' | 'imageUrlOriginal' | 'price' | 'currency' | 'status'
   >;
   onScheduleViewing?: () => void;
   onContactAgent?: () => void;
@@ -26,17 +27,22 @@ export function PropertyVillaCtaBanner({
   onScheduleViewing,
   onContactAgent,
 }: PropertyVillaCtaBannerProps) {
+  const bannerSrc = property.layout2Media.bannerUrl
+    ? mediaOriginalUrl(property.layout2Media.bannerUrl, property.layout2Media.bannerUrlOriginal)
+    : propertyOriginalUrl(property);
+
   return (
     <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
       <div className="section-container">
         <div className="grid overflow-hidden rounded-[1.75rem] shadow-xl lg:grid-cols-2">
           <div className="relative hidden min-h-[320px] lg:block">
-            <img
-              src={sizedImage(property.layout2Media.bannerUrl ?? property.imageUrl, 720)}
+            <MediaImage
+              src={bannerSrc}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="object-cover"
+              wrapperClassName="absolute inset-0"
             />
           </div>
 

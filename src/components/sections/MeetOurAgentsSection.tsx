@@ -1,19 +1,43 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { AgentCard } from '@/components/cards/AgentCard';
+import { CarouselControls } from '@/components/ui/CarouselControls';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useAgentsQuery } from '@/hooks/queries';
+import { useTheme } from '@/hooks/useTheme';
 import { routes } from '@/lib/routes';
 import { AgentCardSkeleton } from '@/components/skeletons';
 import type { Agent } from '@/types';
+
+const AGENTS_PER_SLIDE = 3;
 
 interface MeetOurAgentsSectionProps {
   agents?: Agent[];
 }
 
+function buildAgentSlides(agents: Agent[]): Agent[][] {
+  if (agents.length === 0) return [];
+
+  const slides: Agent[][] = [];
+  for (let index = 0; index < agents.length; index += AGENTS_PER_SLIDE) {
+    slides.push(agents.slice(index, index + AGENTS_PER_SLIDE));
+  }
+  return slides;
+}
+
 export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectionProps) {
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
   const { data: fetchedAgents = [], isLoading } = useAgentsQuery();
   const agents = agentsProp ?? fetchedAgents;
+  const agentSlides = buildAgentSlides(agents);
+
+  const { activeIndex, setActiveIndex, goPrev, goNext, swipeHandlers } = useDotCarousel(
+    agentSlides.length
+  );
+
+  const visibleAgents = agentSlides[activeIndex] ?? [];
 
   return (
     <section
@@ -21,14 +45,30 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
       className="section-defer relative w-full overflow-hidden bg-hz-sunken pb-16 pt-12 md:pb-20 md:pt-14"
       aria-labelledby="agents-heading"
     >
-      <SectionAtmosphere
-        tone="light"
-        surface="sunken"
-        intensity="quiet"
-        variant="dual"
-        side="right"
-        image="none"
-      />
+      {isNavy ? (
+        <SectionAtmosphere
+          tone="dark"
+          surface="sunken"
+          intensity="quiet"
+          variant="edge"
+          side="right"
+          image="architecture"
+          photoFade="exit-soft"
+          photoOpacity={0.4}
+        />
+      ) : (
+        <SectionAtmosphere
+          tone="light"
+          surface="sunken"
+          intensity="strong"
+          variant="dual"
+          side="left"
+          image="best-value"
+          photoFade="balanced"
+          photoOpacity={0.2}
+          photoScrimMix={30}
+        />
+      )}
       <div className="section-container relative z-10">
         <header className="mb-12 text-center">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -56,17 +96,33 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
             ))}
           </div>
         ) : (
-          <div
-            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-            role="list"
-            aria-label="Real estate agents"
-          >
-            {agents.map((agent) => (
-              <div key={agent.id} role="listitem">
-                <AgentCard agent={agent} />
+          <>
+            <div
+              className="touch-pan-y"
+              role="list"
+              aria-label="Real estate agents"
+              {...swipeHandlers}
+            >
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {visibleAgents.map((agent) => (
+                  <div key={agent.id} role="listitem" className="h-full">
+                    <AgentCard agent={agent} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+
+            <CarouselControls
+              count={agentSlides.length}
+              activeIndex={activeIndex}
+              onSelect={setActiveIndex}
+              onPrev={goPrev}
+              onNext={goNext}
+              itemLabel="agent slide"
+              tone={isNavy ? 'dark' : 'light'}
+              className="mt-8"
+            />
+          </>
         )}
       </div>
     </section>

@@ -18,6 +18,8 @@ export type AtmosphereImage =
   | 'aerial'
   | 'interior-light'
   | 'location-light'
+  | 'location-edge'
+  | 'location-edge-dark'
   | 'property'
   | 'listings-property'
   | 'footer-edge'
@@ -72,6 +74,8 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   aerial: 'bg/bg-light-aerial-soft.webp',
   'interior-light': 'bg/bg-light-interior-air-v2.webp',
   'location-light': 'bg/bg-light-location-atmosphere-v4.webp',
+  'location-edge': 'bg/bg-light-location-edge-v5.webp',
+  'location-edge-dark': 'bg/bg-dark-location-edge-v1.webp',
   property: 'bg/bg-hero-left-property-v1.webp',
   'listings-property': 'bg/bg-light-listings-interior-v3.webp',
   'footer-edge': 'bg/bg-light-footer-edge-v3.webp',

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useTheme } from '@/hooks/useTheme';
 import { PROPERTY_TYPE_ITEMS } from '@/data/property-types';
 import { usePropertyTypeCountsQuery } from '@/hooks/queries';
@@ -38,11 +37,17 @@ interface PropertyTypeCardProps {
   type: PropertyType;
   count: number;
   isActive: boolean;
-  isLight: boolean;
+  ringOffsetClass: string;
   onClick: () => void;
 }
 
-function PropertyTypeCard({ type, count, isActive, isLight, onClick }: PropertyTypeCardProps) {
+function PropertyTypeCard({
+  type,
+  count,
+  isActive,
+  ringOffsetClass,
+  onClick,
+}: PropertyTypeCardProps) {
   const Illustration = ILLUSTRATIONS[type];
   const countLabel = count === 1 ? 'Property' : 'Properties';
 
@@ -53,18 +58,15 @@ function PropertyTypeCard({ type, count, isActive, isLight, onClick }: PropertyT
       aria-pressed={isActive}
       aria-label={`${type}: ${count} ${countLabel.toLowerCase()}`}
       className={cn(
-        'group flex w-full flex-col items-center justify-center gap-6 h-[220px]',
-        'rounded-hz border-none px-4 py-4',
-        'transition-all duration-300 cursor-pointer focus-visible:outline-none',
+        'group flex h-[220px] w-full cursor-pointer flex-col items-center justify-center gap-6',
+        'rounded-hz px-4 py-4 transition-all duration-300 focus-visible:outline-none',
         isActive
-          ? 'bg-hz-primary text-white shadow-hz-sm'
+          ? 'border border-hz-primary bg-hz-primary text-white shadow-hz-sm'
           : cn(
-              isLight
-                ? 'border border-hz-line bg-hz-elevated shadow-hz-md hover:border-hz-primary/40 hover:shadow-hz-elevated'
-                : 'bg-hz-sunken hover:bg-hz-primary/[0.07]',
-              'text-hz-dark',
-              'focus-visible:ring-2 focus-visible:ring-hz-primary/20',
-              !isLight && 'focus-visible:bg-hz-sunken'
+              'border border-hz-border bg-hz-elevated text-hz-ink shadow-hz-sm',
+              'hover:-translate-y-0.5 hover:border-hz-primary/35 hover:shadow-hz-md',
+              'focus-visible:ring-2 focus-visible:ring-hz-primary/20 focus-visible:ring-offset-2',
+              ringOffsetClass
             )
       )}
     >
@@ -73,11 +75,7 @@ function PropertyTypeCard({ type, count, isActive, isLight, onClick }: PropertyT
           className="flex h-full w-full items-center justify-center"
           iconClassName={cn(
             'h-[80px] w-[80px] max-w-none translate-y-0 object-contain transition-[filter,opacity] duration-300',
-            isActive
-              ? 'hz-raster-icon-on-primary'
-              : isLight
-                ? 'hz-raster-icon-on-surface'
-                : 'hz-raster-icon-muted'
+            isActive ? 'hz-raster-icon-on-primary' : 'hz-raster-icon-on-surface'
           )}
         />
       </div>
@@ -87,7 +85,7 @@ function PropertyTypeCard({ type, count, isActive, isLight, onClick }: PropertyT
         <span
           className={cn(
             'font-poppins text-[12px] leading-none',
-            isActive ? 'text-white/80' : isLight ? 'text-hz-body' : 'text-hz-muted'
+            isActive ? 'text-white/80' : 'text-hz-body'
           )}
         >
           {count > 0 ? `${count.toLocaleString()} ${countLabel}` : 'Explore'}
@@ -156,18 +154,13 @@ export function PropertyTypeGrid() {
   return (
     <section
       id="properties"
-      className="relative w-full overflow-hidden bg-hz-elevated pt-14 pb-20 md:pt-16 md:pb-24"
+      className={cn(
+        'relative w-full py-16 md:py-20',
+        isLight ? 'border-t border-hz-line bg-hz-sunken' : 'border-t border-hz-line/55 bg-hz-page'
+      )}
       aria-labelledby="property-type-heading"
     >
-      <SectionAtmosphere
-        tone="soft"
-        surface="elevated"
-        intensity="quiet"
-        variant="dual"
-        side="left"
-        image="interior-light"
-      />
-      <div className="section-container relative z-10">
+      <div className="section-container">
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -175,7 +168,7 @@ export function PropertyTypeGrid() {
             </p>
             <h2
               id="property-type-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-ink md:text-[36px]"
             >
               Try Searching For
             </h2>
@@ -236,7 +229,7 @@ export function PropertyTypeGrid() {
                   type={item.type}
                   count={item.count}
                   isActive={isCardActive(item.type)}
-                  isLight={isLight}
+                  ringOffsetClass={isLight ? 'focus-visible:ring-offset-hz-sunken' : 'focus-visible:ring-offset-hz-page'}
                   onClick={() =>
                     setPropertyType(filters.propertyType === item.type ? '' : item.type)
                   }

@@ -8,6 +8,7 @@ import {
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { sizedImage } from '@/lib/image-url';
 import { CmsPageSkeleton } from '@/components/skeletons';
+import { MediaImage } from '@/components/ui/media-image';
 import { useArticleQuery } from '@/hooks/queries';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
@@ -77,11 +78,11 @@ export function ArticleDetailPage() {
         )}
 
         <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
-          <img
+          <MediaImage
             src={sizedImage(article.imageUrl, 900)}
             alt={article.title}
             decoding="async"
-            className="h-full w-full object-cover"
+            className="object-cover"
           />
         </div>
 

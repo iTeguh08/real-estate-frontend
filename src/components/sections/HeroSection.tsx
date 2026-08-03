@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
-import { Search, LocateFixed, SlidersHorizontal, ChevronDown, Loader2 } from 'lucide-react';
+import { Search, LocateFixed, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { MediaImage } from '@/components/ui/media-image';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
@@ -51,7 +52,6 @@ export function HeroSection() {
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
   const heroSrc = sizedImage(hero?.backgroundImage ?? heroImage, 1100);
-  const { ready: heroReady, markReady: markHeroReady } = useImageReady(heroSrc);
   const { ready: leftBgReady, markReady: markLeftBgReady } = useImageReady(LIGHT_HERO_LEFT_BG);
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
 
@@ -421,34 +421,13 @@ export function HeroSection() {
         </div>
 
         <div className="relative order-1 lg:order-2 aspect-[1280/1103] w-full min-h-0 overflow-hidden bg-hz-sunken lg:aspect-auto lg:h-full">
-          {!heroReady ? (
-            <div
-              className="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-3 bg-hz-sunken"
-              role="status"
-              aria-live="polite"
-              aria-label="Loading hero image"
-            >
-              <Loader2
-                size={32}
-                strokeWidth={1.5}
-                className="animate-spin text-hz-primary/45"
-                aria-hidden="true"
-              />
-              <p className="font-poppins text-[11px] font-medium tracking-[0.04em] text-hz-muted/60">
-                Loading photo…
-              </p>
-            </div>
-          ) : null}
-          <img
+          <MediaImage
             src={heroSrc}
             alt="Modern luxury residential home"
             width={1280}
             height={1103}
-            onLoad={markHeroReady}
-            className={cn(
-              'absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-500',
-              heroReady ? 'opacity-100' : 'opacity-0'
-            )}
+            className="object-cover object-center"
+            wrapperClassName="absolute inset-0"
             loading="eager"
             fetchPriority="high"
             decoding="async"

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
-import { sizedImage } from '@/lib/image-url';
+import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -16,17 +17,22 @@ export function PropertyCtaSection({
   onScheduleViewing,
   onContactAgent,
 }: PropertyCtaSectionProps) {
+  const bannerSrc = property.layout1Media.bannerUrl
+    ? mediaOriginalUrl(property.layout1Media.bannerUrl, property.layout1Media.bannerUrlOriginal)
+    : propertyOriginalUrl(property);
+
   return (
     <section aria-labelledby="property-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
       <div className="section-container">
         <div className="grid overflow-hidden rounded-hz bg-hz-elevated lg:grid-cols-2">
           <div className="relative hidden min-h-[280px] lg:block">
-            <img
-              src={sizedImage(property.layout1Media.bannerUrl ?? property.imageUrl, 720)}
+            <MediaImage
+              src={bannerSrc}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="object-cover"
+              wrapperClassName="absolute inset-0"
             />
             <div className="absolute inset-0 bg-hz-inverse/30" aria-hidden="true" />
           </div>

@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ArticleCard } from '@/components/cards/ArticleCard';
 import { ArticleCardSkeleton } from '@/components/skeletons';
-import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { ARTICLE_PREVIEW_COUNT } from '@/data/articles';
 import { SITE_CONFIG } from '@/data/site-config';
 import { useArticlesQuery } from '@/hooks/queries';
@@ -21,18 +20,9 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
   return (
     <section
       id="news"
-      className="section-defer relative w-full overflow-hidden bg-hz-deep py-16 text-hz-deep-fg md:py-20"
+      className="section-defer relative w-full overflow-hidden bg-hz-page py-16 md:py-20"
       aria-labelledby="news-heading"
     >
-      <SectionAtmosphere
-        tone="dark"
-        surface="deep"
-        intensity="default"
-        variant="edge"
-        side="right"
-        image="interior-dark"
-        photoOpacity={0.55}
-      />
       <div className="section-container relative z-10">
         <div className="mb-12 flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-between">
           <header className="text-center sm:text-left">
@@ -41,7 +31,7 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
             </p>
             <h2
               id="news-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-deep-fg md:text-[36px]"
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
             >
               {SITE_CONFIG.brand} Market Updates
             </h2>
@@ -49,7 +39,7 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
 
           <Link
             to={routes.news}
-            className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-deep-fg/70 no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
+            className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
             aria-label="See all news articles"
           >
             See All News
@@ -60,7 +50,7 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
         {isLoading && !articlesProp ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: ARTICLE_PREVIEW_COUNT }).map((_, i) => (
-              <ArticleCardSkeleton key={i} tone="dark" />
+              <ArticleCardSkeleton key={i} />
             ))}
           </div>
         ) : (
@@ -71,7 +61,7 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
           >
             {previewArticles.map((article) => (
               <div key={article.id} role="listitem">
-                <ArticleCard article={article} tone="dark" />
+                <ArticleCard article={article} />
               </div>
             ))}
           </div>

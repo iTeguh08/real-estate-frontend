@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { sizedImage } from '@/lib/image-url';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { CmsPageSkeleton } from '@/components/skeletons';
+import { MediaImage } from '@/components/ui/media-image';
 import { useAboutPageQuery } from '@/hooks/queries';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { routes } from '@/lib/routes';
@@ -87,11 +88,11 @@ export function AboutUsPage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-2xl shadow-sm">
-              <img
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-sm">
+              <MediaImage
                 src={sizedImage(hero.image, 720)}
                 alt="Modern luxury home exterior"
-                className="aspect-[4/3] w-full object-cover"
+                className="object-cover"
                 loading="eager"
                 decoding="async"
               />

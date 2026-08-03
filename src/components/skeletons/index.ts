@@ -7,5 +7,6 @@ export { CompareTableSkeleton } from '@/components/skeletons/CompareTableSkeleto
 export { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
 export { EditListingSkeleton } from '@/components/skeletons/EditListingSkeleton';
 export { MyListingRowSkeleton } from '@/components/skeletons/MyListingRowSkeleton';
+export { PageLoader } from '@/components/skeletons/PageLoader';
 export { PropertyCardSkeleton } from '@/components/skeletons/PropertyCardSkeleton';
 export { PropertyShowcaseSkeleton } from '@/components/skeletons/PropertyShowcaseSkeleton';

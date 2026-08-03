@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowLeftRight, Heart, Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
-import { sizedImage } from '@/lib/image-url';
+import { propertyOriginalUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { VILLA_SECTION_GUTTERS } from '@/lib/property-layout';
@@ -23,6 +24,7 @@ export interface PropertyVillaHeroProps {
     | 'type'
     | 'tagline'
     | 'imageUrl'
+    | 'imageUrlOriginal'
     | 'price'
     | 'currency'
   >;
@@ -34,7 +36,7 @@ export interface PropertyVillaHeroProps {
  * sharp-cornered ~90% white overlay anchored top-left (reference: The Eight).
  */
 export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVillaHeroProps) {
-  const { id, title, status, type, tagline, imageUrl } = property;
+  const { id, title, status, type, tagline } = property;
   const locationLabel = formatPropertyLocation(property);
   const { isWishlisted, toggleWishlist, isTogglingId: wishlistTogglingId } = useWishlist();
   const { isCompared, toggleCompare, isTogglingId: compareTogglingId } = useCompare();
@@ -48,12 +50,13 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
         <div className="relative min-h-[min(78vh,720px)] overflow-hidden bg-hz-inverse md:min-h-[min(78vh,800px)]">
           {/* Background image */}
           <div className="absolute inset-0" aria-hidden="true">
-            <img
-              src={sizedImage(imageUrl, 1100)}
+            <MediaImage
+              src={propertyOriginalUrl(property)}
               alt=""
-              className="h-full w-full object-cover object-center"
               fetchPriority="high"
               decoding="async"
+              className="object-cover object-center"
+              wrapperClassName="absolute inset-0"
             />
           </div>
 

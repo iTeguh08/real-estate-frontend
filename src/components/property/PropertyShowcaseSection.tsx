@@ -1,5 +1,7 @@
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
-import { sizedImage } from '@/lib/image-url';
+import { MediaImage } from '@/components/ui/media-image';
+import { Skeleton } from '@/components/ui/skeleton';
+import { mediaOriginalUrl } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyShowcaseSectionProps {
@@ -15,8 +17,12 @@ export function PropertyShowcaseSection({
   embedded = false,
 }: PropertyShowcaseSectionProps) {
   const { title, layout1Media, description, features } = property;
-  const verticalUrl = layout1Media.featureVerticalUrl;
-  const squareUrl = layout1Media.featureSquareUrl;
+  const verticalUrl = layout1Media.featureVerticalUrl
+    ? mediaOriginalUrl(layout1Media.featureVerticalUrl, layout1Media.featureVerticalUrlOriginal)
+    : null;
+  const squareUrl = layout1Media.featureSquareUrl
+    ? mediaOriginalUrl(layout1Media.featureSquareUrl, layout1Media.featureSquareUrlOriginal)
+    : null;
   const hasCollage = Boolean(verticalUrl && squareUrl && verticalUrl !== squareUrl);
   const singleUrl = verticalUrl ?? squareUrl ?? null;
 
@@ -33,36 +39,38 @@ export function PropertyShowcaseSection({
         {hasCollage ? (
           <>
             <div className="relative z-[1] aspect-[3/4] w-[62%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
-              <img
-                src={sizedImage(verticalUrl!, 420)}
+              <MediaImage
+                src={verticalUrl!}
                 alt={`${title} — interior`}
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-cover"
+                className="object-cover"
+                skeletonDelayMs={0}
               />
             </div>
             <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
-              <img
-                src={sizedImage(squareUrl!, 360)}
+              <MediaImage
+                src={squareUrl!}
                 alt={`${title} — detail`}
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-cover"
+                className="object-cover"
+                skeletonDelayMs={120}
               />
             </div>
           </>
         ) : singleUrl ? (
           <div className="aspect-[4/5] w-full max-w-md overflow-hidden rounded-hz shadow-hz-md lg:max-w-none">
-            <img
-              src={sizedImage(singleUrl, 560)}
+            <MediaImage
+              src={singleUrl}
               alt={`${title} — interior`}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover"
+              className="object-cover"
             />
           </div>
         ) : (
-          <div className="aspect-[4/5] w-full max-w-md overflow-hidden rounded-hz bg-hz-sunken lg:max-w-none" />
+          <Skeleton className="aspect-[4/5] w-full max-w-md rounded-hz lg:max-w-none" delayMs={0} />
         )}
       </div>
 

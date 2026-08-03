@@ -14,6 +14,7 @@ import {
   type MediaSlotField,
 } from '@/data/property-media-slots';
 import { EditListingSkeleton } from '@/components/skeletons';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useClearMyListingMediaMutation,
@@ -419,7 +420,7 @@ export function EditMyListingPage() {
             <p className="font-poppins text-xs text-hz-muted">{PROPERTY_FORM.location.hint}</p>
             <Suspense
               fallback={
-                <div className="h-[320px] animate-pulse rounded-hz border border-hz-border bg-hz-bg-soft" />
+                <Skeleton className="h-[320px] w-full rounded-hz border border-hz-border" />
               }
             >
               <LocationPicker
