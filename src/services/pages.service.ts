@@ -9,7 +9,7 @@ import {
   type HomepageExpertiseItem,
   type PrivacyPageContent,
 } from '@/data/cms-fallbacks';
-import { graphqlFetch, useMockData } from '@/services/graphql-client';
+import { graphqlFetch, isMockDataEnabled } from '@/services/graphql-client';
 
 type FlexibleItem = Record<string, unknown> | { attributes?: Record<string, unknown> };
 
@@ -200,7 +200,7 @@ function parseHomepage(raw: Record<string, unknown> | null): HomepageContent {
 }
 
 export async function getAboutPage(): Promise<AboutPageContent> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return ABOUT_PAGE_FALLBACK;
   }
 
@@ -214,7 +214,7 @@ export async function getAboutPage(): Promise<AboutPageContent> {
 }
 
 export async function getContactPage(): Promise<ContactPageContent> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return CONTACT_PAGE_FALLBACK;
   }
 
@@ -261,7 +261,7 @@ export async function getContactPage(): Promise<ContactPageContent> {
 }
 
 export async function getHomepage(): Promise<HomepageContent> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return HOMEPAGE_FALLBACK;
   }
 
@@ -275,7 +275,7 @@ export async function getHomepage(): Promise<HomepageContent> {
 }
 
 export async function getPrivacyPage(): Promise<PrivacyPageContent> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return PRIVACY_PAGE_FALLBACK;
   }
 

@@ -13,56 +13,53 @@ interface AgentCardProps {
 
 export function AgentCard({ agent, className }: AgentCardProps) {
   const { name, role, avatarUrl, phone, avatarObjectPosition = 'center 30%', slug } = agent;
+  const profilePath = routes.agent(slug);
 
   return (
-    <article className={cn('group', className)}>
-      <Link
-        to={routes.agent(slug)}
-        className="block no-underline"
-        aria-label={`View profile for ${name}`}
-      >
-        <div className="relative aspect-[16/10] overflow-hidden rounded-hz border border-hz-border">
-          <MediaImage
-            src={sizedImage(avatarUrl, 340)}
-            alt={name}
-            className="object-cover transition-transform duration-400 group-hover:scale-105"
-            style={{ objectPosition: avatarObjectPosition }}
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
+    <article className={cn('group relative', className)}>
+      <div className="relative aspect-[16/10] overflow-hidden rounded-hz border border-hz-border">
+        <MediaImage
+          src={sizedImage(avatarUrl, 340)}
+          alt={name}
+          className="object-cover transition-transform duration-400 group-hover:scale-105"
+          style={{ objectPosition: avatarObjectPosition }}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
 
-        <div className="flex items-end justify-between gap-4 pt-4">
-          <div className="min-w-0">
-            <h3 className="truncate font-poppins text-lg font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary md:text-xl">
+      <div className="flex items-end justify-between gap-4 pt-4">
+        <div className="min-w-0">
+          <h3 className="truncate font-poppins text-lg font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary md:text-xl">
+            <Link to={profilePath} className="no-underline text-inherit" aria-label={`View profile for ${name}`}>
               {name}
-            </h3>
-            <p className="mt-0.5 font-poppins text-sm text-hz-muted">{role}</p>
-          </div>
-
-          {phone ? (
-            <a
-              href={`tel:${phone.replace(/\s/g, '')}`}
-              onClick={(e) => e.stopPropagation()}
-              className={cn(
-                'flex h-10 w-10 shrink-0 items-center justify-center',
-                'text-hz-dark transition-colors duration-200',
-                'hover:text-hz-primary'
-              )}
-              aria-label={`Call ${name}`}
-            >
-              <Phone size={22} strokeWidth={2.25} aria-hidden="true" />
-            </a>
-          ) : (
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center text-hz-muted/50"
-              aria-hidden="true"
-            >
-              <Phone size={22} strokeWidth={2.25} />
-            </span>
-          )}
+              <span className="absolute inset-0" aria-hidden="true" />
+            </Link>
+          </h3>
+          <p className="mt-0.5 font-poppins text-sm text-hz-muted">{role}</p>
         </div>
-      </Link>
+
+        {phone ? (
+          <a
+            href={`tel:${phone.replace(/\s/g, '')}`}
+            className={cn(
+              'relative z-10 flex h-10 w-10 shrink-0 items-center justify-center',
+              'text-hz-dark transition-colors duration-200',
+              'hover:text-hz-primary'
+            )}
+            aria-label={`Call ${name}`}
+          >
+            <Phone size={22} strokeWidth={2.25} aria-hidden="true" />
+          </a>
+        ) : (
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center text-hz-muted/50"
+            aria-hidden="true"
+          >
+            <Phone size={22} strokeWidth={2.25} />
+          </span>
+        )}
+      </div>
     </article>
   );
 }

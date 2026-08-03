@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 
 export interface GeoSuggestion {
   label: string;
@@ -77,7 +77,7 @@ export async function searchLocations(
   const q = query.trim();
   if (q.length < 2) return [];
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 180));
     const needle = q.toLowerCase();
     return MOCK_SUGGESTIONS.filter(
@@ -100,7 +100,7 @@ export async function reverseGeocode(
   latitude: number,
   longitude: number
 ): Promise<GeoSuggestion | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 150));
     return {
       label: `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,

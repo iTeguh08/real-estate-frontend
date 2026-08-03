@@ -1,6 +1,6 @@
 import { ARTICLES } from '@/data/articles';
 import { mergeArticleWithFallback, mergeArticlesWithFallback } from '@/lib/cms-merge';
-import { graphqlFetch, useMockData } from '@/services/graphql-client';
+import { graphqlFetch, isMockDataEnabled } from '@/services/graphql-client';
 import type { Article, ArticleCategory } from '@/types';
 
 const ARTICLES_LIST_FIELDS = `
@@ -20,7 +20,7 @@ const ARTICLE_DETAIL_FIELDS = `
 `;
 
 export async function getArticles(category?: ArticleCategory, tag?: string): Promise<Article[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return ARTICLES.filter((article) => {
       if (category && article.category !== category) return false;
       if (tag && !article.tags.includes(tag)) return false;
@@ -46,7 +46,7 @@ export async function getArticles(category?: ArticleCategory, tag?: string): Pro
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return ARTICLES.find((article) => article.slug === slug) ?? null;
   }
 

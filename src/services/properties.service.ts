@@ -7,7 +7,7 @@ import {
   mergePropertyWithFallback,
 } from '@/lib/cms-merge';
 import { hasSearchIntent, listingFiltersToSearchVariables } from '@/lib/search-intent';
-import { graphqlFetch, useMockData } from '@/services/graphql-client';
+import { graphqlFetch, isMockDataEnabled } from '@/services/graphql-client';
 import type { ListingFilters, Property, PropertyDetail, PropertySearchResult, PropertySearchVariables, PropertySort, PropertyTypeCount, PropertyWithAgent } from '@/types';
 import { DEFAULT_LISTINGS_PER_PAGE } from '@/types';
 
@@ -46,7 +46,7 @@ const PROPERTY_DETAIL_FIELDS = `
 `;
 
 export async function getFeaturedProperties(): Promise<Property[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return FEATURED_PROPERTIES;
   }
 
@@ -191,7 +191,7 @@ export async function searchProperties(intent: ListingFilters): Promise<Property
   const page = variables.page ?? 1;
   const perPage = variables.perPage ?? DEFAULT_LISTINGS_PER_PAGE;
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     const filtered = filterPropertiesLocally(ALL_PROPERTIES, intent);
     return paginateLocally(filtered, page, perPage);
   }
@@ -220,7 +220,7 @@ export async function searchProperties(intent: ListingFilters): Promise<Property
 }
 
 export async function getPropertyTypeCounts(): Promise<PropertyTypeCount[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     const { PROPERTY_TYPE_ITEMS } = await import('@/data/property-types');
     return PROPERTY_TYPE_ITEMS;
   }
@@ -233,7 +233,7 @@ export async function getPropertyTypeCounts(): Promise<PropertyTypeCount[]> {
 }
 
 export async function getBestValueProperties(): Promise<PropertyWithAgent[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return BEST_VALUE_PROPERTIES;
   }
 
@@ -250,7 +250,7 @@ export async function getBestValueProperties(): Promise<PropertyWithAgent[]> {
 }
 
 export async function getPropertyBySlug(slug: string): Promise<Property | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return ALL_PROPERTIES.find((p) => p.slug === slug) ?? null;
   }
 
@@ -264,7 +264,7 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
 }
 
 export async function getPropertyById(id: string): Promise<Property | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return ALL_PROPERTIES.find((p) => p.id === id) ?? null;
   }
 
@@ -278,7 +278,7 @@ export async function getPropertyById(id: string): Promise<Property | null> {
 }
 
 export async function getPropertyDetailBySlug(slug: string): Promise<PropertyDetail | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     const property = ALL_PROPERTIES.find((p) => p.slug === slug);
     return property ? enrichPropertyDetail(property) : null;
   }
@@ -293,7 +293,7 @@ export async function getPropertyDetailBySlug(slug: string): Promise<PropertyDet
 }
 
 export async function getPropertyDetailById(id: string): Promise<PropertyDetail | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     const property = ALL_PROPERTIES.find((p) => p.id === id);
     return property ? enrichPropertyDetail(property) : null;
   }
@@ -313,7 +313,7 @@ export async function getRelatedProperties(
 ): Promise<Property[]> {
   const ids = property.relatedPropertyIds ?? [];
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     const related = ids
       .map((id) => ALL_PROPERTIES.find((p) => p.id === id))
       .filter((p): p is Property => Boolean(p));
@@ -334,7 +334,7 @@ export async function getRelatedProperties(
 }
 
 export async function getPropertiesByIds(ids: string[]): Promise<Property[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return ids
       .map((id) => ALL_PROPERTIES.find((p) => p.id === id))
       .filter((p): p is Property => Boolean(p));

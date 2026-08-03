@@ -12,7 +12,7 @@ import {
 import { FormField } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget, useSecurityConfig } from '@/components/forms/GuestSpamFields';
 import { useSubmitContactMutation } from '@/hooks/mutations';
-import { useMockData } from '@/services/api-client';
+import { isMockDataEnabled } from '@/services/api-client';
 import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
 import { cn } from '@/lib/utils';
 import type { FieldErrors } from '@/services/api-client';
@@ -77,7 +77,7 @@ export function InquiryDialog({
   const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
   const mutation = useSubmitContactMutation();
   const security = useSecurityConfig();
-  const mock = useMockData();
+  const mock = isMockDataEnabled();
   const turnstileRequired = !mock && Boolean(security?.turnstile.enabled && security.turnstile.siteKey);
   const fieldId = (field: string) => `${idPrefix}-${field}-${mode}`;
 

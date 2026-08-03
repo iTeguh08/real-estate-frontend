@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import { getPropertiesByIds } from '@/services/properties.service';
 import type { Property } from '@/types';
 
@@ -31,7 +31,7 @@ function normalizeIds(ids: unknown): string[] {
 }
 
 export async function getWishlistIds(): Promise<string[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return readLocalWishlist();
   }
   return normalizeIds(await apiFetch<unknown[]>('/wishlist'));
@@ -40,7 +40,7 @@ export async function getWishlistIds(): Promise<string[]> {
 export async function toggleWishlistItem(propertyId: string): Promise<string[]> {
   const id = String(propertyId);
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 200));
     const current = readLocalWishlist();
     const next = current.includes(id)
@@ -57,7 +57,7 @@ export async function getWishlistProperties(ids: string[]): Promise<Property[]> 
   const normalized = normalizeIds(ids);
   if (normalized.length === 0) return [];
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return getPropertiesByIds(normalized);
   }
 

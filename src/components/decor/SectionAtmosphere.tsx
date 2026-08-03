@@ -277,7 +277,7 @@ export function SectionAtmosphere({
   const showAmbient = variant === 'ambient';
 
   const objectPosition =
-    resolvedImage === 'soft-left'
+    resolvedImage === 'soft-left' || resolvedImage === 'related-plants'
       ? 'left center'
       : resolvedImage === 'location-light'
         ? 'center center'

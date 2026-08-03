@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import { getPropertiesByIds } from '@/services/properties.service';
 import type { Property } from '@/types';
 
@@ -33,7 +33,7 @@ function normalizeIds(ids: unknown): string[] {
 }
 
 export async function getCompareIds(): Promise<string[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return readLocalCompare();
   }
   return normalizeIds(await apiFetch<unknown[]>('/compare'));
@@ -44,7 +44,7 @@ export async function toggleCompareItem(
 ): Promise<{ ids: string[]; limited: boolean }> {
   const id = String(propertyId);
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 150));
     const current = readLocalCompare();
 
@@ -77,7 +77,7 @@ export async function getCompareProperties(ids: string[]): Promise<Property[]> {
   const normalized = normalizeIds(ids);
   if (normalized.length === 0) return [];
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return getPropertiesByIds(normalized);
   }
 
@@ -87,7 +87,7 @@ export async function getCompareProperties(ids: string[]): Promise<Property[]> {
 }
 
 export async function clearCompare(): Promise<string[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     writeLocalCompare([]);
     return [];
   }

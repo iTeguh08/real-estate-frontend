@@ -18,19 +18,16 @@ const SERVICE_META = {
     Illustration: VillaIllustration,
     href: listingsHref({ status: 'For Sale' }),
     cta: 'Browse homes for sale',
-    step: '01',
   },
   rent: {
     Illustration: ApartmentIllustration,
     href: listingsHref({ status: 'For Rent' }),
     cta: 'Explore rentals',
-    step: '02',
   },
   sell: {
     Illustration: CommercialIllustration,
     href: routes.submitProperty,
     cta: 'List your property',
-    step: '03',
   },
 } as const;
 
@@ -38,7 +35,6 @@ type ExpertiseItem = HomepageExpertiseItem & {
   Illustration: React.ComponentType<{ className?: string; iconClassName?: string }>;
   href: string;
   cta: string;
-  step: string;
 };
 
 const KEY_DIFFERENTIATORS = [
@@ -60,7 +56,7 @@ function ExpertiseMetric({ value, label }: { value: string; label: string }) {
 }
 
 function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
-  const { Illustration, label, description, href, cta, step } = item;
+  const { Illustration, label, description, href, cta } = item;
 
   return (
     <Link
@@ -74,13 +70,6 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
       )}
       aria-label={`${label} — ${cta}`}
     >
-      <span
-        className="absolute top-4 right-5 font-poppins text-[11px] font-semibold tracking-[0.2em] text-hz-border transition-colors duration-300 group-hover:text-hz-primary/40"
-        aria-hidden="true"
-      >
-        {step}
-      </span>
-
       <div
         className="hidden h-[88px] w-20 shrink-0 items-center justify-center md:flex"
         aria-hidden="true"

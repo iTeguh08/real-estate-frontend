@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import { withGuestSpamFields } from '@/services/security.service';
 
 export interface ContactFormData {
@@ -17,7 +17,7 @@ interface ContactResponse {
 }
 
 export async function submitContactForm(data: ContactFormData): Promise<string> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     return `Thank you, ${data.name || 'there'}! Your message has been received. Our team will get back to you within 1–2 business days.`;
   }

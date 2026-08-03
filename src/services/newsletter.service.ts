@@ -1,8 +1,8 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import { withGuestSpamFields } from '@/services/security.service';
 
 export async function subscribeNewsletter(email: string, turnstileToken = ''): Promise<void> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 600));
     if (email.includes('fail')) {
       throw new Error('Subscription failed');

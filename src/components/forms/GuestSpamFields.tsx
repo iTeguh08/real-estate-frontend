@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { getSecurityConfig, type SecurityConfig } from '@/services/security.service';
-import { useMockData } from '@/services/api-client';
+import { isMockDataEnabled } from '@/services/api-client';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -111,7 +111,7 @@ interface TurnstileWidgetProps {
  */
 export function TurnstileWidget({ onTokenChange }: TurnstileWidgetProps) {
   const config = useSecurityConfig();
-  const mock = useMockData();
+  const mock = isMockDataEnabled();
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const turnstileTheme = theme === 'navy' ? 'dark' : 'light';

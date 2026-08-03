@@ -1,6 +1,6 @@
 import { SITE_CONFIG } from '@/data/site-config';
 import { SITE_FOOTER_FALLBACK, type SiteFooterContent } from '@/data/cms-fallbacks';
-import { graphqlFetch, useMockData } from '@/services/graphql-client';
+import { graphqlFetch, isMockDataEnabled } from '@/services/graphql-client';
 
 export interface SiteConfig {
   brand: string;
@@ -40,7 +40,7 @@ function toPhoneHref(phone: string): string {
 }
 
 export async function getSiteConfig(): Promise<SiteConfig> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return {
       brand: SITE_CONFIG.brand,
       tagline: SITE_CONFIG.tagline,

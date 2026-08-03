@@ -2,7 +2,7 @@ export function getGraphqlUrl(): string {
   return import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:8080/graphql';
 }
 
-export function useMockData(): boolean {
+export function isMockDataEnabled(): boolean {
   return import.meta.env.VITE_USE_MOCK !== 'false';
 }
 

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useTheme } from '@/hooks/useTheme';
 import { PROPERTY_TYPE_ITEMS } from '@/data/property-types';
 import { usePropertyTypeCountsQuery } from '@/hooks/queries';
@@ -60,12 +59,12 @@ function PropertyTypeCard({
       aria-label={`${type}: ${count} ${countLabel.toLowerCase()}`}
       className={cn(
         'group flex h-auto min-h-[108px] w-full cursor-pointer flex-col items-center justify-center gap-3',
-        'rounded-hz px-4 py-5 transition-all duration-300 focus-visible:outline-none md:h-[220px] md:gap-6 md:py-4',
+        'rounded-hz px-4 py-5 focus-visible:outline-none md:h-[220px] md:gap-6 md:py-4',
         isActive
           ? 'border border-hz-primary bg-hz-primary text-white shadow-hz-sm'
           : cn(
               'border border-hz-border bg-hz-elevated text-hz-ink shadow-hz-sm',
-              'hover:-translate-y-0.5 hover:border-hz-primary/35 hover:shadow-hz-md',
+              'hover:border-hz-primary/35',
               'focus-visible:ring-2 focus-visible:ring-hz-primary/20 focus-visible:ring-offset-2',
               ringOffsetClass
             )
@@ -75,7 +74,7 @@ function PropertyTypeCard({
         <Illustration
           className="flex h-full w-full items-center justify-center"
           iconClassName={cn(
-            'h-[80px] w-[80px] max-w-none translate-y-0 object-contain transition-[filter,opacity] duration-300',
+            'h-[80px] w-[80px] max-w-none translate-y-0 object-contain',
             isActive ? 'hz-raster-icon-on-primary' : 'hz-raster-icon-on-surface'
           )}
         />
@@ -156,23 +155,12 @@ export function PropertyTypeGrid() {
     <section
       id="properties"
       className={cn(
-        'relative w-full overflow-hidden py-16 md:py-20',
+        'relative w-full py-16 md:py-20',
         isLight ? 'border-t border-hz-line bg-hz-sunken' : 'border-t border-hz-line/55 bg-hz-page'
       )}
       aria-labelledby="property-type-heading"
     >
-      {isLight ? (
-        <SectionAtmosphere
-          tone="soft"
-          surface="sunken"
-          intensity="quiet"
-          variant="dual"
-          side="left"
-          image="interior-light"
-          className="max-md:hidden"
-        />
-      ) : null}
-      <div className="section-container relative z-10">
+      <div className="section-container">
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

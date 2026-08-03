@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import type { CustomLayout, MediaSlotField } from '@/data/property-media-slots';
 
 export type AgentPublishStatus = 'draft' | 'pending_review' | 'published';
@@ -180,7 +180,7 @@ export function mediaPreview(listing: AgentListing, field: MediaSlotField): stri
 }
 
 export async function fetchMyListings(): Promise<AgentListing[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 250));
     return MOCK_LISTINGS;
   }
@@ -190,7 +190,7 @@ export async function fetchMyListings(): Promise<AgentListing[]> {
 }
 
 export async function fetchMyListing(id: number | string): Promise<AgentListing> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 200));
     const found = MOCK_LISTINGS.find((item) => String(item.id) === String(id));
     if (!found) {
@@ -207,7 +207,7 @@ export async function updateMyListing(
   id: number | string,
   input: AgentListingUpdateInput
 ): Promise<AgentListing> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 300));
     const idx = MOCK_LISTINGS.findIndex((item) => String(item.id) === String(id));
     if (idx < 0) throw new Error('Listing not found');
@@ -228,7 +228,7 @@ export async function uploadMyListingMedia(
   field: MediaSlotField,
   file: File
 ): Promise<AgentListing> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 300));
     const idx = MOCK_LISTINGS.findIndex((item) => String(item.id) === String(id));
     if (idx < 0) throw new Error('Listing not found');
@@ -265,7 +265,7 @@ export async function clearMyListingMedia(
   id: number | string,
   field: MediaSlotField
 ): Promise<AgentListing> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 200));
     const idx = MOCK_LISTINGS.findIndex((item) => String(item.id) === String(id));
     if (idx < 0) throw new Error('Listing not found');
@@ -295,7 +295,7 @@ export async function clearMyListingMedia(
 }
 
 export async function publishMyListing(id: number | string): Promise<AgentListing> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 300));
     const idx = MOCK_LISTINGS.findIndex((item) => String(item.id) === String(id));
     if (idx < 0) throw new Error('Listing not found');
@@ -310,7 +310,7 @@ export async function publishMyListing(id: number | string): Promise<AgentListin
 }
 
 export async function unpublishMyListing(id: number | string): Promise<AgentListing> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 300));
     const idx = MOCK_LISTINGS.findIndex((item) => String(item.id) === String(id));
     if (idx < 0) throw new Error('Listing not found');
@@ -325,7 +325,7 @@ export async function unpublishMyListing(id: number | string): Promise<AgentList
 }
 
 export async function deleteMyListing(id: number | string): Promise<void> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((r) => setTimeout(r, 300));
     const idx = MOCK_LISTINGS.findIndex((item) => String(item.id) === String(id));
     if (idx < 0) throw new Error('Listing not found');

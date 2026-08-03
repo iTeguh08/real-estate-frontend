@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 
 export const HONEYPOT_FIELD = 'website';
 export const TURNSTILE_FIELD = 'cf-turnstile-response';
@@ -29,7 +29,7 @@ let cachedConfig: SecurityConfig | null = null;
 let inflight: Promise<SecurityConfig> | null = null;
 
 export async function getSecurityConfig(): Promise<SecurityConfig> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return FALLBACK_CONFIG;
   }
 

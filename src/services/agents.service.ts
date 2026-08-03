@@ -1,6 +1,6 @@
 import { AGENTS } from '@/data/agents';
 import { mergeAgentWithFallback, mergeAgentsWithFallback } from '@/lib/cms-merge';
-import { graphqlFetch, useMockData } from '@/services/graphql-client';
+import { graphqlFetch, isMockDataEnabled } from '@/services/graphql-client';
 import type { Agent } from '@/types';
 
 const AGENT_FIELDS = `
@@ -9,7 +9,7 @@ const AGENT_FIELDS = `
 `;
 
 export async function getFeaturedAgents(): Promise<Agent[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return AGENTS;
   }
 
@@ -21,7 +21,7 @@ export async function getFeaturedAgents(): Promise<Agent[]> {
 }
 
 export async function getAgents(): Promise<Agent[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return AGENTS;
   }
 
@@ -33,7 +33,7 @@ export async function getAgents(): Promise<Agent[]> {
 }
 
 export async function getAgentBySlug(slug: string): Promise<Agent | null> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return AGENTS.find((agent) => agent.slug === slug) ?? null;
   }
 

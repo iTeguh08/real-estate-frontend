@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import { getStoredToken } from '@/services/auth-storage';
 import { withGuestSpamFields } from '@/services/security.service';
 import type { PropertyStatus, PropertyType } from '@/types';
@@ -79,7 +79,7 @@ function submitPath(): string {
 }
 
 export async function fetchMyPropertySubmissions(): Promise<MyPropertySubmission[]> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 200));
     return [...MOCK_SUBMISSIONS];
   }
@@ -89,7 +89,7 @@ export async function fetchMyPropertySubmissions(): Promise<MyPropertySubmission
 }
 
 export async function cancelMyPropertySubmission(id: number | string): Promise<void> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 200));
     const idx = MOCK_SUBMISSIONS.findIndex((item) => String(item.id) === String(id));
     if (idx >= 0) {
@@ -117,7 +117,7 @@ export function reviewStatusLabel(status: SubmissionReviewStatus): string {
 export async function submitPropertyListing(
   data: PropertySubmissionData
 ): Promise<PropertySubmissionResult> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     const submission: MyPropertySubmission = {
       id: Date.now(),

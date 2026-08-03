@@ -1,4 +1,4 @@
-import { apiFetch, useMockData } from '@/services/api-client';
+import { apiFetch, isMockDataEnabled } from '@/services/api-client';
 import {
   clearAuth,
   getStoredToken,
@@ -19,7 +19,7 @@ export async function registerMember(input: {
   password: string;
   password_confirmation: string;
 }): Promise<AuthResponse> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 400));
     const user: AuthUser = {
       id: 1,
@@ -52,7 +52,7 @@ export async function loginMember(input: {
   email: string;
   password: string;
 }): Promise<AuthResponse> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     await new Promise((resolve) => setTimeout(resolve, 400));
     const user: AuthUser = {
       id: 1,
@@ -82,7 +82,7 @@ export async function loginMember(input: {
 }
 
 export async function logoutMember(): Promise<void> {
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     clearAuth();
     return;
   }
@@ -102,7 +102,7 @@ export async function fetchCurrentUser(): Promise<AuthUser | null> {
     return null;
   }
 
-  if (useMockData()) {
+  if (isMockDataEnabled()) {
     return getStoredUser();
   }
 
