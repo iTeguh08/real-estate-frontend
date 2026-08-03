@@ -57,6 +57,7 @@ export function WhatPeopleSaySection({
           variant="ambient"
           side="right"
           image="interior-dark"
+          className="max-md:hidden"
         />
         <p className="relative z-10 mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           {eyebrow}

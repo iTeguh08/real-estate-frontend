@@ -71,6 +71,7 @@ export function PropertyIntroduction({ property, embedded = false }: PropertyInt
         variant="ambient"
         side="left"
         image="interior-light"
+        className="max-md:hidden"
       />
       <div className="relative z-10">{content}</div>
     </section>

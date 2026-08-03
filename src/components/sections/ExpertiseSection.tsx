@@ -82,7 +82,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
       </span>
 
       <div
-        className="flex h-[88px] w-20 shrink-0 items-center justify-center"
+        className="hidden h-[88px] w-20 shrink-0 items-center justify-center md:flex"
         aria-hidden="true"
       >
         <Illustration
@@ -91,7 +91,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
         />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 pr-8">
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 pr-4 md:pr-8">
         <h3 className="font-poppins text-lg font-semibold leading-tight text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
           {label}
         </h3>
@@ -137,6 +137,7 @@ export function ExpertiseSection() {
         variant="dual"
         side="left"
         image="none"
+        className="max-md:hidden"
       />
       <div className="section-container relative z-10 xl:px-16 2xl:px-20">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">

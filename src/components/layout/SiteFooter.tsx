@@ -191,6 +191,7 @@ export function SiteFooter() {
         photoOpacity={isLight ? 0.92 : 0.35}
         photoScrimMix={isLight ? 40 : undefined}
         photoFade="hold"
+        className="max-md:hidden"
       />
 
       <div className="relative z-10 section-container">

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useTheme } from '@/hooks/useTheme';
 import { PROPERTY_TYPE_ITEMS } from '@/data/property-types';
 import { usePropertyTypeCountsQuery } from '@/hooks/queries';
@@ -58,8 +59,8 @@ function PropertyTypeCard({
       aria-pressed={isActive}
       aria-label={`${type}: ${count} ${countLabel.toLowerCase()}`}
       className={cn(
-        'group flex h-[220px] w-full cursor-pointer flex-col items-center justify-center gap-6',
-        'rounded-hz px-4 py-4 transition-all duration-300 focus-visible:outline-none',
+        'group flex h-auto min-h-[108px] w-full cursor-pointer flex-col items-center justify-center gap-3',
+        'rounded-hz px-4 py-5 transition-all duration-300 focus-visible:outline-none md:h-[220px] md:gap-6 md:py-4',
         isActive
           ? 'border border-hz-primary bg-hz-primary text-white shadow-hz-sm'
           : cn(
@@ -70,7 +71,7 @@ function PropertyTypeCard({
             )
       )}
     >
-      <div className="flex h-[88px] w-full items-center justify-center" aria-hidden="true">
+      <div className="hidden h-[88px] w-full items-center justify-center md:flex" aria-hidden="true">
         <Illustration
           className="flex h-full w-full items-center justify-center"
           iconClassName={cn(
@@ -80,8 +81,8 @@ function PropertyTypeCard({
         />
       </div>
 
-      <div className="flex w-full flex-col items-center gap-3 text-center">
-        <span className="font-poppins text-lg font-semibold leading-none">{type}</span>
+      <div className="flex w-full flex-col items-center gap-2 text-center md:gap-3">
+        <span className="font-poppins text-base font-semibold leading-none md:text-lg">{type}</span>
         <span
           className={cn(
             'font-poppins text-[12px] leading-none',
@@ -155,12 +156,23 @@ export function PropertyTypeGrid() {
     <section
       id="properties"
       className={cn(
-        'relative w-full py-16 md:py-20',
+        'relative w-full overflow-hidden py-16 md:py-20',
         isLight ? 'border-t border-hz-line bg-hz-sunken' : 'border-t border-hz-line/55 bg-hz-page'
       )}
       aria-labelledby="property-type-heading"
     >
-      <div className="section-container">
+      {isLight ? (
+        <SectionAtmosphere
+          tone="soft"
+          surface="sunken"
+          intensity="quiet"
+          variant="dual"
+          side="left"
+          image="interior-light"
+          className="max-md:hidden"
+        />
+      ) : null}
+      <div className="section-container relative z-10">
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

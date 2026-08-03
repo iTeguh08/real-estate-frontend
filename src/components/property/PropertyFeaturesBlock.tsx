@@ -26,6 +26,7 @@ export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) 
         variant="edge"
         side="left"
         image="interior-dark"
+        className="max-md:hidden"
       />
       <div className="section-container relative z-10 grid items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 xl:gap-20">
         <div className="lg:pr-6">

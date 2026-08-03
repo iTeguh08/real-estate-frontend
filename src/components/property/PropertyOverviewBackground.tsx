@@ -8,7 +8,7 @@ export interface PropertyOverviewBackgroundProps {
 
 export function PropertyOverviewBackground({ imageUrl }: PropertyOverviewBackgroundProps) {
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div className="pointer-events-none absolute inset-0 max-md:hidden" aria-hidden="true">
       <MediaImage
         src={sizedImage(imageUrl, 720)}
         alt=""

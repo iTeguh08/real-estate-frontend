@@ -55,6 +55,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           image="architecture"
           photoFade="exit-soft"
           photoOpacity={0.4}
+          className="max-md:hidden"
         />
       ) : (
         <SectionAtmosphere
@@ -67,6 +68,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           photoFade="balanced"
           photoOpacity={0.2}
           photoScrimMix={30}
+          className="max-md:hidden"
         />
       )}
       <div className="section-container relative z-10">

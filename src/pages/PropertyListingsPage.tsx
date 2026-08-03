@@ -53,6 +53,21 @@ function clampListingPrice(value: number) {
   return Math.min(LISTINGS_PRICE_MAX, Math.max(LISTINGS_PRICE_MIN, value));
 }
 
+/** Mobile Filters badge — ignore default For Rent on plain /listings. */
+function hasListingsMobileFiltersActive(filters: ListingFilters): boolean {
+  if (
+    filters.keyword ||
+    filters.location ||
+    filters.propertyType ||
+    filters.beds ||
+    filters.minPrice ||
+    filters.maxPrice
+  ) {
+    return true;
+  }
+  return Boolean(filters.status && filters.status !== 'For Rent');
+}
+
 function SidebarRecentProperty({ property }: { property: Property }) {
   return (
     <Link
@@ -147,6 +162,7 @@ export function PropertyListingsPage() {
   const maxPriceValue = parseListingPrice(filters.maxPrice, LISTINGS_PRICE_MAX);
   const sliderMin = Math.min(minPriceValue, maxPriceValue);
   const sliderMax = Math.max(minPriceValue, maxPriceValue);
+  const filtersActive = hasListingsMobileFiltersActive(filters);
   const listingGridClass =
     gridColumns === 1
       ? 'grid grid-cols-1 gap-5'
@@ -208,7 +224,7 @@ export function PropertyListingsPage() {
             style={{ backgroundColor: 'var(--hz-listings)' }}
           />
           <div
-            className="pointer-events-none fixed inset-0 z-0"
+            className="pointer-events-none fixed inset-0 z-0 max-lg:hidden"
             aria-hidden="true"
             style={{
               backgroundImage: `url(${publicAsset('bg/bg-listings-haze.webp')})`,
@@ -241,13 +257,14 @@ export function PropertyListingsPage() {
             photoFade="hold"
             photoOpacity={0.22}
             photoScrimMix={52}
+            className="max-md:hidden"
           />
         ) : null}
       <div className="section-container relative z-10 col-start-1 row-start-1 py-12 md:py-16">
         <div className="grid gap-8 lg:grid-cols-[290px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           <aside
             ref={asideRef}
-            className="flex flex-col gap-6 lg:sticky lg:z-20 lg:self-start"
+            className="hidden flex-col gap-6 lg:flex lg:sticky lg:z-20 lg:self-start"
             style={asideStickyTop !== undefined ? { top: asideStickyTop } : undefined}
           >
             <section
@@ -258,9 +275,6 @@ export function PropertyListingsPage() {
                   : 'bg-hz-listings-sidebar/75 ring-1 ring-hz-listings-sidebar/30'
               )}
             >
-              <h1 className="font-poppins text-[30px] font-semibold text-hz-ink lg:hidden">
-                Property listing
-              </h1>
               <h2 className="mb-5 font-poppins text-[18px] font-semibold text-hz-ink">Search</h2>
 
               <div className="mb-4 grid grid-cols-2 overflow-hidden rounded-hz border border-hz-border bg-hz-elevated">
@@ -440,7 +454,7 @@ export function PropertyListingsPage() {
               </div>
             </section>
 
-            <section className="rounded-hz bg-hz-sunken p-5 shadow-hz-sm">
+            <section className="hidden rounded-hz bg-hz-sunken p-5 shadow-hz-sm lg:block">
               <h2 className="mb-4 font-poppins text-[17px] font-semibold text-hz-ink">Latest Properties</h2>
               <div className="space-y-2">
                 {recentProperties.map((property) => (
@@ -452,10 +466,27 @@ export function PropertyListingsPage() {
 
           <section>
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <h1 className="hidden font-poppins text-[32px] font-semibold text-hz-ink lg:block">
-                Property listing
-              </h1>
+              <div className="flex items-center justify-between gap-3 lg:block">
+                <h1 className="font-poppins text-[30px] font-semibold text-hz-ink lg:text-[32px]">
+                  Property listing
+                </h1>
+                <button
+                  type="button"
+                  onClick={() => setAdvancedSearchOpen(true)}
+                  className={cn(
+                    'inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-hz border px-4 font-poppins text-[13px] font-semibold transition-colors lg:hidden',
+                    filtersActive
+                      ? 'border-hz-primary bg-hz-primary/10 text-hz-primary'
+                      : 'border-hz-border bg-hz-elevated text-hz-ink hover:border-hz-primary/40 hover:text-hz-primary'
+                  )}
+                  aria-label="Open search filters"
+                >
+                  <SlidersHorizontal size={16} strokeWidth={1.85} aria-hidden="true" />
+                  Filters
+                </button>
+              </div>
               <div className="ml-auto flex flex-wrap items-center gap-3">
+                <div className="hidden items-center gap-3 md:flex">
                 <button
                   type="button"
                   onClick={() => setGridColumns(1)}
@@ -504,11 +535,12 @@ export function PropertyListingsPage() {
                     ))}
                   </div>
                 </button>
+                </div>
 
                 <SelectField
                   value={String(filters.perPage)}
                   onChange={(event) => updateFilters({ perPage: Number(event.target.value), page: 1 })}
-                  className="min-w-[130px] border-hz-border text-hz-body"
+                  className="hidden min-w-[130px] border-hz-border text-hz-body md:block"
                 >
                   {PER_PAGE_OPTIONS.map((option) => (
                     <option key={option} value={option}>

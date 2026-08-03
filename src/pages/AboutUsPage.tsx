@@ -52,7 +52,7 @@ export function AboutUsPage() {
   return (
     <main id="main-content">
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" />
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="max-w-xl">
@@ -113,7 +113,7 @@ export function AboutUsPage() {
       </section>
 
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20" aria-labelledby="mission-heading">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="dual" side="right" image="aerial" />
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="dual" side="right" image="aerial" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -149,7 +149,7 @@ export function AboutUsPage() {
       </section>
 
       <section className="relative overflow-hidden bg-hz-sunken py-16 md:py-20" aria-labelledby="services-heading">
-        <SectionAtmosphere tone="light" intensity="quiet" variant="dual" side="left" image="interior-light" />
+        <SectionAtmosphere tone="light" intensity="quiet" variant="dual" side="left" image="interior-light" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <header className="mb-12 max-w-2xl">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -171,13 +171,16 @@ export function AboutUsPage() {
                 <article
                   key={service.id}
                   className={cn(
-                    'group flex w-full items-center gap-6',
-                    'rounded-hz bg-hz-elevated p-6',
+                    'group flex w-full items-center gap-4 md:gap-6',
+                    'rounded-hz bg-hz-elevated p-5 md:p-6',
                     'shadow-hz-sm',
                     'transition-all duration-300 hover:shadow-hz-md'
                   )}
                 >
-                  <div className="flex h-[88px] w-20 shrink-0 items-center justify-center" aria-hidden="true">
+                  <div
+                    className="hidden h-[88px] w-20 shrink-0 items-center justify-center md:flex"
+                    aria-hidden="true"
+                  >
                     <Illustration
                       className="flex h-full w-full items-center justify-center"
                       iconClassName="!h-full !w-full !translate-y-0 object-contain object-center hz-raster-icon-on-surface"
@@ -197,7 +200,7 @@ export function AboutUsPage() {
       </section>
 
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20" aria-labelledby="timeline-heading">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" />
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <header className="mb-12 text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -237,7 +240,7 @@ export function AboutUsPage() {
         className="relative overflow-hidden bg-hz-footer py-16 md:py-20"
         aria-labelledby="about-cta-heading"
       >
-        <SectionAtmosphere tone="dark" intensity="strong" variant="ambient" side="left" image="architecture" />
+        <SectionAtmosphere tone="dark" intensity="strong" variant="ambient" side="left" image="architecture" className="max-md:hidden" />
         <div className="section-container relative z-10 text-center">
           <h2
             id="about-cta-heading"

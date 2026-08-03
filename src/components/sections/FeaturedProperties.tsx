@@ -59,6 +59,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
         photoScrimMix={62}
         photoFade="exit-soft"
         stickyViewport
+        className="max-md:hidden"
       />
       <div className="section-container relative z-10 col-start-1 row-start-1 py-16 md:py-20">
         <div className="mb-12 flex flex-col items-center justify-center text-center">

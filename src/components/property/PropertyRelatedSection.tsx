@@ -43,6 +43,7 @@ export function PropertyRelatedSection({
         photoOpacity={isNavy ? 0.36 : 0.2}
         photoScrimMix={isNavy ? 58 : 62}
         photoFade="exit-soft"
+        className="max-md:hidden"
       />
       <div className="section-container relative z-10 col-start-1 row-start-1 pt-20 pb-16 md:pt-24 md:pb-20">
         <div className="mb-12 flex flex-col items-center justify-center text-center">

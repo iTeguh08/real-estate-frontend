@@ -313,12 +313,12 @@ export function HeroSection() {
 
   const heroFooter = (
     <>
-      <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted">
+      <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted max-md:hidden">
         Your search preferences are saved and shared via the URL. Matching listings load live from
         our database — scroll down to browse results.
       </p>
 
-      <div className="mt-4 max-w-[620px] 3xl:max-w-[720px] flex items-center gap-3 flex-wrap">
+      <div className="mt-4 flex max-w-[620px] flex-wrap items-center gap-3 3xl:max-w-[720px] max-md:hidden">
         <span className="font-poppins font-normal text-[13px] text-hz-muted">
           When you are looking for:
         </span>
@@ -359,7 +359,7 @@ export function HeroSection() {
     >
       {isLight ? (
         <div
-          className="pointer-events-none absolute inset-0 z-[1]"
+          className="pointer-events-none absolute inset-0 z-[1] max-md:hidden"
           aria-hidden="true"
         >
           <img

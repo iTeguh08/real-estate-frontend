@@ -212,6 +212,7 @@ export function LocationSection({
         photoScrimMix={isNavy ? undefined : 42}
         photoFade="exit-soft"
         lightGlow="white"
+        className="max-md:hidden"
       />
       <div className="section-container relative z-10">
         <div className="mb-12 flex flex-col items-center text-center">

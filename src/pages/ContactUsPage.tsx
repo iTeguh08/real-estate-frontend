@@ -99,7 +99,7 @@ export function ContactUsPage() {
   return (
     <main id="main-content">
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="right" image="aerial" />
+        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="right" image="aerial" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <header className="mx-auto max-w-2xl text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -114,7 +114,7 @@ export function ContactUsPage() {
       </section>
 
       <section className="relative overflow-hidden bg-hz-sunken pb-12 pt-0 md:pb-16" aria-label="Contact information">
-        <SectionAtmosphere tone="light" intensity="quiet" variant="edge" side="left" image="interior-light" />
+        <SectionAtmosphere tone="light" intensity="quiet" variant="edge" side="left" image="interior-light" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <ContactInfoCard icon={MapPin} title="Visit Us">
@@ -163,6 +163,7 @@ export function ContactUsPage() {
           variant="dual"
           side="right"
           image="none"
+          className="max-md:hidden"
         />
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">

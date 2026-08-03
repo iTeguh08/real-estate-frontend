@@ -113,6 +113,7 @@ export function PropertyShowcaseSection({
         variant="dual"
         side="right"
         image="interior-light"
+        className="max-md:hidden"
       />
       <div className="relative z-10">{content}</div>
     </section>

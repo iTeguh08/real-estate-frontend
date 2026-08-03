@@ -20,7 +20,7 @@ export function AuthFormShell({
 }: AuthFormShellProps) {
   return (
     <main id="main-content" className="relative flex min-h-[calc(100vh-76px)] items-center overflow-hidden bg-hz-sunken py-12">
-      <SectionAtmosphere tone="light" intensity="default" variant="ambient" side="left" image="interior-light" />
+      <SectionAtmosphere tone="light" intensity="default" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
       <div className="section-container relative z-10 w-full max-w-md">
         <div className="rounded-hz border border-hz-border bg-hz-elevated p-6 shadow-hz-md md:p-8">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
