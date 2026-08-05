@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { MediaImage } from '@/components/ui/media-image';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
 
@@ -24,6 +25,7 @@ export type AtmosphereImage =
   | 'listings-property'
   | 'footer-edge'
   | 'best-value'
+  | 'agents-plants'
   | 'related-plants'
   | 'auto'
   | 'none';
@@ -80,6 +82,7 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   'listings-property': 'bg/bg-light-listings-interior-v3.webp',
   'footer-edge': 'bg/bg-light-footer-edge-v3.webp',
   'best-value': 'bg/bg-light-best-value-edges-v2.webp',
+  'agents-plants': 'bg/bg-light-agents-plants-v1.webp',
   'related-plants': 'bg/bg-light-related-plants.webp',
 };
 
@@ -216,6 +219,7 @@ export function SectionAtmosphere({
   const primaryEdge = side === 'left' ? 'left' : 'right';
   const oppositeEdge = side === 'left' ? 'right' : 'left';
   const resolvedImage = resolveImage(tone, image);
+  const isRelatedPlants = resolvedImage === 'related-plants';
   const isBareLocationPhoto = resolvedImage === 'location-light' && !isDark;
   const photoSrc =
     resolvedImage === 'none' ? null : publicAsset(IMAGE_FILES[resolvedImage]);
@@ -223,14 +227,22 @@ export function SectionAtmosphere({
 
   const photoMask = isBareLocationPhoto
     ? 'linear-gradient(to right, transparent 0%, black 22%, black 100%)'
-    : photoFade === 'hold'
+    : isRelatedPlants
+      ? side === 'left'
+        ? 'linear-gradient(to right, black 0%, black 52%, transparent 92%)'
+        : 'linear-gradient(to left, black 0%, black 52%, transparent 92%)'
+      : photoFade === 'hold'
       ? 'linear-gradient(to bottom, transparent 0%, black 14%, black 100%)'
       : photoFade === 'exit-soft'
         ? 'linear-gradient(to bottom, transparent 0%, black 14%, black 58%, transparent 92%)'
         : 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)';
   const scrimMask = isBareLocationPhoto
     ? 'linear-gradient(to right, transparent 0%, black 18%, black 100%)'
-    : photoFade === 'hold'
+    : isRelatedPlants
+      ? side === 'left'
+        ? 'linear-gradient(to right, black 0%, black 38%, transparent 90%)'
+        : 'linear-gradient(to left, black 0%, black 38%, transparent 90%)'
+      : photoFade === 'hold'
       ? 'linear-gradient(to bottom, transparent 0%, black 12%, black 100%)'
       : photoFade === 'exit-soft'
         ? 'linear-gradient(to bottom, transparent 0%, black 12%, black 62%, transparent 94%)'
@@ -277,13 +289,17 @@ export function SectionAtmosphere({
   const showAmbient = variant === 'ambient';
 
   const objectPosition =
-    resolvedImage === 'soft-left' || resolvedImage === 'related-plants'
+    resolvedImage === 'soft-left'
       ? 'left center'
-      : resolvedImage === 'location-light'
-        ? 'center center'
-        : side === 'right'
-          ? '70% center'
-          : '30% center';
+      : resolvedImage === 'related-plants'
+        ? side === 'left'
+          ? 'left bottom'
+          : 'right bottom'
+        : resolvedImage === 'location-light'
+          ? 'center center'
+          : side === 'right'
+            ? '70% center'
+            : '30% center';
 
   const SCRIM_VAR: Record<Surface, string> = {
     footer: 'var(--hz-footer)',
@@ -332,18 +348,30 @@ export function SectionAtmosphere({
     >
       {photoSrc ? (
         <>
-          <img
+          <MediaImage
             src={photoSrc}
             alt=""
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="object-cover"
+            wrapperClassName={cn(
+              'absolute inset-0',
+              isRelatedPlants &&
+                (side === 'left'
+                  ? 'bottom-0 left-0 top-auto h-[76%] w-[46%] right-auto'
+                  : 'bottom-0 right-0 top-auto h-[76%] w-[46%] left-auto')
+            )}
             style={{
               objectPosition,
               opacity: photoOpacity,
-              // Fade the photo itself — not a fake next-section color overlay
               WebkitMaskImage: photoMask,
               maskImage: photoMask,
+              ...(isRelatedPlants
+                ? {
+                    transform: 'scale(1)',
+                    transformOrigin: side === 'left' ? 'left bottom' : 'right bottom',
+                  }
+                : {}),
             }}
           />
           <div

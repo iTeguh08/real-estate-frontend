@@ -8,7 +8,7 @@ import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
 import { propertyCard } from '@/lib/cva';
-import { propertyPreviewUrl } from '@/lib/image-url';
+import { propertyPreviewUrl, GRID_CARD_PREVIEW_WIDTH } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { Property } from '@/types';
@@ -42,6 +42,8 @@ interface PropertyCardProps extends CardVariants {
   className?: string;
   uniformHeight?: boolean;
   onSelect?: (property: Property) => void;
+  /** Above-the-fold load tier — homepage featured row. */
+  imageLoadPriority?: 'high' | 'low' | 'auto';
 }
 
 export function PropertyCard({
@@ -51,6 +53,7 @@ export function PropertyCard({
   className,
   uniformHeight = false,
   onSelect,
+  imageLoadPriority = 'auto',
 }: PropertyCardProps) {
   const { id, title, status, type, specs, imageUrl, isFeatured } = property;
   const locationLabel = formatPropertyLocation(property);
@@ -103,9 +106,13 @@ export function PropertyCard({
         )}
       >
         <MediaImage
-          src={propertyPreviewUrl({ imageUrl }, isListVariant ? 180 : 800)}
+          src={propertyPreviewUrl(
+            { imageUrl },
+            isListVariant ? 180 : GRID_CARD_PREVIEW_WIDTH
+          )}
           alt={`${title} — ${locationLabel}`}
-          loading="lazy"
+          loading={imageLoadPriority === 'auto' ? 'lazy' : 'eager'}
+          fetchPriority={imageLoadPriority === 'high' ? 'high' : imageLoadPriority === 'low' ? 'low' : undefined}
           decoding="async"
           className="object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
         />

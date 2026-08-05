@@ -19,7 +19,6 @@ import {
 import { TYPE_SELECT_OPTIONS } from '@/data/property-types';
 import { formatPerSqftPrice } from '@/lib/format-property';
 import { filtersToSearchParams, searchParamsToFilters } from '@/lib/listing-filter-params';
-import { publicAsset } from '@/lib/public-asset';
 import { routes } from '@/lib/routes';
 import { propertyPreviewUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
@@ -51,6 +50,38 @@ function formatListingPrice(value: number) {
 
 function clampListingPrice(value: number) {
   return Math.min(LISTINGS_PRICE_MAX, Math.max(LISTINGS_PRICE_MIN, value));
+}
+
+/** Sidebar reset target — plain /listings defaults to For Rent; preserve agent scope. */
+function getListingsResetFilters(filters: ListingFilters): ListingFilters {
+  return {
+    keyword: '',
+    location: '',
+    propertyType: '',
+    status: 'For Rent',
+    beds: '',
+    minPrice: '',
+    maxPrice: '',
+    agentSlug: filters.agentSlug,
+    sort: '',
+    page: 1,
+    perPage: filters.perPage,
+  };
+}
+
+function hasSidebarFiltersActive(filters: ListingFilters): boolean {
+  if (
+    filters.keyword ||
+    filters.location ||
+    filters.propertyType ||
+    filters.beds ||
+    filters.minPrice ||
+    filters.maxPrice ||
+    filters.sort
+  ) {
+    return true;
+  }
+  return filters.status !== 'For Rent' || filters.page > 1;
 }
 
 /** Mobile Filters badge — ignore default For Rent on plain /listings. */
@@ -128,7 +159,7 @@ export function PropertyListingsPage() {
   const asideRef = useRef<HTMLElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-  const [gridColumns, setGridColumns] = useState<1 | 2 | 3>(2);
+  const [gridColumns, setGridColumns] = useState<1 | 2 | 3>(3);
   const { setAdvancedSearchOpen } = useListingFilters();
 
   const filters = useMemo(
@@ -163,6 +194,7 @@ export function PropertyListingsPage() {
   const sliderMin = Math.min(minPriceValue, maxPriceValue);
   const sliderMax = Math.max(minPriceValue, maxPriceValue);
   const filtersActive = hasListingsMobileFiltersActive(filters);
+  const sidebarFiltersActive = hasSidebarFiltersActive(filters);
   const listingGridClass =
     gridColumns === 1
       ? 'grid grid-cols-1 gap-5'
@@ -210,56 +242,30 @@ export function PropertyListingsPage() {
     setSearchParams(filtersToSearchParams(next), { replace: true });
   };
 
+  const resetFilters = () => {
+    setSearchParams(filtersToSearchParams(getListingsResetFilters(filters)), { replace: true });
+  };
+
   return (
-    <>
-      {isNavy ? (
-        <>
-          {/*
-            Navy-only: fixed haze photo with screen blend over midnight canvas.
-            Footer (z-20+) paints over this so it never merges into the footer.
-          */}
-          <div
-            className="pointer-events-none fixed inset-0 z-0"
-            aria-hidden="true"
-            style={{ backgroundColor: 'var(--hz-listings)' }}
-          />
-          <div
-            className="pointer-events-none fixed inset-0 z-0 max-lg:hidden"
-            aria-hidden="true"
-            style={{
-              backgroundImage: `url(${publicAsset('bg/bg-listings-haze.webp')})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              mixBlendMode: 'screen',
-              opacity: 0.85,
-            }}
-          />
-        </>
-      ) : null}
-      <main
-        id="main-content"
-        className={cn(
-          'relative z-[1] grid grid-cols-1',
-          isNavy ? 'bg-transparent' : 'bg-hz-listings'
-        )}
-      >
-        {!isNavy ? (
-          <SectionAtmosphere
-            tone="light"
-            surface="listings"
-            intensity="quiet"
-            variant="dual"
-            side="left"
-            image="related-plants"
-            lightGlow="white"
-            stickyViewport
-            photoFade="hold"
-            photoOpacity={0.22}
-            photoScrimMix={52}
-            className="max-md:hidden"
-          />
-        ) : null}
+    <main
+      id="main-content"
+      className="relative z-[1] grid grid-cols-1 bg-hz-elevated"
+    >
+      <SectionAtmosphere
+        tone={isNavy ? 'dark' : 'light'}
+        lightGlow="white"
+        washStyle={isNavy ? 'pattern' : 'gradient'}
+        surface="elevated"
+        intensity="quiet"
+        variant="dual"
+        side="left"
+        image={isNavy ? 'none' : 'location-edge'}
+        photoOpacity={0.4}
+        photoScrimMix={62}
+        photoFade="exit-soft"
+        stickyViewport
+        className="max-md:hidden"
+      />
       <div className="section-container relative z-10 col-start-1 row-start-1 py-12 md:py-16">
         <div className="grid gap-8 lg:grid-cols-[290px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           <aside
@@ -444,13 +450,26 @@ export function PropertyListingsPage() {
                   Advanced
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => updateFilters({ page: 1 })}
-                  className="h-11 w-full cursor-pointer rounded-hz bg-hz-primary font-poppins text-[14px] font-semibold text-white transition-colors hover:bg-hz-primary-hover"
-                >
-                  Find Properties
-                </button>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    disabled={!sidebarFiltersActive}
+                    className={cn(
+                      'h-11 cursor-pointer rounded-hz border border-hz-border bg-hz-elevated font-poppins text-[13px] font-semibold uppercase tracking-[0.04em] text-hz-ink transition-colors',
+                      'hover:border-hz-primary hover:text-hz-primary disabled:cursor-not-allowed disabled:opacity-40'
+                    )}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateFilters({ page: 1 })}
+                    className="h-11 cursor-pointer rounded-hz bg-hz-primary font-poppins text-[14px] font-semibold text-white transition-colors hover:bg-hz-primary-hover"
+                  >
+                    Find Properties
+                  </button>
+                </div>
               </div>
             </section>
 
@@ -666,6 +685,5 @@ export function PropertyListingsPage() {
         }}
       />
     </main>
-    </>
   );
 }

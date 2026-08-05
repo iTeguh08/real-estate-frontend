@@ -11,11 +11,13 @@
     /* ── Responsive breakpoints & container tokens ─────── */
     --breakpoint-3xl: 1920px;
     --breakpoint-4xl: 2560px;
-    --container-padding-DEFAULT: 1.5rem;
-    --container-max-width-xl: 1280px;
+    --container-padding-DEFAULT: 1.75rem;
+    --container-padding-lg: 5rem;
+    --container-padding-xl: 8.0625rem;
+    --container-max-width-xl: 1440px;
     --container-max-width-2xl: 1440px;
-    --container-max-width-3xl: 1680px;
-    --container-max-width-4xl: 1920px;
+    --container-max-width-3xl: 1440px;
+    --container-max-width-4xl: 1440px;
 
     /* ── Typography ──────────────────────────────────────── */
     --font-display: 'Poppins', sans-serif;
@@ -175,6 +177,22 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /* Section container — Fairfield-aligned responsive gutters */
+    --hz-section-max: 90rem;
+    --hz-section-gutter: 1.75rem; /* 28px — mobile & tablet (<1024) */
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --hz-section-gutter: 5rem; /* 80px — desktop */
+    }
+}
+
+@media (min-width: 1440px) {
+    :root {
+        --hz-section-gutter: 8.0625rem; /* 129px — wide / capped canvas */
+    }
 }
 
 /* ── Navy theme (opt-in): dark blue surfaces, light ink/borders; brand orange LOCKED ── */
@@ -291,8 +309,27 @@ html {
   }
 }
 
+/**
+ * Fairfield-style section container (fairfieldresidential.com):
+ * 28px gutter (<1024) → 80px @1024 → 129px @1440, max-width 1440px centered.
+ */
 @utility section-container {
-  @apply w-full max-w-7xl mx-auto px-5 md:px-10 2xl:max-w-[1680px] 2xl:px-12 3xl:max-w-[1920px] 3xl:px-16;
+  width: 100%;
+  max-width: var(--hz-section-max);
+  margin-inline: auto;
+  padding-inline: var(--hz-section-gutter);
+}
+
+/** Hero — Homzen split layout; NOT Fairfield section gutters (see section-container). */
+@utility hero-container {
+  @apply w-full px-5 md:px-10 lg:px-20;
+}
+
+/** Edge-bleed scroll rows inside section-container (mobile carousels). */
+@utility section-bleed-x {
+  margin-inline: calc(-1 * var(--hz-section-gutter));
+  padding-inline: var(--hz-section-gutter);
+  scroll-padding-inline: var(--hz-section-gutter);
 }
 
 /**
@@ -387,13 +424,13 @@ html {
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    background-color: color-mix(in oklch, var(--hz-sunken) 78%, var(--hz-line));
+    background-color: color-mix(in oklch, var(--hz-line) 38%, var(--hz-sunken));
     background-image: linear-gradient(
       115deg,
-      color-mix(in oklch, var(--hz-sunken) 94%, var(--hz-elevated)) 0%,
-      color-mix(in oklch, var(--hz-elevated) 62%, var(--hz-sunken)) 42%,
-      color-mix(in oklch, var(--hz-sunken) 90%, var(--hz-primary) 5%) 72%,
-      color-mix(in oklch, var(--hz-sunken) 96%, var(--hz-elevated)) 100%
+      color-mix(in oklch, var(--hz-sunken) 88%, var(--hz-line)) 0%,
+      color-mix(in oklch, var(--hz-elevated) 55%, var(--hz-line)) 42%,
+      color-mix(in oklch, var(--hz-line) 42%, var(--hz-sunken)) 72%,
+      color-mix(in oklch, var(--hz-sunken) 90%, var(--hz-line)) 100%
     );
     background-size: 220% 100%;
     animation: hz-skeleton-breathe 2.6s ease-in-out infinite;
@@ -408,11 +445,11 @@ html {
     background: linear-gradient(
       105deg,
       transparent 0%,
-      transparent 38%,
-      color-mix(in oklch, white 18%, transparent) 46%,
-      color-mix(in oklch, white 55%, var(--hz-primary) 12%) 50%,
-      color-mix(in oklch, white 18%, transparent) 54%,
-      transparent 62%,
+      transparent 36%,
+      color-mix(in oklch, white 28%, transparent) 46%,
+      color-mix(in oklch, white 62%, transparent) 50%,
+      color-mix(in oklch, white 28%, transparent) 54%,
+      transparent 64%,
       transparent 100%
     );
     transform: translateX(-130%) skewX(-12deg);
@@ -421,13 +458,13 @@ html {
   }
 
   html[data-theme='navy'] .hz-skeleton {
-    background-color: color-mix(in oklch, var(--hz-elevated) 55%, var(--hz-sunken));
+    background-color: color-mix(in oklch, var(--hz-line) 32%, var(--hz-elevated));
     background-image: linear-gradient(
       115deg,
-      color-mix(in oklch, var(--hz-sunken) 70%, var(--hz-elevated)) 0%,
-      color-mix(in oklch, var(--hz-elevated) 78%, var(--hz-sunken)) 44%,
-      color-mix(in oklch, var(--hz-elevated) 70%, var(--hz-primary) 8%) 70%,
-      color-mix(in oklch, var(--hz-sunken) 75%, var(--hz-elevated)) 100%
+      color-mix(in oklch, var(--hz-sunken) 65%, var(--hz-elevated)) 0%,
+      color-mix(in oklch, var(--hz-elevated) 72%, var(--hz-line)) 44%,
+      color-mix(in oklch, var(--hz-line) 34%, var(--hz-elevated)) 70%,
+      color-mix(in oklch, var(--hz-sunken) 70%, var(--hz-elevated)) 100%
     );
   }
 
@@ -435,11 +472,11 @@ html {
     background: linear-gradient(
       105deg,
       transparent 0%,
-      transparent 38%,
-      color-mix(in oklch, var(--hz-footer-fg) 6%, transparent) 46%,
-      color-mix(in oklch, var(--hz-footer-fg) 28%, var(--hz-primary) 14%) 50%,
-      color-mix(in oklch, var(--hz-footer-fg) 6%, transparent) 54%,
-      transparent 62%,
+      transparent 36%,
+      color-mix(in oklch, var(--hz-footer-fg) 10%, transparent) 46%,
+      color-mix(in oklch, var(--hz-footer-fg) 30%, transparent) 50%,
+      color-mix(in oklch, var(--hz-footer-fg) 10%, transparent) 54%,
+      transparent 64%,
       transparent 100%
     );
   }

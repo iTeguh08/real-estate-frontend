@@ -43,7 +43,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
   return (
     <section
       id="listings"
-      className="relative grid grid-cols-1 bg-hz-elevated"
+      className="relative grid scroll-mt-24 grid-cols-1 bg-hz-elevated"
       aria-labelledby="featured-properties-heading"
     >
       <SectionAtmosphere
@@ -54,8 +54,8 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
         intensity="quiet"
         variant="dual"
         side="left"
-        image={isNavy ? 'none' : 'related-plants'}
-        photoOpacity={0.2}
+        image={isNavy ? 'none' : 'location-edge'}
+        photoOpacity={0.4}
         photoScrimMix={62}
         photoFade="exit-soft"
         stickyViewport
@@ -131,7 +131,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
             role="list"
             aria-label="Featured property listings"
           >
-            {properties.map((property) => (
+            {properties.map((property, index) => (
               <div key={property.id} role="listitem" className="h-full">
                 <PropertyCard
                   property={property}
@@ -140,6 +140,9 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
                   uniformHeight
                   onSelect={setSelectedProperty}
                   className="rounded-hz"
+                  imageLoadPriority={
+                    index === 0 ? 'high' : index < 8 ? 'low' : 'auto'
+                  }
                 />
               </div>
             ))}

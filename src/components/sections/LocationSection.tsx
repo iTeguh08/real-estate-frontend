@@ -8,12 +8,49 @@ import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
 import { useHomepageQuery } from '@/hooks/queries';
 import { sizedImage } from '@/lib/image-url';
+import { publicAsset } from '@/lib/public-asset';
 import type { Location } from '@/types';
+
+const LOCATION_PLANTS_BG = publicAsset('bg/bg-light-related-plants.webp');
+
+/** Full-height plants photo — scoped to Location section only. */
+function LocationSectionPlantsBg() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 max-md:hidden" aria-hidden="true">
+      <MediaImage
+        src={LOCATION_PLANTS_BG}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        wrapperClassName="absolute inset-0"
+        className="object-cover"
+        style={{
+          objectPosition: 'left bottom',
+          opacity: 0.2,
+          transform: 'scale(1.04)',
+          transformOrigin: 'left bottom',
+          WebkitMaskImage:
+            'linear-gradient(to right, black 0%, black 64%, transparent 100%)',
+          maskImage: 'linear-gradient(to right, black 0%, black 64%, transparent 100%)',
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'color-mix(in srgb, var(--hz-page) 52%, transparent)',
+          WebkitMaskImage:
+            'linear-gradient(to right, black 0%, black 46%, transparent 98%)',
+          maskImage: 'linear-gradient(to right, black 0%, black 46%, transparent 98%)',
+        }}
+      />
+    </div>
+  );
+}
 
 type LocationCardVariant = 'square' | 'wide';
 
 const LOCATION_IMAGE_HEIGHT =
-  'h-[calc((100cqw-0.75rem)/2)] lg:h-[calc((100cqw-2.25rem)/4)]';
+  'h-[calc((100cqw-1.25rem)/2)] lg:h-[calc((100cqw-3.75rem)/4)]';
 
 interface LocationCardProps {
   location: Location;
@@ -36,8 +73,8 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
         className={cn(
           'relative overflow-hidden rounded-hz',
           lightSurface
-            ? 'bg-hz-elevated shadow-hz-sm ring-1 ring-hz-border'
-            : 'bg-hz-footer-fg/5 ring-1 ring-hz-footer-fg/10',
+            ? 'bg-hz-elevated shadow-hz-sm ring-hz-border'
+            : 'bg-hz-footer-fg/5 ring-hz-footer-fg/10',
           LOCATION_IMAGE_HEIGHT
         )}
       >
@@ -130,7 +167,7 @@ function LocationRow({
   ));
 
   return (
-    <div className="@container grid grid-cols-2 gap-3 lg:grid-cols-4" role="presentation">
+    <div className="@container grid grid-cols-2 gap-5 lg:grid-cols-4" role="presentation">
       {reverseOrder ? (
         <>
           {squareCards}
@@ -201,19 +238,35 @@ export function LocationSection({
       )}
       aria-labelledby="locations-heading"
     >
-      <SectionAtmosphere
-        tone={isNavy ? 'dark' : 'light'}
-        surface={isNavy ? 'footer' : 'page'}
-        intensity={isNavy ? 'quiet' : 'strong'}
-        variant="dual"
-        side={isNavy ? 'right' : 'left'}
-        image={isNavy ? 'location-edge-dark' : 'location-edge'}
-        photoOpacity={isNavy ? 0.42 : 0.88}
-        photoScrimMix={isNavy ? undefined : 42}
-        photoFade="exit-soft"
-        lightGlow="white"
-        className="max-md:hidden"
-      />
+      {isNavy ? (
+        <SectionAtmosphere
+          tone="dark"
+          surface="footer"
+          intensity="quiet"
+          variant="dual"
+          side="right"
+          image="location-edge-dark"
+          photoOpacity={0.42}
+          photoFade="exit-soft"
+          lightGlow="white"
+          className="max-md:hidden"
+        />
+      ) : (
+        <>
+          <LocationSectionPlantsBg />
+          <SectionAtmosphere
+            tone="light"
+            surface="page"
+            intensity="quiet"
+            variant="dual"
+            side="left"
+            image="none"
+            lightGlow="white"
+            photoFade="exit-soft"
+            className="max-md:hidden"
+          />
+        </>
+      )}
       <div className="section-container relative z-10">
         <div className="mb-12 flex flex-col items-center text-center">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

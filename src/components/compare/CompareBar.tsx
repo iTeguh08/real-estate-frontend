@@ -16,7 +16,7 @@ export function CompareBar() {
     <div
       className={cn(
         // Below dialog (z-50) / sheet (z-200) so overlays always win if detection lags.
-        'fixed bottom-0 left-0 right-0 z-40 border-t border-hz-border bg-hz-elevated px-5 py-3 shadow-hz-md',
+        'fixed bottom-0 left-0 right-0 z-40 border-t border-hz-border bg-hz-elevated py-3 shadow-hz-md',
         'font-poppins'
       )}
       role="region"

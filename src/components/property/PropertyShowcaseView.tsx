@@ -59,14 +59,6 @@ function PropertyShowcaseClassicView({ property }: PropertyShowcaseViewProps) {
   return (
     <>
       <div className="relative">
-        <Link
-          to={{ pathname: routes.home, hash: 'listings' }}
-          className="absolute top-4 left-5 z-30 inline-flex items-center gap-2 rounded-hz bg-black/40 px-3 py-2 font-poppins text-sm text-white no-underline transition-colors hover:bg-black/60 md:left-10 md:top-6"
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to listings
-        </Link>
-
         <PropertyDetailHero property={property} onScheduleViewing={handleScheduleViewing} />
       </div>
 

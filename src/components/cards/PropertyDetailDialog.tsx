@@ -51,7 +51,7 @@ export function PropertyDetailDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {property && (
-        <DialogContent className="max-h-[min(92vh,820px)] overflow-y-auto p-0 sm:max-w-lg">
+        <DialogContent className="flex max-h-[min(92vh,820px)] flex-col overflow-hidden p-0 sm:max-w-lg">
           <PropertyDetailBody property={property} />
         </DialogContent>
       )}
@@ -65,19 +65,19 @@ function PropertyDetailBody({ property }: { property: Property }) {
 
   return (
     <>
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-t-hz bg-hz-bg-soft">
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-hz bg-hz-bg-soft">
         <MediaImage
           src={propertyOriginalUrl(property)}
           alt={`${title} — ${locationLabel}`}
           decoding="async"
           className="object-cover"
         />
-        <span className="absolute top-4 left-4 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
+        <span className="absolute top-4 left-4 z-10 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
           {status}
         </span>
       </div>
 
-      <div className="flex flex-col gap-5 p-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
         <DialogHeader className="gap-3 text-left">
           <p className="font-poppins text-xs font-semibold uppercase tracking-[0.18em] text-hz-primary">
             {type}

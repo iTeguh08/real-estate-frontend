@@ -104,7 +104,11 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
         return;
       }
       requestAnimationFrame(() => {
-        document.getElementById('listings')?.scrollIntoView({ behavior: 'smooth' });
+        const target = document.getElementById('listings');
+        if (!target) return;
+        const headerOffset = 96;
+        const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
       });
     },
     [location.pathname, navigate, filters]
@@ -169,10 +173,13 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
           page: 1,
         };
         syncUrl(next);
+        if (propertyType) {
+          scrollToListings(next);
+        }
         return next;
       });
     },
-    [syncUrl]
+    [scrollToListings, syncUrl]
   );
 
   const setStatus = useCallback(

@@ -54,7 +54,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           side="right"
           image="architecture"
           photoFade="exit-soft"
-          photoOpacity={0.4}
+          photoOpacity={0.1}
           className="max-md:hidden"
         />
       ) : (
@@ -64,10 +64,10 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           intensity="strong"
           variant="dual"
           side="left"
-          image="best-value"
+          image="agents-plants"
           photoFade="balanced"
-          photoOpacity={0.2}
-          photoScrimMix={30}
+          photoOpacity={0.26}
+          photoScrimMix={38}
           className="max-md:hidden"
         />
       )}

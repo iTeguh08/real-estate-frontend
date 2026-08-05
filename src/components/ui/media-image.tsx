@@ -1,6 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+
+/** Minimum shimmer for lazy / below-fold images. */
+const MIN_SKELETON_MS = 450;
+
+/** Priority images reveal as soon as decoded — no artificial delay. */
+const MIN_SKELETON_PRIORITY_MS = 0;
 
 export interface MediaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   /** Classes on the positioning wrapper (usually fill the parent aspect box). */
@@ -13,9 +19,20 @@ export interface MediaImageProps extends React.ImgHTMLAttributes<HTMLImageElemen
   noSkeleton?: boolean;
 }
 
+function resolveMinSkeletonMs(
+  noSkeleton: boolean,
+  loading: MediaImageProps['loading'],
+  fetchPriority: MediaImageProps['fetchPriority']
+): number {
+  if (noSkeleton) return 0;
+  if (fetchPriority === 'high') return MIN_SKELETON_PRIORITY_MS;
+  if (loading === 'eager') return MIN_SKELETON_PRIORITY_MS;
+  return MIN_SKELETON_MS;
+}
+
 /**
- * Content image with luxury shimmer until decoded — use inside a `relative` box
- * with explicit aspect ratio or fixed height on the parent.
+ * Content image with neutral shimmer until the `<img>` finishes loading.
+ * Respects `loading="lazy"` — no eager probe that bypasses lazy or cache.
  */
 export function MediaImage({
   className,
@@ -25,37 +42,37 @@ export function MediaImage({
   noSkeleton = false,
   src,
   alt = '',
+  loading,
+  fetchPriority,
   onLoad,
   onError,
   ...props
 }: MediaImageProps) {
-  const [ready, setReady] = useState(false);
+  const [imageReady, setImageReady] = useState(false);
+  const [minElapsed, setMinElapsed] = useState(false);
+  const srcKey = typeof src === 'string' ? src : '';
+  const mountRef = useRef(0);
+  const minSkeletonMs = resolveMinSkeletonMs(noSkeleton, loading, fetchPriority);
 
   useEffect(() => {
-    setReady(false);
-    if (!src || typeof src !== 'string') return;
+    setImageReady(false);
+    setMinElapsed(minSkeletonMs === 0);
+    const token = ++mountRef.current;
 
-    let cancelled = false;
-    const probe = new Image();
-    probe.onload = () => {
-      if (!cancelled) setReady(true);
-    };
-    probe.onerror = () => {
-      if (!cancelled) setReady(true);
-    };
-    probe.src = src;
-    if (probe.complete && probe.naturalWidth > 0) {
-      setReady(true);
-    }
+    if (minSkeletonMs === 0) return;
+
+    const timer = window.setTimeout(() => {
+      if (mountRef.current === token) setMinElapsed(true);
+    }, minSkeletonMs);
 
     return () => {
-      cancelled = true;
+      window.clearTimeout(timer);
     };
-  }, [src]);
+  }, [srcKey, minSkeletonMs]);
 
   const handleLoad = useCallback(
     (event: React.SyntheticEvent<HTMLImageElement>) => {
-      setReady(true);
+      setImageReady(true);
       onLoad?.(event);
     },
     [onLoad]
@@ -63,13 +80,24 @@ export function MediaImage({
 
   const handleError = useCallback(
     (event: React.SyntheticEvent<HTMLImageElement>) => {
-      setReady(true);
+      setImageReady(true);
       onError?.(event);
     },
     [onError]
   );
 
-  const showSkeleton = !noSkeleton && !ready;
+  const bindImgRef = useCallback(
+    (node: HTMLImageElement | null) => {
+      if (!node || !srcKey) return;
+      if (node.complete && node.naturalWidth > 0) {
+        setImageReady(true);
+      }
+    },
+    [srcKey]
+  );
+
+  const revealed = imageReady && minElapsed;
+  const showSkeleton = !noSkeleton && Boolean(srcKey) && !revealed;
 
   return (
     <div className={cn('relative h-full w-full overflow-hidden', wrapperClassName)}>
@@ -80,18 +108,24 @@ export function MediaImage({
           aria-hidden="true"
         />
       ) : null}
-      <img
-        src={src}
-        alt={alt}
-        onLoad={handleLoad}
-        onError={handleError}
-        className={cn(
-          'absolute inset-0 z-[1] block h-full w-full transition-opacity duration-500 ease-out',
-          ready ? 'opacity-100' : 'opacity-0',
-          className
-        )}
-        {...props}
-      />
+      {srcKey ? (
+        <img
+          key={srcKey}
+          ref={bindImgRef}
+          src={srcKey}
+          alt={alt}
+          loading={loading}
+          fetchPriority={fetchPriority}
+          onLoad={handleLoad}
+          onError={handleError}
+          className={cn(
+            'absolute inset-0 z-[1] block h-full w-full transition-opacity duration-500 ease-out',
+            revealed ? 'opacity-100' : 'opacity-0',
+            className
+          )}
+          {...props}
+        />
+      ) : null}
     </div>
   );
 }

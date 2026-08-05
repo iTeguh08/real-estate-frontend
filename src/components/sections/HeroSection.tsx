@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Search, LocateFixed, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
-import { sizedImage } from '@/lib/image-url';
+import { sizedImage, HERO_PREVIEW_WIDTH } from '@/lib/image-url';
+import { preloadImage } from '@/lib/preload-image';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useHomepageQuery } from '@/hooks/queries';
 import { useTheme } from '@/hooks/useTheme';
@@ -18,42 +19,20 @@ type HeroTab = (typeof TABS)[number];
 
 const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES] as const;
 
-function useImageReady(src: string) {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setReady(false);
-    let cancelled = false;
-    const img = new Image();
-    img.onload = () => {
-      if (!cancelled) setReady(true);
-    };
-    img.onerror = () => {
-      if (!cancelled) setReady(true);
-    };
-    img.src = src;
-    if (img.complete && img.naturalWidth > 0) {
-      setReady(true);
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [src]);
-
-  const markReady = useCallback(() => setReady(true), []);
-
-  return { ready, markReady };
-}
-
 export function HeroSection() {
   const { theme } = useTheme();
   const isLight = theme === 'light';
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
-  const heroSrc = sizedImage(hero?.backgroundImage ?? heroImage, 1100);
-  const { ready: leftBgReady, markReady: markLeftBgReady } = useImageReady(LIGHT_HERO_LEFT_BG);
+  const heroSrc = sizedImage(hero?.backgroundImage ?? heroImage, HERO_PREVIEW_WIDTH, {
+    maxWidth: 1440,
+  });
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
+
+  useEffect(() => {
+    return preloadImage(heroSrc);
+  }, [heroSrc]);
 
   const [activeTab, setActiveTab] = useState<HeroTab>('For Rent');
   const [keyword, setKeywordLocal] = useState('');
@@ -362,17 +341,14 @@ export function HeroSection() {
           className="pointer-events-none absolute inset-0 z-[1] max-md:hidden"
           aria-hidden="true"
         >
-          <img
+          <MediaImage
             src={LIGHT_HERO_LEFT_BG}
             alt=""
             width={960}
             height={720}
-            onLoad={markLeftBgReady}
-            className={cn(
-              'absolute inset-0 h-full w-full object-cover object-left transition-opacity duration-500',
-              leftBgReady ? 'opacity-[0.2]' : 'opacity-0'
-            )}
-            loading="eager"
+            className="object-cover object-left opacity-[0.2]"
+            wrapperClassName="absolute inset-0"
+            loading="lazy"
             fetchPriority="low"
             decoding="async"
             style={{
@@ -408,7 +384,7 @@ export function HeroSection() {
         <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pr-14">
           <div
             className={cn(
-              'relative z-10 section-container',
+              'relative z-10 hero-container',
               'lg:!mx-0 lg:!ml-[max(0px,calc((100vw-min(100vw,80rem))/2))] lg:w-full lg:max-w-none',
               '2xl:!ml-[max(0px,calc((100vw-min(100vw,1680px))/2))]',
               '3xl:!ml-[max(0px,calc((100vw-min(100vw,1920px))/2))]'

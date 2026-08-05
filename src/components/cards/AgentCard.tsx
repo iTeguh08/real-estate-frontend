@@ -17,7 +17,7 @@ export function AgentCard({ agent, className }: AgentCardProps) {
 
   return (
     <article className={cn('group relative', className)}>
-      <div className="relative aspect-[16/10] overflow-hidden rounded-hz border border-hz-border">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-hz border-hz-border">
         <MediaImage
           src={sizedImage(avatarUrl, 340)}
           alt={name}

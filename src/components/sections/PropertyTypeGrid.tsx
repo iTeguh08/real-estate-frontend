@@ -205,8 +205,8 @@ export function PropertyTypeGrid() {
             ref={scrollRef}
             className={cn(
               'flex items-stretch gap-3 overflow-x-auto scroll-smooth',
-              'max-md:-mx-5 max-md:px-5',
-              'max-md:snap-x max-md:snap-mandatory max-md:scroll-pl-5 max-md:scroll-pr-5',
+              'max-md:section-bleed-x',
+              'max-md:snap-x max-md:snap-mandatory',
               'max-md:[&::-webkit-scrollbar]:hidden max-md:scrollbar-none',
               needsDesktopScroll && 'md:[&::-webkit-scrollbar]:hidden md:scrollbar-none'
             )}

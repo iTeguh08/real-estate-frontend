@@ -11,13 +11,6 @@ export function resolvePropertyCustomLayout(
   return property.customLayout ?? (property.type === 'Villa' ? 'layout-2' : 'layout-1');
 }
 
-/** Horizontal gutters for the villa hero (full inset width). */
+/** Horizontal gutters for property detail hero backgrounds (layout 1 & 2). */
 export const VILLA_SECTION_GUTTERS =
   'px-5 md:px-10 lg:px-16 xl:px-20 2xl:px-24';
-
-/**
- * Slightly narrower than hero so images 1 & 2 sit a bit tighter — subtle
- * extra inset only, not as wide as the previous editorial gutters.
- */
-export const VILLA_EDITORIAL_GUTTERS =
-  'mx-auto w-full max-w-7xl px-6 md:px-12 lg:px-14 xl:px-18 2xl:px-22';

@@ -8,7 +8,7 @@ export function PropertyShowcaseSkeleton() {
         aria-hidden="true"
         style={{
           background:
-            'radial-gradient(ellipse at 30% 20%, color-mix(in oklch, var(--hz-primary) 14%, transparent), transparent 55%)',
+            'radial-gradient(ellipse at 30% 20%, color-mix(in oklch, var(--hz-line) 45%, transparent), transparent 55%)',
         }}
       />
       <Skeleton className="min-h-[70vh] w-full rounded-none" delayMs={0} />

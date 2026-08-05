@@ -128,7 +128,7 @@ export function ExpertiseSection() {
         image="none"
         className="max-md:hidden"
       />
-      <div className="section-container relative z-10 xl:px-16 2xl:px-20">
+      <div className="section-container relative z-10">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">

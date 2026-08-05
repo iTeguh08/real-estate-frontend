@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -14,7 +15,7 @@ import {
   PROPERTY_GALLERY_COUNT,
   PROPERTY_GALLERY_PAGE_SIZE,
 } from '@/lib/property-gallery';
-import { galleryOriginalUrl, galleryPreviewUrl } from '@/lib/image-url';
+import { galleryLightboxUrl, galleryPreviewUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { PropertyGalleryImage } from '@/types';
 
@@ -33,6 +34,24 @@ function chunkFullPages(images: PropertyGalleryImage[], size: number) {
   return pages;
 }
 
+function GalleryLightboxImage({ image }: { image: PropertyGalleryImage }) {
+  const [src, setSrc] = useState(() => galleryLightboxUrl(image));
+
+  useEffect(() => {
+    setSrc(galleryLightboxUrl(image));
+  }, [image]);
+
+  return (
+    <img
+      src={src}
+      alt={image.alt}
+      decoding="async"
+      onError={() => setSrc(galleryPreviewUrl(image, 1400))}
+      className="block h-auto max-h-[min(85vh,760px)] w-auto max-w-[min(92vw,880px)]"
+    />
+  );
+}
+
 function GalleryTile({
   image,
   onOpen,
@@ -49,7 +68,7 @@ function GalleryTile({
       type="button"
       onClick={onOpen}
       className={cn(
-        'group relative overflow-hidden rounded-hz bg-hz-sunken',
+        'group relative block h-full w-full min-h-[120px] overflow-hidden rounded-hz bg-hz-sunken',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary focus-visible:ring-offset-2',
         className
       )}
@@ -60,27 +79,64 @@ function GalleryTile({
         alt={image.alt}
         loading="lazy"
         decoding="async"
-        className="absolute inset-0 object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         wrapperClassName="absolute inset-0"
       />
     </button>
   );
 }
 
-/** Same filled bento on every carousel page (4 tiles — large left + 3 right). */
+/** Bento page — 4 tiles; odd pages large-left, even pages large-right (mirrored). */
 function GalleryBentoPage({
   pageImages,
   pageOffset,
   onOpen,
+  reversed = false,
 }: {
   pageImages: PropertyGalleryImage[];
   pageOffset: number;
   onOpen: (absoluteIndex: number) => void;
+  reversed?: boolean;
 }) {
   const [a, b, c, d] = pageImages;
   if (!a || !b || !c || !d) return null;
 
   const openAt = (localIndex: number) => onOpen(pageOffset + localIndex);
+
+  if (reversed) {
+    return (
+      <div className="grid h-[min(120vw,560px)] grid-cols-2 grid-rows-3 gap-3 md:h-[min(42vw,500px)] md:grid-cols-12 md:grid-rows-2 md:gap-4">
+        <GalleryTile
+          image={b}
+          onOpen={() => openAt(1)}
+          className="min-h-0 md:col-span-5 md:col-start-1 md:row-start-1"
+          imageSize={560}
+        />
+        <GalleryTile
+          image={c}
+          onOpen={() => openAt(2)}
+          className="col-start-1 row-start-2 min-h-0 md:hidden"
+          imageSize={480}
+        />
+        <GalleryTile
+          image={d}
+          onOpen={() => openAt(3)}
+          className="col-start-1 row-start-3 min-h-0 md:hidden"
+          imageSize={480}
+        />
+        <div className="hidden min-h-0 grid-cols-2 gap-4 md:col-span-5 md:col-start-1 md:row-start-2 md:grid">
+          <GalleryTile image={c} onOpen={() => openAt(2)} className="min-h-0" imageSize={480} />
+          <GalleryTile image={d} onOpen={() => openAt(3)} className="min-h-0" imageSize={480} />
+        </div>
+        <GalleryTile
+          image={a}
+          onOpen={() => openAt(0)}
+          className="col-start-2 row-span-3 min-h-0 md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1"
+          imageSize={900}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="grid h-[min(120vw,560px)] grid-cols-2 grid-rows-2 gap-3 md:h-[min(42vw,500px)] md:grid-cols-12 md:gap-4">
@@ -136,9 +192,6 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
     return null;
   }
 
-  const activePage = pages[activeIndex] ?? pages[0]!;
-  const pageOffset = activeIndex * PROPERTY_GALLERY_PAGE_SIZE;
-
   const goLightboxPrev = () => {
     if (lightboxIndex === null) return;
     setLightboxIndex((lightboxIndex - 1 + images.length) % images.length);
@@ -173,12 +226,22 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
             </p>
           </div>
 
-          <div className="touch-pan-y" {...swipeHandlers}>
-            <GalleryBentoPage
-              pageImages={activePage}
-              pageOffset={pageOffset}
-              onOpen={setLightboxIndex}
-            />
+          <div className="touch-pan-y overflow-hidden" {...swipeHandlers}>
+            <div
+              className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+            >
+              {pages.map((pageImages, pageIndex) => (
+                <div key={pageIndex} className="w-full shrink-0">
+                  <GalleryBentoPage
+                    pageImages={pageImages}
+                    pageOffset={pageIndex * PROPERTY_GALLERY_PAGE_SIZE}
+                    onOpen={setLightboxIndex}
+                    reversed={pageIndex % 2 === 1}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {pageCount > 1 ? (
@@ -195,33 +258,43 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
         </div>
       </section>
 
-      <Dialog
-        open={lightboxIndex !== null}
-        onOpenChange={(open) => {
-          if (!open) setLightboxIndex(null);
-        }}
-      >
-        {selected && lightboxIndex !== null ? (
-          <DialogContent className="top-[54%] w-fit max-w-[min(92vw,880px)] gap-0 overflow-visible bg-transparent p-0 ring-0 sm:max-w-[min(92vw,880px)]">
+      {lightboxIndex !== null && selected ? (
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setLightboxIndex(null);
+          }}
+        >
+          <DialogContent
+            showCloseButton={false}
+            className="block w-auto max-w-none gap-0 overflow-visible border-none bg-transparent p-0 shadow-none ring-0 sm:max-w-none"
+            overlayClassName="bg-black/70 supports-backdrop-filter:backdrop-blur-sm"
+          >
             <DialogHeader className="sr-only">
               <DialogTitle>{selected.alt}</DialogTitle>
               <DialogDescription>Expanded gallery view for {title}</DialogDescription>
             </DialogHeader>
-            <div className="relative overflow-hidden rounded-hz bg-hz-inverse shadow-hz-md">
-              <MediaImage
-                src={galleryOriginalUrl(selected)}
-                alt={selected.alt}
-                decoding="async"
-                wrapperClassName="flex min-h-[200px] items-center justify-center"
-                className="h-auto max-h-[min(70vh,620px)] w-auto max-w-[min(92vw,880px)] object-contain"
-              />
+
+            <figure className="relative m-0 inline-block max-w-[min(92vw,880px)] leading-none">
+              <GalleryLightboxImage key={selected.id} image={selected} />
+
+              <DialogClose asChild>
+                <button
+                  type="button"
+                  aria-label="Close gallery"
+                  className="absolute top-2.5 right-2.5 z-10 flex size-8 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75"
+                >
+                  <X size={16} strokeWidth={2} aria-hidden="true" />
+                </button>
+              </DialogClose>
+
               {images.length > 1 ? (
                 <>
                   <button
                     type="button"
                     onClick={goLightboxPrev}
                     aria-label="Previous gallery image"
-                    className="absolute top-1/2 left-2.5 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65 md:left-3 md:size-10"
+                    className="absolute top-1/2 left-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65 md:size-10"
                   >
                     <ChevronLeft size={18} strokeWidth={1.85} aria-hidden="true" />
                   </button>
@@ -229,19 +302,19 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
                     type="button"
                     onClick={goLightboxNext}
                     aria-label="Next gallery image"
-                    className="absolute top-1/2 right-2.5 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65 md:right-3 md:size-10"
+                    className="absolute top-1/2 right-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65 md:size-10"
                   >
                     <ChevronRight size={18} strokeWidth={1.85} aria-hidden="true" />
                   </button>
-                  <p className="absolute bottom-2.5 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 font-poppins text-xs text-white">
+                  <figcaption className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 font-poppins text-xs text-white">
                     {lightboxIndex + 1} / {images.length}
-                  </p>
+                  </figcaption>
                 </>
               ) : null}
-            </div>
+            </figure>
           </DialogContent>
-        ) : null}
-      </Dialog>
+        </Dialog>
+      ) : null}
     </>
   );
 }

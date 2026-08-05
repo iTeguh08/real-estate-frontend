@@ -2,7 +2,6 @@ import { Bed, Bathtub, ArrowsOut, CalendarBlank, MapPin } from '@phosphor-icons/
 import { MediaImage } from '@/components/ui/media-image';
 import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
 import { formatPropertyLocation } from '@/lib/format-property';
-import { VILLA_EDITORIAL_GUTTERS } from '@/lib/property-layout';
 import type { PropertyDetail } from '@/types';
 import type { PropertyVillaUtilityAction } from '@/components/property/PropertyVillaHighlights';
 
@@ -192,7 +191,7 @@ export function PropertyVillaEditorialSection({
       aria-labelledby="property-villa-overview-heading"
       className="overflow-visible bg-hz-elevated pt-12 md:pt-16 lg:pb-8"
     >
-      <div className={VILLA_EDITORIAL_GUTTERS}>
+      <div className="section-container">
         <div className="flex flex-col gap-12 lg:hidden">
           <PortraitImage src={portraitImage} title={title} />
           <OverviewCopy property={property} />

@@ -34,15 +34,16 @@ export function PropertyRelatedSection({
       <SectionAtmosphere
         tone={isNavy ? 'dark' : 'light'}
         lightGlow="white"
-        washStyle="gradient"
+        washStyle={isNavy ? 'pattern' : 'gradient'}
         surface="elevated"
         intensity="quiet"
         variant="dual"
         side="left"
-        image={isNavy ? 'interior-dark' : 'related-plants'}
-        photoOpacity={isNavy ? 0.36 : 0.2}
-        photoScrimMix={isNavy ? 58 : 62}
+        image={isNavy ? 'none' : 'location-edge'}
+        photoOpacity={0.4}
+        photoScrimMix={62}
         photoFade="exit-soft"
+        stickyViewport
         className="max-md:hidden"
       />
       <div className="section-container relative z-10 col-start-1 row-start-1 pt-20 pb-16 md:pt-24 md:pb-20">

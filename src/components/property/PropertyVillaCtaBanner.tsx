@@ -34,7 +34,7 @@ export function PropertyVillaCtaBanner({
   return (
     <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
       <div className="section-container">
-        <div className="grid overflow-hidden rounded-[1.75rem] shadow-xl lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-hz shadow-hz-md lg:grid-cols-2">
           <div className="relative hidden min-h-[320px] lg:block">
             <MediaImage
               src={bannerSrc}

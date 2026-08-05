@@ -60,14 +60,14 @@ export function BestPropertyValueSection({
         )}
 
         {isLoading && !propertiesProp ? (
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <BestValueCardSkeleton key={i} />
             ))}
           </div>
         ) : (
           <div
-            className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-2"
+            className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2"
             role="list"
             aria-label="Best property value listings"
           >

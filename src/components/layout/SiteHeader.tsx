@@ -294,7 +294,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-100 w-full border-b border-hz-border/80 bg-hz-elevated font-poppins shadow-hz-sm">
-      <div className="flex h-[76px] items-center justify-between px-6 max-md:px-5 max-lg:px-10 3xl:px-16">
+      <div className="section-container flex h-[76px] items-center justify-between">
         <Link to={routes.home} className="flex shrink-0 items-center gap-1.5 no-underline">
           <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
             <Building2 size={15} strokeWidth={2} className="text-white" aria-hidden="true" />

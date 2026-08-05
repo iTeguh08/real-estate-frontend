@@ -50,7 +50,7 @@ export function WhatPeopleSaySection({
       className="section-defer relative w-full bg-hz-sunken"
       aria-labelledby="testimonials-heading"
     >
-      <div className="relative z-0 isolate overflow-hidden bg-hz-footer px-5 pb-44 pt-16 text-center md:px-10 md:pb-56 md:pt-20">
+      <div className="relative z-0 isolate overflow-hidden bg-hz-footer pb-44 pt-16 text-center md:pb-56 md:pt-20">
         <SectionAtmosphere
           tone="dark"
           intensity="strong"
@@ -59,15 +59,17 @@ export function WhatPeopleSaySection({
           image="interior-dark"
           className="max-md:hidden"
         />
-        <p className="relative z-10 mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
-          {eyebrow}
-        </p>
-        <h2
-          id="testimonials-heading"
-          className="relative z-10 font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg md:text-[36px]"
-        >
-          {title}
-        </h2>
+        <div className="section-container relative z-10">
+          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            {eyebrow}
+          </p>
+          <h2
+            id="testimonials-heading"
+            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg md:text-[36px]"
+          >
+            {title}
+          </h2>
+        </div>
       </div>
 
       <div className="section-container relative z-20">
@@ -76,7 +78,7 @@ export function WhatPeopleSaySection({
           {...swipeHandlers}
         >
           <div
-            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
             role="list"
             aria-label="Client testimonials"
           >

@@ -188,7 +188,7 @@ export function SiteFooter() {
         variant="dual"
         side="left"
         image={isLight ? 'footer-edge' : 'architecture-city'}
-        photoOpacity={isLight ? 0.92 : 0.35}
+        photoOpacity={isLight ? 0.4 : 0.05}
         photoScrimMix={isLight ? 40 : undefined}
         photoFade="hold"
         className="max-md:hidden"

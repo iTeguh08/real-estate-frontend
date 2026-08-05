@@ -2,7 +2,6 @@ import { ChatsCircle } from '@phosphor-icons/react';
 import { Check } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
 import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
-import { VILLA_EDITORIAL_GUTTERS } from '@/lib/property-layout';
 import type { PropertyDetail } from '@/types';
 
 export type PropertyVillaUtilityAction = 'schedule' | 'inquire' | 'location';
@@ -48,15 +47,16 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
       aria-labelledby="property-villa-key-highlights-heading"
       className="bg-hz-sunken py-12 md:py-16"
     >
-      <div className={VILLA_EDITORIAL_GUTTERS}>
-        <div className="grid items-center gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
-          <div className="relative aspect-video overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm">
+      <div className="section-container">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
+          <div className="relative aspect-[4/3] min-h-[280px] overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm lg:min-h-[420px]">
             <MediaImage
               src={bottomImage}
               alt={`${title} — featured exterior`}
               loading="lazy"
               decoding="async"
               className="object-cover"
+              wrapperClassName="absolute inset-0"
             />
           </div>
 
