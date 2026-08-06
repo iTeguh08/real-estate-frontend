@@ -26,7 +26,7 @@ export function HeroSection() {
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
   const heroSrc = sizedImage(hero?.backgroundImage ?? heroImage, HERO_PREVIEW_WIDTH, {
-    maxWidth: 1560,
+    maxWidth: 1440,
   });
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
 
