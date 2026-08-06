@@ -110,7 +110,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
             <p className="font-poppins text-lg font-semibold text-hz-dark">
               {hasSearchIntent(filters) ? 'No listings match your search' : 'No listings available right now'}
             </p>
-            <p className="mt-2 max-w-md font-poppins text-sm text-hz-muted">
+            <p className="mt-2 max-w-md font-poppins hz-paragraph-sm text-hz-muted">
               {hasSearchIntent(filters)
                 ? 'Try adjusting your filters or clearing the search to see more properties.'
                 : 'Check back soon — new properties are added regularly.'}

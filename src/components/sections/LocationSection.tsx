@@ -68,7 +68,7 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
         </p>
         <p
           className={cn(
-            'font-poppins text-[13px]',
+            'font-poppins hz-paragraph-sm',
             lightSurface ? 'text-hz-muted' : 'text-hz-footer-fg/55'
           )}
         >
@@ -220,7 +220,7 @@ export function LocationSection({
           variant="dual"
           side="left"
           image="location-plants"
-          photoOpacity={0.4}
+          photoOpacity={0.9}
           photoScrimMix={42}
           photoFade="exit-soft"
           lightGlow="white"

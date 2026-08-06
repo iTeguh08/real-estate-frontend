@@ -180,7 +180,10 @@
 
     /* Section container — Fairfield-aligned responsive gutters */
     --hz-section-max: 90rem; /* 1440px — site-wide sections */
-    --hz-hero-max: 103.125rem; /* 1650px — hero content canvas only */
+    --hz-hero-max: 97.5rem; /* 1560px — hero content canvas only */
+    --hz-hero-gutter: 4rem; /* 64px — hero horizontal padding */
+    --hz-paragraph-size: 1rem; /* 16px — body / lead paragraphs */
+    --hz-paragraph-sm-size: 0.875rem; /* 14px — secondary paragraph copy */
     --hz-section-gutter: 1.75rem; /* 28px — mobile & tablet (<1024) */
 }
 
@@ -321,12 +324,24 @@ html {
   padding-inline: var(--hz-section-gutter);
 }
 
-/** Hero content — same pattern as section-container, wider max (1650px). Visible in DevTools as max-width. */
+/** Hero content — max 1560px, 4rem padding. Visible in DevTools as max-width / padding-inline. */
 @utility hero-container {
   width: 100%;
   max-width: var(--hz-hero-max);
   margin-inline: auto;
-  padding-inline: var(--hz-section-gutter);
+  padding-inline: var(--hz-hero-gutter);
+}
+
+/** Body paragraph — tweak --hz-paragraph-size on :root (default 16px). */
+@utility hz-paragraph {
+  font-size: var(--hz-paragraph-size);
+  line-height: 1.65;
+}
+
+/** Secondary paragraph / card caption — tweak --hz-paragraph-sm-size on :root (default 14px). */
+@utility hz-paragraph-sm {
+  font-size: var(--hz-paragraph-sm-size);
+  line-height: 1.6;
 }
 
 /** Edge-bleed scroll rows inside section-container (mobile carousels). */

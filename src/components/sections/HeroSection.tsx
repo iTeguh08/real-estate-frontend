@@ -196,7 +196,7 @@ export function HeroSection() {
         ))}
       </h1>
 
-      <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] 3xl:max-w-[520px] mb-6">
+      <p className="font-poppins font-normal hz-paragraph text-hz-muted max-w-[460px] 3xl:max-w-[520px] mb-6">
         {hero?.subheadline ??
           'We are a real estate agency that will help you find the best residence for you at an affordable price.'}
       </p>
@@ -381,7 +381,7 @@ export function HeroSection() {
       )}
 
       <div className="relative z-10 lg:aspect-[2560/1103] lg:min-h-0">
-        {/* Full-bleed hero photo — outside hero-container (not capped at 1650px) */}
+        {/* Full-bleed hero photo — outside hero-container (not capped at 1560px) */}
         <div className="relative aspect-[1280/1103] w-full overflow-hidden bg-hz-sunken lg:absolute lg:inset-y-0 lg:right-0 lg:z-0 lg:aspect-auto lg:h-full lg:w-1/2">
           <MediaImage
             src={heroSrc}
@@ -396,7 +396,7 @@ export function HeroSection() {
           />
         </div>
 
-        {/* max-width: 1650px — inspect this element; tweak --hz-hero-max on :root */}
+        {/* max-width: 1560px, padding: 4rem — inspect [data-hero-container]; tweak --hz-hero-max / --hz-hero-gutter on :root */}
         <div
           data-hero-container
           className="hero-container relative z-10 flex flex-col justify-center py-12 lg:h-full lg:min-h-0 lg:py-10"

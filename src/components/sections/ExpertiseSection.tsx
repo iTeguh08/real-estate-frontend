@@ -84,7 +84,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
         <h3 className="font-poppins text-lg font-semibold leading-tight text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
           {label}
         </h3>
-        <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">{description}</p>
+        <p className="font-poppins hz-paragraph-sm text-hz-body">{description}</p>
         <span className="mt-1 inline-flex w-fit items-center gap-1.5 font-poppins text-[13px] font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
           {cta}
           <ArrowRight
@@ -141,7 +141,7 @@ export function ExpertiseSection() {
               >
                 {expertise.title}
               </h2>
-              <p className="max-w-[460px] font-poppins text-[15px] leading-relaxed text-hz-muted">
+              <p className="max-w-[460px] font-poppins hz-paragraph text-hz-muted">
                 {expertise.description}
               </p>
             </div>
