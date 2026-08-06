@@ -108,7 +108,7 @@ export function MyListingsPage() {
   if (!isAuthenticated || !user) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
-        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+        <p className="hz-eyebrow mb-2 text-hz-primary">
           My Property
         </p>
         <h1 className="font-poppins text-3xl font-semibold text-hz-dark">Sign in required</h1>
@@ -128,7 +128,7 @@ export function MyListingsPage() {
   if (!isAgent) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
-        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+        <p className="hz-eyebrow mb-2 text-hz-primary">
           My Property
         </p>
         <h1 className="font-poppins text-3xl font-semibold text-hz-dark">Agents only</h1>
@@ -158,7 +158,7 @@ export function MyListingsPage() {
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               Agent workspace
             </p>
             <h1 className="font-poppins text-2xl font-semibold text-hz-dark md:text-3xl">

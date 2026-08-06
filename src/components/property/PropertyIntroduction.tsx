@@ -12,16 +12,16 @@ export function PropertyIntroduction({ property, embedded = false }: PropertyInt
 
   const content = (
     <div className="section-container relative mx-auto max-w-3xl text-center">
-      <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+      <p className="hz-eyebrow mb-2 text-hz-primary">
         Property Overview
       </p>
       <h2
         id="property-intro-heading"
-        className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark text-balance md:text-[36px]"
+        className="hz-section-title text-balance text-hz-dark"
       >
         {tagline}
       </h2>
-      <p className="mx-auto mt-4 max-w-lg font-poppins text-sm leading-[1.65] text-hz-body text-pretty md:text-[15px]">
+      <p className="hz-lead mx-auto mt-4 max-w-lg text-pretty text-hz-body">
         {description}
       </p>
 

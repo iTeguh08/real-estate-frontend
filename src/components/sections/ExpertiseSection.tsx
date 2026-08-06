@@ -84,7 +84,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
         <h3 className="font-poppins text-lg font-semibold leading-tight text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
           {label}
         </h3>
-        <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">{description}</p>
+        <p className="hz-lead text-hz-body">{description}</p>
         <span className="mt-1 inline-flex w-fit items-center gap-1.5 font-poppins text-[13px] font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
           {cta}
           <ArrowRight
@@ -132,16 +132,16 @@ export function ExpertiseSection() {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
-              <p className="font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+              <p className="hz-eyebrow text-hz-primary">
                 {expertise.eyebrow}
               </p>
               <h2
                 id="expertise-heading"
-                className="max-w-[420px] font-poppins text-[30px] font-semibold leading-[1.15] tracking-[-0.4px] text-hz-dark md:text-[38px]"
+                className="hz-section-title max-w-[420px] text-hz-dark"
               >
                 {expertise.title}
               </h2>
-              <p className="max-w-[460px] font-poppins text-[15px] leading-relaxed text-hz-muted">
+              <p className="hz-lead max-w-[460px] text-hz-muted">
                 {expertise.description}
               </p>
             </div>

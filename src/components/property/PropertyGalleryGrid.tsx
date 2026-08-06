@@ -211,17 +211,17 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
         <div className="section-container">
           <div className="mb-8 flex flex-col gap-3 md:mb-10 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+              <p className="hz-eyebrow mb-2 text-hz-primary">
                 Gallery
               </p>
               <h2
                 id="property-gallery-heading"
-                className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+                className="hz-section-title text-hz-dark"
               >
                 Explore every angle
               </h2>
             </div>
-            <p className="max-w-sm font-poppins text-sm leading-relaxed text-hz-muted">
+            <p className="hz-lead max-w-sm text-hz-muted">
               {Math.min(images.length, PROPERTY_GALLERY_COUNT)} curated views of {title}
             </p>
           </div>

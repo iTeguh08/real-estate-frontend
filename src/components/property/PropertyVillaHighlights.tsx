@@ -70,7 +70,7 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
             >
               What makes this home stand out
             </h2>
-            <p className="mt-3 max-w-lg font-poppins text-sm leading-[1.7] text-hz-body text-pretty md:text-base">
+            <p className="hz-lead mt-3 max-w-lg text-pretty text-hz-body">
               Curated finishes and practical upgrades across {title} — refined from the first
               walk-through.
             </p>

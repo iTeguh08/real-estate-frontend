@@ -163,12 +163,12 @@ export function PropertyTypeGrid() {
       <div className="section-container">
         <div className="flex items-end justify-between gap-6">
           <div>
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               Property Type
             </p>
             <h2
               id="property-type-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-ink md:text-[36px]"
+              className="hz-section-title text-hz-ink"
             >
               Try Searching For
             </h2>

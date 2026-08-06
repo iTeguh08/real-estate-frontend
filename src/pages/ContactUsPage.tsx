@@ -35,7 +35,7 @@ function ContactInfoCard({ icon: Icon, title, children }: ContactInfoCardProps) 
         <Icon size={20} strokeWidth={1.75} className="text-hz-primary" aria-hidden="true" />
       </div>
       <h3 className="font-poppins text-base font-semibold text-hz-dark">{title}</h3>
-      <div className="mt-2 font-poppins text-sm leading-relaxed text-hz-muted">{children}</div>
+      <div className="hz-lead mt-2 text-hz-muted">{children}</div>
     </div>
   );
 }
@@ -102,13 +102,13 @@ export function ContactUsPage() {
         <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="right" image="aerial" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <header className="mx-auto max-w-2xl text-center">
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               {page.eyebrow}
             </p>
-            <h1 className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[40px]">
+            <h1 className="hz-section-title text-hz-dark">
               {page.headline}
             </h1>
-            <p className="mt-5 font-poppins text-sm leading-relaxed text-hz-muted">{page.tagline}</p>
+            <p className="hz-lead mt-5 text-hz-muted">{page.tagline}</p>
           </header>
         </div>
       </section>

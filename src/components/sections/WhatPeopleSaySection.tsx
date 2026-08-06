@@ -60,12 +60,12 @@ export function WhatPeopleSaySection({
           className="max-md:hidden"
         />
         <div className="section-container relative z-10">
-          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+          <p className="hz-eyebrow mb-2 text-hz-primary">
             {eyebrow}
           </p>
           <h2
             id="testimonials-heading"
-            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg md:text-[36px]"
+            className="hz-section-title text-hz-footer-fg"
           >
             {title}
           </h2>

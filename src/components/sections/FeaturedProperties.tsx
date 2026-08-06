@@ -64,12 +64,12 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
       <div className="section-container relative z-10 col-start-1 row-start-1 py-16 md:py-20">
         <div className="mb-12 flex flex-col items-center justify-center text-center">
           <div className="max-w-3xl">
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               Featured Listings
             </p>
             <h2
               id="featured-properties-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+              className="hz-section-title text-hz-dark"
             >
               Discover {brand}&apos;s Finest Properties
               <br className="hidden sm:inline" />

@@ -286,7 +286,7 @@ export function EditMyListingPage() {
           Back to My Property
         </Link>
 
-        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+        <p className="hz-eyebrow mb-2 text-hz-primary">
           {mode === 'edit' ? 'Edit property' : 'Property detail'}
         </p>
         <h1 className="font-poppins text-2xl font-semibold text-hz-dark md:text-3xl">

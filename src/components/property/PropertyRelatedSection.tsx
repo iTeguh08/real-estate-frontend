@@ -49,12 +49,12 @@ export function PropertyRelatedSection({
       <div className="section-container relative z-10 col-start-1 row-start-1 pt-20 pb-16 md:pt-24 md:pb-20">
         <div className="mb-12 flex flex-col items-center justify-center text-center">
           <div className="max-w-3xl">
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               You May Also Like
             </p>
             <h2
               id="related-properties-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+              className="hz-section-title text-hz-dark"
             >
               Related Properties
             </h2>

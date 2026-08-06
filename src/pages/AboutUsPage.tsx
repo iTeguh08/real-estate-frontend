@@ -56,13 +56,13 @@ export function AboutUsPage() {
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="max-w-xl">
-              <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+              <p className="hz-eyebrow mb-2 text-hz-primary">
                 {hero.eyebrow.replace('Homzen', brand)}
               </p>
-              <h1 className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[40px]">
+              <h1 className="hz-section-title text-hz-dark">
                 {hero.headline}
               </h1>
-              <p className="mt-5 font-poppins text-sm leading-relaxed text-hz-muted">{hero.description}</p>
+              <p className="hz-lead mt-5 text-hz-muted">{hero.description}</p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
                   to={routes.contact}
@@ -116,16 +116,16 @@ export function AboutUsPage() {
         <SectionAtmosphere tone="soft" intensity="quiet" variant="dual" side="right" image="aerial" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               {mission.eyebrow}
             </p>
             <h2
               id="mission-heading"
-              className="font-poppins text-[28px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[34px]"
+              className="hz-section-title text-hz-dark"
             >
               {mission.title}
             </h2>
-            <p className="mt-5 font-poppins text-sm leading-relaxed text-hz-muted">{mission.description}</p>
+            <p className="hz-lead mt-5 text-hz-muted">{mission.description}</p>
           </div>
 
           <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -140,7 +140,7 @@ export function AboutUsPage() {
                     <Icon size={22} strokeWidth={1.75} className="text-hz-primary" aria-hidden="true" />
                   </div>
                   <h3 className="font-poppins text-lg font-semibold text-hz-dark">{title}</h3>
-                  <p className="mt-2 font-poppins text-sm leading-relaxed text-hz-muted">{description}</p>
+                  <p className="hz-lead mt-2 text-hz-muted">{description}</p>
                 </article>
               );
             })}
@@ -152,16 +152,16 @@ export function AboutUsPage() {
         <SectionAtmosphere tone="light" intensity="quiet" variant="dual" side="left" image="interior-light" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <header className="mb-12 max-w-2xl">
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               {services.eyebrow}
             </p>
             <h2
               id="services-heading"
-              className="font-poppins text-[28px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[34px]"
+              className="hz-section-title text-hz-dark"
             >
               {services.title}
             </h2>
-            <p className="mt-4 font-poppins text-sm leading-relaxed text-hz-muted">{services.description}</p>
+            <p className="hz-lead mt-4 text-hz-muted">{services.description}</p>
           </header>
 
           <div className="flex flex-col gap-5">
@@ -190,7 +190,7 @@ export function AboutUsPage() {
                     <h3 className="font-poppins text-lg font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary">
                       {service.label}
                     </h3>
-                    <p className="font-poppins text-[13.5px] leading-[1.65] text-hz-body">{service.description}</p>
+                    <p className="hz-lead text-hz-body">{service.description}</p>
                   </div>
                 </article>
               );
@@ -203,12 +203,12 @@ export function AboutUsPage() {
         <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
         <div className="section-container relative z-10">
           <header className="mb-12 text-center">
-            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
+            <p className="hz-eyebrow mb-2 text-hz-primary">
               {timeline.eyebrow}
             </p>
             <h2
               id="timeline-heading"
-              className="font-poppins text-[28px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[34px]"
+              className="hz-section-title text-hz-dark"
             >
               {timeline.title}
             </h2>
@@ -244,11 +244,11 @@ export function AboutUsPage() {
         <div className="section-container relative z-10 text-center">
           <h2
             id="about-cta-heading"
-            className="font-poppins text-[28px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg md:text-[34px]"
+            className="hz-section-title text-hz-footer-fg"
           >
             {cta.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-lg font-poppins text-sm leading-relaxed text-hz-footer-fg/70">{cta.description}</p>
+          <p className="hz-lead mx-auto mt-4 max-w-lg text-hz-footer-fg/70">{cta.description}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
               to={routes.contact}
