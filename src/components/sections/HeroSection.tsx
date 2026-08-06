@@ -380,16 +380,9 @@ export function HeroSection() {
         />
       )}
 
-      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
-        <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pr-14">
-          <div className="relative z-10 hero-container lg:mx-0 lg:w-full lg:max-w-none">
-            {heroCopy}
-            {searchBlock}
-            {heroFooter}
-          </div>
-        </div>
-
-        <div className="relative order-1 lg:order-2 aspect-[1280/1103] w-full min-h-0 overflow-hidden bg-hz-sunken lg:aspect-auto lg:h-full">
+      <div className="relative z-10 lg:aspect-[2560/1103] lg:min-h-0">
+        {/* Full-bleed hero photo — outside hero-container (not capped at 1650px) */}
+        <div className="relative aspect-[1280/1103] w-full overflow-hidden bg-hz-sunken lg:absolute lg:inset-y-0 lg:right-0 lg:z-0 lg:aspect-auto lg:h-full lg:w-1/2">
           <MediaImage
             src={heroSrc}
             alt="Modern luxury residential home"
@@ -401,6 +394,16 @@ export function HeroSection() {
             fetchPriority="high"
             decoding="async"
           />
+        </div>
+
+        {/* max-width: 1650px — inspect this element; tweak --hz-hero-max on :root */}
+        <div
+          data-hero-container
+          className="hero-container relative z-10 flex flex-col justify-center py-12 lg:h-full lg:min-h-0 lg:py-10"
+        >
+          {heroCopy}
+          {searchBlock}
+          {heroFooter}
         </div>
       </div>
     </section>

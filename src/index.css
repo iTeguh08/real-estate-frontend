@@ -321,15 +321,12 @@ html {
   padding-inline: var(--hz-section-gutter);
 }
 
-/** Hero split layout — 1650px content canvas; same responsive gutters as sections. */
+/** Hero content — same pattern as section-container, wider max (1650px). Visible in DevTools as max-width. */
 @utility hero-container {
   width: 100%;
+  max-width: var(--hz-hero-max);
+  margin-inline: auto;
   padding-inline: var(--hz-section-gutter);
-
-  @media (min-width: 1024px) {
-    padding-left: calc((100vw - min(100vw, var(--hz-hero-max))) / 2 + var(--hz-section-gutter));
-    padding-right: 3.5rem;
-  }
 }
 
 /** Edge-bleed scroll rows inside section-container (mobile carousels). */
