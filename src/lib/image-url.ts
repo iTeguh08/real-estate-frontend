@@ -110,7 +110,7 @@ export function originalImage(url: string): string {
 /** Grid card cover — ~300–340px column at lg; 380 keeps 2× DPR sharp without 1600px fetch. */
 export const GRID_CARD_PREVIEW_WIDTH = 380;
 
-/** Hero panel — capped at 1440px; visually identical at full-bleed hero sizes. */
+/** Hero panel — capped at 1560px; visually identical at full-bleed hero sizes. */
 export const HERO_PREVIEW_WIDTH = 960;
 
 /** Preview URL for property cover — prefers API `imageUrl`, soft-sizes previews. */

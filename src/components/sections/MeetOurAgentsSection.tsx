@@ -66,7 +66,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           side="left"
           image="agents-plants"
           photoFade="balanced"
-          photoOpacity={0.26}
+          photoOpacity={0.4}
           photoScrimMix={38}
           className="max-md:hidden"
         />

@@ -179,7 +179,8 @@
     --sidebar-ring: oklch(0.708 0 0);
 
     /* Section container — Fairfield-aligned responsive gutters */
-    --hz-section-max: 90rem;
+    --hz-section-max: 90rem; /* 1440px — site-wide sections */
+    --hz-hero-max: 97.5rem; /* 1560px — hero content canvas only */
     --hz-section-gutter: 1.75rem; /* 28px — mobile & tablet (<1024) */
 }
 
@@ -320,13 +321,13 @@ html {
   padding-inline: var(--hz-section-gutter);
 }
 
-/** Hero split layout — left content aligned with section-container gutters. */
+/** Hero split layout — 1560px content canvas; same responsive gutters as sections. */
 @utility hero-container {
   width: 100%;
   padding-inline: var(--hz-section-gutter);
 
   @media (min-width: 1024px) {
-    padding-left: calc((100vw - min(100vw, var(--hz-section-max))) / 2 + var(--hz-section-gutter));
+    padding-left: calc((100vw - min(100vw, var(--hz-hero-max))) / 2 + var(--hz-section-gutter));
     padding-right: 3.5rem;
   }
 }

@@ -21,6 +21,8 @@ export type AtmosphereImage =
   | 'location-light'
   | 'location-edge'
   | 'location-edge-dark'
+  | 'location-plants'
+  | 'location-plants-dark'
   | 'property'
   | 'listings-property'
   | 'footer-edge'
@@ -78,6 +80,8 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   'location-light': 'bg/bg-light-location-atmosphere-v4.webp',
   'location-edge': 'bg/bg-light-location-edge-v5.webp',
   'location-edge-dark': 'bg/bg-dark-location-edge-v1.webp',
+  'location-plants': 'bg/bg-light-location-plants-v1.webp',
+  'location-plants-dark': 'bg/bg-dark-location-plants-v1.webp',
   property: 'bg/bg-hero-left-property-v1.webp',
   'listings-property': 'bg/bg-light-listings-interior-v3.webp',
   'footer-edge': 'bg/bg-light-footer-edge-v3.webp',
@@ -219,6 +223,8 @@ export function SectionAtmosphere({
   const primaryEdge = side === 'left' ? 'left' : 'right';
   const oppositeEdge = side === 'left' ? 'right' : 'left';
   const resolvedImage = resolveImage(tone, image);
+  const isLocationPlants =
+    resolvedImage === 'location-plants' || resolvedImage === 'location-plants-dark';
   const isRelatedPlants = resolvedImage === 'related-plants';
   const isBareLocationPhoto = resolvedImage === 'location-light' && !isDark;
   const photoSrc =
@@ -295,7 +301,7 @@ export function SectionAtmosphere({
         ? side === 'left'
           ? 'left bottom'
           : 'right bottom'
-        : resolvedImage === 'location-light'
+        : resolvedImage === 'location-light' || isLocationPlants
           ? 'center center'
           : side === 'right'
             ? '70% center'

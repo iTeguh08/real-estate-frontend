@@ -8,44 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
 import { useHomepageQuery } from '@/hooks/queries';
 import { sizedImage } from '@/lib/image-url';
-import { publicAsset } from '@/lib/public-asset';
 import type { Location } from '@/types';
-
-const LOCATION_PLANTS_BG = publicAsset('bg/bg-light-related-plants.webp');
-
-/** Full-height plants photo — scoped to Location section only. */
-function LocationSectionPlantsBg() {
-  return (
-    <div className="pointer-events-none absolute inset-0 z-0 max-md:hidden" aria-hidden="true">
-      <MediaImage
-        src={LOCATION_PLANTS_BG}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        wrapperClassName="absolute inset-0"
-        className="object-cover"
-        style={{
-          objectPosition: 'left bottom',
-          opacity: 0.2,
-          transform: 'scale(1.04)',
-          transformOrigin: 'left bottom',
-          WebkitMaskImage:
-            'linear-gradient(to right, black 0%, black 64%, transparent 100%)',
-          maskImage: 'linear-gradient(to right, black 0%, black 64%, transparent 100%)',
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: 'color-mix(in srgb, var(--hz-page) 52%, transparent)',
-          WebkitMaskImage:
-            'linear-gradient(to right, black 0%, black 46%, transparent 98%)',
-          maskImage: 'linear-gradient(to right, black 0%, black 46%, transparent 98%)',
-        }}
-      />
-    </div>
-  );
-}
 
 type LocationCardVariant = 'square' | 'wide';
 
@@ -242,30 +205,27 @@ export function LocationSection({
         <SectionAtmosphere
           tone="dark"
           surface="footer"
-          intensity="quiet"
+          intensity="default"
           variant="dual"
           side="right"
-          image="location-edge-dark"
-          photoOpacity={0.42}
+          image="none"
+          photoFade="exit-soft"
+          className="max-md:hidden"
+        />
+      ) : (
+        <SectionAtmosphere
+          tone="light"
+          surface="page"
+          intensity="strong"
+          variant="dual"
+          side="left"
+          image="location-plants"
+          photoOpacity={0.4}
+          photoScrimMix={42}
           photoFade="exit-soft"
           lightGlow="white"
           className="max-md:hidden"
         />
-      ) : (
-        <>
-          <LocationSectionPlantsBg />
-          <SectionAtmosphere
-            tone="light"
-            surface="page"
-            intensity="quiet"
-            variant="dual"
-            side="left"
-            image="none"
-            lightGlow="white"
-            photoFade="exit-soft"
-            className="max-md:hidden"
-          />
-        </>
       )}
       <div className="section-container relative z-10">
         <div className="mb-12 flex flex-col items-center text-center">
