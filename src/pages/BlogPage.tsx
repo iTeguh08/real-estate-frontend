@@ -18,13 +18,13 @@ export function BlogPage() {
       <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
       <div className="section-container relative z-10">
         <header className="mb-12 max-w-2xl">
-          <p className="hz-eyebrow mb-2 text-hz-primary">
+          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             Blog
           </p>
-          <h1 className="hz-section-title text-hz-dark">
+          <h1 className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]">
             {brand} Guides & Insights
           </h1>
-          <p className="hz-lead mt-4 text-hz-muted">
+          <p className="mt-4 font-poppins text-sm leading-relaxed text-hz-muted">
             Buyer guides, expert tips, and practical advice for your real estate journey.
           </p>
           {activeTag && (

@@ -176,12 +176,18 @@ export function HeroSection() {
   );
 
   const heroCopy = (
-    <div className="max-w-[620px] lg:max-w-[680px] 3xl:max-w-[720px]">
-      <p className="hz-eyebrow mb-4 text-hz-primary">
+    <div className="max-w-[620px] 3xl:max-w-[720px]">
+      <p className="font-poppins font-semibold text-[12px] text-hz-primary uppercase tracking-[2px] mb-4">
         {hero?.eyebrow ?? 'Real Estate Agency'}
       </p>
 
-      <h1 className="hz-display max-w-[500px] font-bold text-hz-dark lg:max-w-[580px] 3xl:max-w-[640px]">
+      <h1
+        className={cn(
+          'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px]',
+          'text-[36px] md:text-[42px] lg:text-[48px] 3xl:text-[56px]',
+          'max-w-[500px] 3xl:max-w-[580px]'
+        )}
+      >
         {(hero?.headline ?? 'Find A Home That\nFits Your Dream').split('\n').map((line, index) => (
           <span key={line}>
             {index > 0 && <br />}
@@ -190,7 +196,7 @@ export function HeroSection() {
         ))}
       </h1>
 
-      <p className="hz-lead mb-6 max-w-[460px] text-hz-muted 3xl:max-w-[520px]">
+      <p className="font-poppins font-normal text-[15px] text-hz-muted leading-[1.65] max-w-[460px] 3xl:max-w-[520px] mb-6">
         {hero?.subheadline ??
           'We are a real estate agency that will help you find the best residence for you at an affordable price.'}
       </p>

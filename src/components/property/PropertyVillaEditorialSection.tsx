@@ -83,7 +83,7 @@ function OverviewCopy({
       <p className="mt-4 font-poppins text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold uppercase leading-[1.15] tracking-[-0.02em] text-hz-dark text-balance">
         {title}
       </p>
-      <p className="hz-lead mt-4 max-w-lg text-pretty text-hz-body">
+      <p className="mt-4 max-w-lg font-poppins text-sm leading-[1.7] text-hz-body text-pretty md:text-base">
         {description}
       </p>
 
@@ -135,7 +135,7 @@ function InteriorCopy({
       >
         Designed for everyday luxury
       </h2>
-      <p className="hz-lead mt-4 max-w-lg text-pretty text-hz-body">
+      <p className="mt-4 max-w-lg font-poppins text-sm leading-[1.7] text-hz-body text-pretty md:text-base">
         {tagline}. Every room is arranged to maximize light, flow, and comfort.
       </p>
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

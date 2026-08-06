@@ -23,11 +23,11 @@ export function AuthFormShell({
       <SectionAtmosphere tone="light" intensity="default" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
       <div className="section-container relative z-10 w-full max-w-md">
         <div className="rounded-hz border border-hz-border bg-hz-elevated p-6 shadow-hz-md md:p-8">
-          <p className="hz-eyebrow mb-2 text-hz-primary">
+          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             {eyebrow}
           </p>
           <h1 className="font-poppins text-2xl font-semibold text-hz-ink">{title}</h1>
-          <p className="hz-lead mt-2 text-hz-muted">{description}</p>
+          <p className="mt-2 font-poppins text-sm leading-relaxed text-hz-muted">{description}</p>
 
           <div className="mt-8">{children}</div>
 

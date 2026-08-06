@@ -129,7 +129,7 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
                 <MapPin size={15} className="shrink-0 text-hz-primary" strokeWidth={1.5} aria-hidden="true" />
                 {locationLabel}
               </p>
-              <p className="hz-lead mt-3 max-w-md text-pretty text-hz-body">
+              <p className="mt-3 max-w-md font-poppins text-sm leading-[1.65] text-hz-body text-pretty">
                 {tagline}
               </p>
 

@@ -20,11 +20,11 @@ export function WishlistPage() {
   if (wishlistIds.length === 0) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
-        <p className="hz-eyebrow mb-2 text-hz-primary">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           Wishlist
         </p>
         <h1 className="font-poppins text-3xl font-semibold text-hz-dark">No saved properties yet</h1>
-        <p className="hz-lead mx-auto mt-4 max-w-md text-hz-muted">
+        <p className="mx-auto mt-4 max-w-md font-poppins text-sm leading-relaxed text-hz-muted">
           Tap the heart icon on any listing to save it here for later.
         </p>
         <Link

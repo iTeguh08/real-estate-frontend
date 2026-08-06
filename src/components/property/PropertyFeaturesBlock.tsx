@@ -30,17 +30,17 @@ export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) 
       />
       <div className="section-container relative z-10 grid items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 xl:gap-20">
         <div className="lg:pr-6">
-          <p className="hz-eyebrow mb-2 text-hz-footer-fg/65">
+          <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-footer-fg/65">
             Key Highlights
           </p>
           <h2
             id="property-features-heading"
-            className="hz-section-title text-balance text-hz-footer-fg"
+            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg text-balance md:text-[36px]"
           >
             What makes this home stand out
           </h2>
           <div className="mt-4 h-px w-16 bg-hz-elevated/35" aria-hidden="true" />
-          <p className="hz-lead mt-5 max-w-lg text-pretty text-hz-footer-fg/75">
+          <p className="mt-5 max-w-lg font-poppins text-sm leading-[1.65] text-hz-footer-fg/75 text-pretty md:text-base">
             Curated finishes and practical upgrades across {title}.
           </p>
           <ul className="mt-10 space-y-4" role="list">

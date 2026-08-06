@@ -38,16 +38,16 @@ export function PropertyCtaSection({
           </div>
 
           <div className="flex flex-col justify-center px-8 py-12 md:px-12 md:py-16">
-            <p className="hz-eyebrow mb-2 text-hz-primary">
+            <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               Ready to visit?
             </p>
             <h2
               id="property-cta-heading"
-              className="hz-section-title text-balance text-hz-dark"
+              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark text-balance md:text-[36px]"
             >
               Schedule a private tour
             </h2>
-            <p className="hz-lead mt-5 text-pretty text-hz-body">
+            <p className="mt-5 font-poppins text-sm leading-[1.7] text-hz-body text-pretty md:text-base">
               Listed at {formatPropertyPrice(property)} — our team can arrange an in-person or virtual
               viewing of {property.title} at your convenience.
             </p>

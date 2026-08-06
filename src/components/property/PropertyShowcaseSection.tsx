@@ -75,17 +75,17 @@ export function PropertyShowcaseSection({
       </div>
 
       <div className="lg:py-4">
-        <p className="hz-eyebrow mb-2 text-hz-primary">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           Interior &amp; Lifestyle
         </p>
         <h2
           id="property-showcase-heading"
-          className="hz-section-title text-balance text-hz-dark"
+          className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark text-balance md:text-[36px]"
         >
           A closer look inside
         </h2>
         {lifestyleBody ? (
-          <p className="hz-lead mt-5 max-w-lg text-pretty text-hz-body">
+          <p className="mt-5 max-w-lg font-poppins text-sm leading-[1.65] text-hz-body text-pretty md:text-base">
             {lifestyleBody}
           </p>
         ) : null}

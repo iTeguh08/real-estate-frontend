@@ -58,7 +58,7 @@ export function PropertyVillaCtaBanner({
             >
               Schedule a private tour
             </h2>
-            <p className="hz-lead mt-5 text-pretty text-hz-footer-fg/75">
+            <p className="mt-5 font-poppins text-sm leading-[1.7] text-hz-footer-fg/75 text-pretty md:text-base">
               Listed at {formatPropertyPrice(property)} — our team can arrange an in-person or
               virtual viewing of {property.title} at your convenience.
             </p>

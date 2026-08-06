@@ -57,11 +57,11 @@ export function ComparePage() {
   if (compareIds.length === 0) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
-        <p className="hz-eyebrow mb-2 text-hz-primary">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           Compare
         </p>
         <h1 className="font-poppins text-3xl font-semibold text-hz-dark">No properties to compare</h1>
-        <p className="hz-lead mx-auto mt-4 max-w-md text-hz-muted">
+        <p className="mx-auto mt-4 max-w-md font-poppins text-sm leading-relaxed text-hz-muted">
           Use the compare icon on any listing card to add up to {MAX_COMPARE_ITEMS} properties side by side.
         </p>
         <Link

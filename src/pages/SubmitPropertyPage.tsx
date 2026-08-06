@@ -201,13 +201,13 @@ export function SubmitPropertyPage() {
   return (
     <main id="main-content" className="bg-hz-sunken py-10 md:py-16">
       <div className="section-container max-w-2xl">
-        <p className="hz-eyebrow mb-2 text-hz-primary">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           List with Homzen
         </p>
         <h1 className="font-poppins text-2xl font-semibold text-hz-dark md:text-3xl">
           Submit Your Property
         </h1>
-        <p className="hz-lead mt-2 max-w-lg text-hz-muted">
+        <p className="mt-2 max-w-lg font-poppins text-sm leading-relaxed text-hz-muted">
           Fill in the details below and our team will review your submission.
         </p>
 

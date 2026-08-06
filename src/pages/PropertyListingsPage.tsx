@@ -486,7 +486,7 @@ export function PropertyListingsPage() {
           <section>
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center justify-between gap-3 lg:block">
-                <h1 className="hz-section-title text-hz-ink">
+                <h1 className="font-poppins text-[30px] font-semibold text-hz-ink lg:text-[32px]">
                   Property listing
                 </h1>
                 <button

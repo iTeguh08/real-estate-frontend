@@ -15,11 +15,11 @@ export function DashboardPage() {
   if (!isAuthenticated || !user) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
-        <p className="hz-eyebrow mb-2 text-hz-primary">
+        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           Member area
         </p>
         <h1 className="font-poppins text-3xl font-semibold text-hz-dark">Sign in required</h1>
-        <p className="hz-lead mx-auto mt-4 max-w-md text-hz-muted">
+        <p className="mx-auto mt-4 max-w-md font-poppins text-sm leading-relaxed text-hz-muted">
           Create a free Homzen member account to open your dashboard. Wishlist and compare still work
           without signing in.
         </p>
@@ -43,7 +43,7 @@ export function DashboardPage() {
 
   return (
     <main id="main-content" className="section-container py-16 md:py-20">
-      <p className="hz-eyebrow mb-2 text-hz-primary">
+      <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
         {isAgent ? 'Agent dashboard' : 'Member dashboard'}
       </p>
       <h1 className="font-poppins text-3xl font-semibold text-hz-dark">Hello, {user.name}</h1>

@@ -15,7 +15,7 @@ export function PrivacyPolicyPage() {
       <section className="bg-hz-elevated py-16 md:py-20">
         <div className="section-container">
           <header className="mx-auto mb-10 max-w-3xl text-center">
-            <h1 className="hz-section-title text-hz-dark">
+            <h1 className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[40px]">
               {page.title}
             </h1>
           </header>

@@ -167,7 +167,7 @@ export function AgentProfilePage() {
         <section className="mt-12" aria-labelledby="agent-listings-heading">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <p className="hz-eyebrow text-hz-primary">
+              <p className="font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
                 Portfolio
               </p>
               <h2

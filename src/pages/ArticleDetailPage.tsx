@@ -59,7 +59,7 @@ export function ArticleDetailPage() {
         <p className="font-poppins text-xs text-hz-muted">
           {categoryLabel} <span aria-hidden="true">•</span> {article.publishedAt}
         </p>
-        <h1 className="mt-3 hz-section-title text-hz-dark">
+        <h1 className="mt-3 font-poppins text-[28px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[34px]">
           {article.title}
         </h1>
 
