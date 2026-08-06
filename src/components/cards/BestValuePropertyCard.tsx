@@ -113,7 +113,8 @@ export function BestValuePropertyCard({
           </span>
         </div>
 
-        <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1">
+        {/* Narrow thumbnail — stack actions below badges to avoid overlap */}
+        <div className="absolute top-14 right-2.5 z-10 flex flex-col items-center gap-1">
           <ImageActionButton
             size="sm"
             label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
@@ -147,16 +148,18 @@ export function BestValuePropertyCard({
             />
           </ImageActionButton>
           {onSelect && (
-            <ImageActionButton
-              size="sm"
-              label={`Quick view ${title}`}
-              onClick={(e) => {
-                stopPropagation(e);
-                onSelect(property);
-              }}
-            >
-              <Eye size={14} strokeWidth={1.75} />
-            </ImageActionButton>
+            <div className="hidden sm:contents">
+              <ImageActionButton
+                size="sm"
+                label={`Quick view ${title}`}
+                onClick={(e) => {
+                  stopPropagation(e);
+                  onSelect(property);
+                }}
+              >
+                <Eye size={14} strokeWidth={1.75} />
+              </ImageActionButton>
+            </div>
           )}
         </div>
 

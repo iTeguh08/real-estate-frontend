@@ -382,14 +382,7 @@ export function HeroSection() {
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 lg:aspect-[2560/1103] lg:min-h-0">
         <div className="order-2 lg:order-1 relative z-20 flex flex-col justify-center overflow-visible py-12 lg:h-full lg:min-h-0 lg:py-10 lg:pr-14">
-          <div
-            className={cn(
-              'relative z-10 hero-container',
-              'lg:!mx-0 lg:!ml-[max(0px,calc((100vw-min(100vw,80rem))/2))] lg:w-full lg:max-w-none',
-              '2xl:!ml-[max(0px,calc((100vw-min(100vw,1680px))/2))]',
-              '3xl:!ml-[max(0px,calc((100vw-min(100vw,1920px))/2))]'
-            )}
-          >
+          <div className="relative z-10 hero-container lg:mx-0 lg:w-full lg:max-w-none">
             {heroCopy}
             {searchBlock}
             {heroFooter}

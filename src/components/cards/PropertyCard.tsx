@@ -129,8 +129,15 @@ export function PropertyCard({
           </span>
         </div>
 
-        {/* Top-right — action icons */}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+        {/* Top-right — action icons (list thumbnail is too narrow for a horizontal row) */}
+        <div
+          className={cn(
+            'absolute right-3 z-10 flex gap-1.5',
+            isListVariant
+              ? 'top-14 flex-col items-center'
+              : 'top-3 flex-row items-center'
+          )}
+        >
           <ImageActionButton
             label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
             active={saved}

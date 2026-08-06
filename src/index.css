@@ -320,9 +320,15 @@ html {
   padding-inline: var(--hz-section-gutter);
 }
 
-/** Hero — Homzen split layout; NOT Fairfield section gutters (see section-container). */
+/** Hero split layout — left content aligned with section-container gutters. */
 @utility hero-container {
-  @apply w-full px-5 md:px-10 lg:px-20;
+  width: 100%;
+  padding-inline: var(--hz-section-gutter);
+
+  @media (min-width: 1024px) {
+    padding-left: calc((100vw - min(100vw, var(--hz-section-max))) / 2 + var(--hz-section-gutter));
+    padding-right: 3.5rem;
+  }
 }
 
 /** Edge-bleed scroll rows inside section-container (mobile carousels). */
