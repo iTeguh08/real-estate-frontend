@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 import {
   AuthFooterLink,
   AuthFormShell,
@@ -8,21 +10,31 @@ import {
   MockSubmitNotice,
 } from '@/components/auth/AuthFormShell';
 import { useAuth } from '@/hooks/useAuth';
-import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
+import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
+import { apiErrorMessage } from '@/lib/form-errors';
+import { registerSchema, type RegisterFormValues } from '@/lib/form-schemas';
 import { routes } from '@/lib/routes';
-import type { FieldErrors } from '@/services/api-client';
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { register, isAuthenticated } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const { register: registerMember, isAuthenticated } = useAuth();
   const [notice, setNotice] = useState('');
-  const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [pending, setPending] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+    },
+  });
 
   if (isAuthenticated) {
     return (
@@ -46,23 +58,23 @@ export function RegisterPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setFieldErrors({});
+  const onSubmit = handleSubmit(async (values) => {
+    setFormError('');
     setNotice('');
-    setPending(true);
     try {
-      const message = await register(name, email, password, passwordConfirm);
+      const message = await registerMember(
+        values.name,
+        values.email,
+        values.password,
+        values.password_confirmation,
+      );
       setNotice(message);
       navigate(routes.dashboard);
     } catch (err) {
-      setFieldErrors(getApiFieldErrors(err));
-      setError(apiErrorMessage(err, 'Registration failed. Please try again.'));
-    } finally {
-      setPending(false);
+      applyApiFieldErrors(err, setError);
+      setFormError(apiErrorMessage(err, 'Registration failed. Please try again.'));
     }
-  };
+  });
 
   return (
     <AuthFormShell
@@ -75,63 +87,79 @@ export function RegisterPage() {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        <FormField
-          id="register-name"
-          label="Full name"
-          value={name}
-          onChange={(value) => {
-            setName(value);
-            setFieldErrors((prev) => clearFieldError(prev, 'name'));
-          }}
-          autoComplete="name"
-          error={fieldErrors.name?.[0]}
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="register-name"
+              label="Full name"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="name"
+              error={errors.name?.message}
+            />
+          )}
         />
-        <FormField
-          id="register-email"
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(value) => {
-            setEmail(value);
-            setFieldErrors((prev) => clearFieldError(prev, 'email'));
-          }}
-          autoComplete="email"
-          error={fieldErrors.email?.[0]}
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="register-email"
+              label="Email"
+              type="email"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="email"
+              error={errors.email?.message}
+            />
+          )}
         />
-        <FormField
-          id="register-password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(value) => {
-            setPassword(value);
-            setFieldErrors((prev) => clearFieldError(prev, 'password'));
-          }}
-          autoComplete="new-password"
-          error={fieldErrors.password?.[0]}
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="register-password"
+              label="Password"
+              type="password"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="new-password"
+              error={errors.password?.message}
+            />
+          )}
         />
-        <FormField
-          id="register-password-confirm"
-          label="Confirm password"
-          type="password"
-          value={passwordConfirm}
-          onChange={(value) => {
-            setPasswordConfirm(value);
-            setFieldErrors((prev) => clearFieldError(prev, 'password_confirmation'));
-          }}
-          autoComplete="new-password"
-          error={fieldErrors.password_confirmation?.[0]}
+        <Controller
+          name="password_confirmation"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="register-password-confirm"
+              label="Confirm password"
+              type="password"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="new-password"
+              error={errors.password_confirmation?.message}
+            />
+          )}
         />
-        <AuthSubmitButton disabled={pending}>
-          {pending ? 'Creating…' : 'Create Account'}
+        <AuthSubmitButton disabled={isSubmitting}>
+          {isSubmitting ? 'Creating…' : 'Create Account'}
         </AuthSubmitButton>
         {notice && <MockSubmitNotice message={notice} />}
-        {error && Object.keys(fieldErrors).length === 0 && (
-          <p className="font-poppins text-sm text-hz-primary" role="alert">
-            {error}
-          </p>
-        )}
+        {formError &&
+          !errors.name &&
+          !errors.email &&
+          !errors.password &&
+          !errors.password_confirmation && (
+            <p className="font-poppins text-sm text-hz-primary" role="alert">
+              {formError}
+            </p>
+          )}
       </form>
     </AuthFormShell>
   );

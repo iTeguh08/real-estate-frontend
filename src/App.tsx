@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageLoader } from '@/components/skeletons';
 import { ListingFiltersProvider } from '@/hooks/useListingFilters';
@@ -89,11 +90,13 @@ export default function App() {
               <Route path="about" element={<AboutUsPage />} />
               <Route path="contact" element={<ContactUsPage />} />
               <Route path="privacy" element={<PrivacyPolicyPage />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="dashboard/my-property" element={<MyListingsPage />} />
-              <Route path="dashboard/my-property/:id" element={<EditMyListingPage />} />
-              <Route path="dashboard/my-listings" element={<MyListingsPage />} />
-              <Route path="dashboard/my-listings/:id/edit" element={<EditMyListingPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="dashboard/my-property" element={<MyListingsPage />} />
+                <Route path="dashboard/my-property/:id" element={<EditMyListingPage />} />
+                <Route path="dashboard/my-listings" element={<MyListingsPage />} />
+                <Route path="dashboard/my-listings/:id/edit" element={<EditMyListingPage />} />
+              </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

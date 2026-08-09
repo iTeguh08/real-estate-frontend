@@ -105,27 +105,7 @@ export function MyListingsPage() {
     return <DashboardSkeleton />;
   }
 
-  if (!isAuthenticated || !user) {
-    return (
-      <main id="main-content" className="section-container py-20 text-center">
-        <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
-          My Property
-        </p>
-        <h1 className="font-poppins text-3xl font-semibold text-hz-dark">Sign in required</h1>
-        <p className="mx-auto mt-4 max-w-md font-poppins text-sm text-hz-muted">
-          Agent accounts can manage drafts after CMS approval.
-        </p>
-        <Link
-          to={routes.login}
-          className="mt-8 inline-block rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white no-underline hover:bg-hz-primary-hover"
-        >
-          Sign In
-        </Link>
-      </main>
-    );
-  }
-
-  if (!isAgent) {
+  if (!user || !isAgent) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
         <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

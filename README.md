@@ -1,75 +1,61 @@
-# React + TypeScript + Vite
+# Homzen Real Estate — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React SPA for Homzen listings, agents, articles, and member/agent dashboards. Talks to the Laravel backend via GraphQL (reads) and Sanctum REST (auth + agent listings + guest forms).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript + Vite 8
+- Tailwind 4 + Homzen `hz-*` design tokens (light / navy themes)
+- TanStack Query, React Router 7
+- React Hook Form + Zod (login / register / contact)
+- Sentry (`@sentry/react`) — enabled only when `VITE_SENTRY_DSN` is set
+- Vitest unit tests
 
-## React Compiler
+## Local development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Requires the backend Sail stack on `:8080` (see `real-estate-backend`).
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+cp .env.example .env
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+App: `http://localhost:5173`  
+Vite proxies `/api`, `/graphql`, guest forms, wishlist/compare to `localhost:8080`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Important env
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Variable | Notes |
+|----------|--------|
+| `VITE_USE_MOCK` | Must be `false` to hit the live API (default in `.env.example`) |
+| `VITE_GRAPHQL_URL` | Dev: `http://localhost:8080/graphql` · Prod: `/graphql` or API host |
+| `VITE_API_URL` | Leave empty in dev (proxy). Set API origin in production if cross-origin |
+| `VITE_SENTRY_DSN` | Optional. Empty = no-op locally |
 
+## Scripts
+
+```bash
+npm run dev          # Vite HMR
+npm test             # Vitest
+npm run lint         # ESLint (some legacy rule debt remains)
+npm run build        # optimize assets + typecheck + production bundle
+npm run preview      # preview dist/
 ```
+
+## Auth-protected routes
+
+`/dashboard` and `/dashboard/my-property/*` are wrapped in a route guard. Guests are redirected to `/login`.
+
+## Deploy
+
+GitHub Actions:
+
+- `ci.yml` — unit tests + production build on PR/push
+- `deploy.yml` — tests, then GitHub Pages from `dist/`
+
+Set production secrets/env for `VITE_SENTRY_DSN` (and API URLs) on the host or CI build environment — do not commit real DSNs.
+
+## Design system
+
+See `.cursorrules` for Homzen typography, color tokens, iconography, and dual-theme rules.

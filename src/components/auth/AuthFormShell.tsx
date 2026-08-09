@@ -46,7 +46,7 @@ interface FormFieldProps {
   type?: string;
   value: string;
   onChange: (value: string) => void;
-  /** Visual / a11y hint only — forms should use `noValidate` and rely on API errors. */
+  /** Visual / a11y hint only — prefer zod / API errors with `noValidate`. */
   required?: boolean;
   autoComplete?: string;
   disabled?: boolean;

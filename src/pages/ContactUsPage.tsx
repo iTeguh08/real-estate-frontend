@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { FormField, MockSubmitNotice } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
@@ -8,19 +10,15 @@ import { CmsPageSkeleton } from '@/components/skeletons';
 import { useContactPageQuery } from '@/hooks/queries';
 import { useSubmitContactMutation } from '@/hooks/mutations';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
+import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
+import { apiErrorMessage } from '@/lib/form-errors';
+import {
+  CONTACT_INQUIRY_TYPES,
+  contactSchema,
+  type ContactFormValues,
+} from '@/lib/form-schemas';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
-import type { FieldErrors } from '@/services/api-client';
-
-const INQUIRY_TYPES = [
-  'General Inquiry',
-  'Buy a Property',
-  'Sell a Property',
-  'Rent a Property',
-  'Schedule a Viewing',
-  'Partnership',
-] as const;
 
 interface ContactInfoCardProps {
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
@@ -45,56 +43,70 @@ export function ContactUsPage() {
   const { data: siteConfig } = useSiteConfig();
   const brand = siteConfig?.brand ?? 'Homzen';
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [inquiryType, setInquiryType] = useState<string>(INQUIRY_TYPES[0]);
-  const [message, setMessage] = useState('');
   const [notice, setNotice] = useState('');
   const [submitError, setSubmitError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [turnstileToken, setTurnstileToken] = useState('');
   const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
 
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      inquiry_type: CONTACT_INQUIRY_TYPES[0],
+      message: '',
+    },
+  });
+
   const contactMutation = useSubmitContactMutation();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = handleSubmit((values) => {
     setSubmitError('');
-    setFieldErrors({});
+    setNotice('');
 
     contactMutation.mutate(
       {
-        name,
-        email,
-        phone: phone || undefined,
-        inquiry_type: inquiryType,
-        message,
+        name: values.name,
+        email: values.email,
+        phone: values.phone || undefined,
+        inquiry_type: values.inquiry_type,
+        message: values.message,
         turnstileToken,
       },
       {
         onSuccess: (responseMessage) => {
           setNotice(responseMessage);
-          setName('');
-          setEmail('');
-          setPhone('');
-          setMessage('');
-          setInquiryType(INQUIRY_TYPES[0]);
+          reset({
+            name: '',
+            email: '',
+            phone: '',
+            inquiry_type: CONTACT_INQUIRY_TYPES[0],
+            message: '',
+          });
           setTurnstileToken('');
-          setFieldErrors({});
         },
         onError: (error) => {
           setNotice('');
-          setFieldErrors(getApiFieldErrors(error));
+          applyApiFieldErrors(error, setError);
           setSubmitError(apiErrorMessage(error, 'Something went wrong. Please try again.'));
         },
       },
     );
-  };
+  });
 
   if (isLoading || !page) {
     return <CmsPageSkeleton />;
   }
+
+  const pending = contactMutation.isPending || isSubmitting;
+  const hasFieldErrors = Object.keys(errors).length > 0;
 
   return (
     <main id="main-content">
@@ -155,8 +167,7 @@ export function ContactUsPage() {
       <section
         className="relative overflow-hidden bg-hz-sunken pb-16 md:pb-20"
         aria-labelledby="contact-form-heading"
-      >
-        <SectionAtmosphere
+      >        <SectionAtmosphere
           tone="light"
           surface="sunken"
           intensity="quiet"
@@ -176,134 +187,149 @@ export function ContactUsPage() {
               </h2>
 
               <form
-                onSubmit={handleSubmit}
+                onSubmit={onSubmit}
                 noValidate
                 className="relative space-y-5 rounded-hz border border-hz-border bg-hz-elevated p-6 shadow-sm md:p-8"
               >
                 <HoneypotInput />
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <FormField
-                    id="contact-name"
-                    label="Full name"
-                    value={name}
-                    onChange={(value) => {
-                      setName(value);
-                      setFieldErrors((prev) => clearFieldError(prev, 'name'));
-                    }}
-                    autoComplete="name"
-                    error={fieldErrors.name?.[0]}
+                  <Controller
+                    name="name"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        id="contact-name"
+                        label="Full name"
+                        value={field.value}
+                        onChange={field.onChange}
+                        autoComplete="name"
+                        error={errors.name?.message}
+                      />
+                    )}
                   />
-                  <FormField
-                    id="contact-email"
-                    label="Email address"
-                    type="email"
-                    value={email}
-                    onChange={(value) => {
-                      setEmail(value);
-                      setFieldErrors((prev) => clearFieldError(prev, 'email'));
-                    }}
-                    autoComplete="email"
-                    error={fieldErrors.email?.[0]}
+                  <Controller
+                    name="email"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        id="contact-email"
+                        label="Email address"
+                        type="email"
+                        value={field.value}
+                        onChange={field.onChange}
+                        autoComplete="email"
+                        error={errors.email?.message}
+                      />
+                    )}
                   />
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <FormField
-                    id="contact-phone"
-                    label="Phone number"
-                    type="tel"
-                    value={phone}
-                    onChange={(value) => {
-                      setPhone(value);
-                      setFieldErrors((prev) => clearFieldError(prev, 'phone'));
-                    }}
-                    autoComplete="tel"
-                    error={fieldErrors.phone?.[0]}
-                  />
-
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="contact-inquiry"
-                      className="font-poppins text-sm font-medium text-hz-dark"
-                    >
-                      Inquiry type
-                    </label>
-                    <select
-                      id="contact-inquiry"
-                      value={inquiryType}
-                      onChange={(e) => {
-                        setInquiryType(e.target.value);
-                        setFieldErrors((prev) => clearFieldError(prev, 'inquiry_type'));
-                      }}
-                      aria-invalid={fieldErrors.inquiry_type ? true : undefined}
-                      className={cn(
-                        'h-11 w-full rounded-hz border bg-hz-elevated px-3',
-                        'font-poppins text-sm text-hz-dark outline-none focus:border-hz-primary/60',
-                        fieldErrors.inquiry_type ? 'border-hz-primary/70' : 'border-hz-border'
-                      )}
-                    >
-                      {INQUIRY_TYPES.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    {fieldErrors.inquiry_type?.[0] ? (
-                      <p className="font-poppins text-xs text-hz-primary" role="alert">
-                        {fieldErrors.inquiry_type[0]}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor="contact-message"
-                    className="font-poppins text-sm font-medium text-hz-dark"
-                  >
-                    Your message
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    value={message}
-                    onChange={(e) => {
-                      setMessage(e.target.value);
-                      setFieldErrors((prev) => clearFieldError(prev, 'message'));
-                    }}
-                    rows={5}
-                    placeholder="Tell us how we can help you..."
-                    aria-invalid={fieldErrors.message ? true : undefined}
-                    className={cn(
-                      'w-full resize-y rounded-hz border bg-hz-elevated px-3 py-2.5',
-                      'font-poppins text-sm text-hz-dark outline-none transition-colors',
-                      'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
-                      fieldErrors.message ? 'border-hz-primary/70' : 'border-hz-border'
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        id="contact-phone"
+                        label="Phone number"
+                        type="tel"
+                        value={field.value}
+                        onChange={field.onChange}
+                        autoComplete="tel"
+                        error={errors.phone?.message}
+                      />
                     )}
                   />
-                  {fieldErrors.message?.[0] ? (
-                    <p className="font-poppins text-xs text-hz-primary" role="alert">
-                      {fieldErrors.message[0]}
-                    </p>
-                  ) : null}
+
+                  <Controller
+                    name="inquiry_type"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="space-y-1.5">
+                        <label
+                          htmlFor="contact-inquiry"
+                          className="font-poppins text-sm font-medium text-hz-dark"
+                        >
+                          Inquiry type
+                        </label>
+                        <select
+                          id="contact-inquiry"
+                          value={field.value}
+                          onChange={field.onChange}
+                          aria-invalid={errors.inquiry_type ? true : undefined}
+                          className={cn(
+                            'h-11 w-full rounded-hz border bg-hz-elevated px-3',
+                            'font-poppins text-sm text-hz-dark outline-none focus:border-hz-primary/60',
+                            errors.inquiry_type ? 'border-hz-primary/70' : 'border-hz-border',
+                          )}
+                        >
+                          {CONTACT_INQUIRY_TYPES.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.inquiry_type?.message ? (
+                          <p className="font-poppins text-xs text-hz-primary" role="alert">
+                            {errors.inquiry_type.message}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+                  />
                 </div>
+
+                <Controller
+                  name="message"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="space-y-1.5">
+                      <label
+                        htmlFor="contact-message"
+                        className="font-poppins text-sm font-medium text-hz-dark"
+                      >
+                        Your message
+                      </label>
+                      <textarea
+                        id="contact-message"
+                        value={field.value}
+                        onChange={field.onChange}
+                        rows={5}
+                        placeholder="Tell us how we can help you..."
+                        aria-invalid={errors.message ? true : undefined}
+                        className={cn(
+                          'w-full resize-y rounded-hz border bg-hz-elevated px-3 py-2.5',
+                          'font-poppins text-sm text-hz-dark outline-none transition-colors',
+                          'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
+                          errors.message ? 'border-hz-primary/70' : 'border-hz-border',
+                        )}
+                      />
+                      {errors.message?.message ? (
+                        <p className="font-poppins text-xs text-hz-primary" role="alert">
+                          {errors.message.message}
+                        </p>
+                      ) : null}
+                    </div>
+                  )}
+                />
 
                 <TurnstileWidget onTokenChange={onTurnstileToken} />
 
                 <button
                   type="submit"
-                  disabled={contactMutation.isPending}
+                  disabled={pending}
                   className={cn(
                     'flex w-full items-center justify-center gap-2 rounded-hz bg-hz-primary px-6 py-3',
                     'font-poppins text-sm font-semibold text-white',
-                    'transition-colors duration-200 hover:bg-hz-primary-hover disabled:opacity-60'
+                    'transition-colors duration-200 hover:bg-hz-primary-hover disabled:opacity-60',
                   )}
                 >
                   <Send size={16} strokeWidth={1.75} aria-hidden="true" />
-                  {contactMutation.isPending ? 'Sending...' : 'Send Message'}
+                  {pending ? 'Sending...' : 'Send Message'}
                 </button>
 
                 {notice && <MockSubmitNotice message={notice} />}
-                {submitError && Object.keys(fieldErrors).length === 0 && (
+                {submitError && !hasFieldErrors && (
                   <p className="font-poppins text-sm text-hz-primary" role="alert">
                     {submitError}
                   </p>

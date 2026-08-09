@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 import {
   AuthFooterLink,
   AuthFormShell,
@@ -8,19 +10,37 @@ import {
   MockSubmitNotice,
 } from '@/components/auth/AuthFormShell';
 import { useAuth } from '@/hooks/useAuth';
-import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
+import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
+import { apiErrorMessage } from '@/lib/form-errors';
+import { loginSchema, type LoginFormValues } from '@/lib/form-schemas';
 import { routes } from '@/lib/routes';
-import type { FieldErrors } from '@/services/api-client';
+
+function postLoginPath(from: unknown): string {
+  if (typeof from === 'string' && from.startsWith('/') && !from.startsWith('//')) {
+    return from;
+  }
+  return routes.dashboard;
+}
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isAuthenticated } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [notice, setNotice] = useState('');
-  const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [pending, setPending] = useState(false);
+  const [formError, setFormError] = useState('');
+  const redirectTo = postLoginPath(
+    (location.state as { from?: unknown } | null)?.from,
+  );
+
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
 
   if (isAuthenticated) {
     return (
@@ -45,23 +65,18 @@ export function LoginPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setFieldErrors({});
+  const onSubmit = handleSubmit(async (values) => {
+    setFormError('');
     setNotice('');
-    setPending(true);
     try {
-      const message = await login(email, password);
+      const message = await login(values.email, values.password);
       setNotice(message);
-      navigate(routes.dashboard);
+      navigate(redirectTo);
     } catch (err) {
-      setFieldErrors(getApiFieldErrors(err));
-      setError(apiErrorMessage(err, 'Sign-in failed. Please try again.'));
-    } finally {
-      setPending(false);
+      applyApiFieldErrors(err, setError);
+      setFormError(apiErrorMessage(err, 'Sign-in failed. Please try again.'));
     }
-  };
+  });
 
   return (
     <AuthFormShell
@@ -75,38 +90,44 @@ export function LoginPage() {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        <FormField
-          id="login-email"
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(value) => {
-            setEmail(value);
-            setFieldErrors((prev) => clearFieldError(prev, 'email'));
-          }}
-          autoComplete="email"
-          error={fieldErrors.email?.[0]}
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="login-email"
+              label="Email"
+              type="email"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="email"
+              error={errors.email?.message}
+            />
+          )}
         />
-        <FormField
-          id="login-password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(value) => {
-            setPassword(value);
-            setFieldErrors((prev) => clearFieldError(prev, 'password'));
-          }}
-          autoComplete="current-password"
-          error={fieldErrors.password?.[0]}
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="login-password"
+              label="Password"
+              type="password"
+              value={field.value}
+              onChange={field.onChange}
+              autoComplete="current-password"
+              error={errors.password?.message}
+            />
+          )}
         />
-        <AuthSubmitButton disabled={pending}>
-          {pending ? 'Signing in…' : 'Sign In'}
+        <AuthSubmitButton disabled={isSubmitting}>
+          {isSubmitting ? 'Signing in…' : 'Sign In'}
         </AuthSubmitButton>
         {notice && <MockSubmitNotice message={notice} />}
-        {error && Object.keys(fieldErrors).length === 0 && (
+        {formError && !errors.email && !errors.password && (
           <p className="font-poppins text-sm text-hz-primary" role="alert">
-            {error}
+            {formError}
           </p>
         )}
       </form>
