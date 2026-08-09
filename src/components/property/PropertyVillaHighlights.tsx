@@ -1,7 +1,7 @@
 import { ChatsCircle } from '@phosphor-icons/react';
 import { Check } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
-import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
+import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export type PropertyVillaUtilityAction = 'schedule' | 'inquire' | 'location';
@@ -38,9 +38,11 @@ function UtilityPillButton({
  */
 export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyVillaHighlightsProps) {
   const { title, features, layout2Media } = property;
-  const bottomImage = layout2Media.bannerUrl
-    ? mediaOriginalUrl(layout2Media.bannerUrl, layout2Media.bannerUrlOriginal)
-    : propertyOriginalUrl(property);
+  const bottomImage = mediaPreviewUrl(
+    layout2Media.bannerUrl,
+    MID_PAGE_MEDIA_WIDTH,
+    property.imageUrl,
+  );
 
   return (
     <section

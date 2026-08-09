@@ -1,6 +1,10 @@
 import { Bed, Bathtub, ArrowsOut, CalendarBlank, MapPin } from '@phosphor-icons/react';
 import { MediaImage } from '@/components/ui/media-image';
-import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
+import {
+  mediaPreviewUrl,
+  MID_PAGE_PORTRAIT_WIDTH,
+  MID_PAGE_WIDE_WIDTH,
+} from '@/lib/image-url';
 import { formatPropertyLocation } from '@/lib/format-property';
 import type { PropertyDetail } from '@/types';
 import type { PropertyVillaUtilityAction } from '@/components/property/PropertyVillaHighlights';
@@ -179,12 +183,16 @@ export function PropertyVillaEditorialSection({
   onUtilityAction,
 }: PropertyVillaEditorialSectionProps) {
   const { title, layout2Media } = property;
-  const portraitImage = layout2Media.splitVerticalUrl
-    ? mediaOriginalUrl(layout2Media.splitVerticalUrl, layout2Media.splitVerticalUrlOriginal)
-    : propertyOriginalUrl(property);
-  const wideImage = layout2Media.splitLandscapeUrl
-    ? mediaOriginalUrl(layout2Media.splitLandscapeUrl, layout2Media.splitLandscapeUrlOriginal)
-    : propertyOriginalUrl(property);
+  const portraitImage = mediaPreviewUrl(
+    layout2Media.splitVerticalUrl,
+    MID_PAGE_PORTRAIT_WIDTH,
+    property.imageUrl,
+  );
+  const wideImage = mediaPreviewUrl(
+    layout2Media.splitLandscapeUrl,
+    MID_PAGE_WIDE_WIDTH,
+    property.imageUrl,
+  );
 
   return (
     <section

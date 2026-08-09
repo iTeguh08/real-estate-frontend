@@ -235,7 +235,7 @@ export function LocationSection({
           <h2
             id="locations-heading"
             className={cn(
-              'font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] md:text-[36px]',
+              'font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] md:text-[36px] lg:text-[40px]',
               isNavy ? 'text-hz-footer-fg' : 'text-hz-ink'
             )}
           >

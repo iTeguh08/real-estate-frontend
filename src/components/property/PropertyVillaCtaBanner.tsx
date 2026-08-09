@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
-import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
+import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -27,9 +27,11 @@ export function PropertyVillaCtaBanner({
   onScheduleViewing,
   onContactAgent,
 }: PropertyVillaCtaBannerProps) {
-  const bannerSrc = property.layout2Media.bannerUrl
-    ? mediaOriginalUrl(property.layout2Media.bannerUrl, property.layout2Media.bannerUrlOriginal)
-    : propertyOriginalUrl(property);
+  const bannerSrc = mediaPreviewUrl(
+    property.layout2Media.bannerUrl,
+    MID_PAGE_MEDIA_WIDTH,
+    property.imageUrl,
+  );
 
   return (
     <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">

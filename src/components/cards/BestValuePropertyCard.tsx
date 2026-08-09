@@ -95,7 +95,7 @@ export function BestValuePropertyCard({
     >
       <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <MediaImage
-          src={propertyPreviewUrl({ imageUrl }, 800)}
+          src={propertyPreviewUrl({ imageUrl }, 200)}
           alt={`${title} — ${locationLabel}`}
           loading="lazy"
           decoding="async"

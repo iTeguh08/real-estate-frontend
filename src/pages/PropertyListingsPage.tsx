@@ -107,7 +107,7 @@ function SidebarRecentProperty({ property }: { property: Property }) {
     >
       <div className="relative h-[74px] w-[74px] shrink-0 overflow-hidden rounded-hz">
         <MediaImage
-          src={propertyPreviewUrl(property, 148)}
+          src={propertyPreviewUrl(property, 74)}
           alt={property.title}
           decoding="async"
           loading="lazy"

@@ -46,7 +46,7 @@ function GalleryLightboxImage({ image }: { image: PropertyGalleryImage }) {
       src={src}
       alt={image.alt}
       decoding="async"
-      onError={() => setSrc(galleryPreviewUrl(image, 1400))}
+      onError={() => setSrc(galleryPreviewUrl(image, 880))}
       className="block h-auto max-h-[min(85vh,760px)] w-auto max-w-[min(92vw,880px)]"
     />
   );

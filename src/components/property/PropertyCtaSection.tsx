@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
-import { mediaOriginalUrl, propertyOriginalUrl } from '@/lib/image-url';
+import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -17,9 +17,11 @@ export function PropertyCtaSection({
   onScheduleViewing,
   onContactAgent,
 }: PropertyCtaSectionProps) {
-  const bannerSrc = property.layout1Media.bannerUrl
-    ? mediaOriginalUrl(property.layout1Media.bannerUrl, property.layout1Media.bannerUrlOriginal)
-    : propertyOriginalUrl(property);
+  const bannerSrc = mediaPreviewUrl(
+    property.layout1Media.bannerUrl,
+    MID_PAGE_MEDIA_WIDTH,
+    property.imageUrl,
+  );
 
   return (
     <section aria-labelledby="property-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">

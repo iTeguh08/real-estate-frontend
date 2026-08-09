@@ -205,7 +205,7 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
                     >
                       <span className="relative block aspect-[5/4] overflow-hidden rounded-hz">
                         <MediaImage
-                          src={sizedImage(thumb.preview, 360)}
+                          src={sizedImage(thumb.preview, 280)}
                           alt={thumb.alt}
                           loading="lazy"
                           decoding="async"

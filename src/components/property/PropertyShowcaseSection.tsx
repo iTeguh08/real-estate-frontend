@@ -1,7 +1,7 @@
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { MediaImage } from '@/components/ui/media-image';
 import { Skeleton } from '@/components/ui/skeleton';
-import { mediaOriginalUrl } from '@/lib/image-url';
+import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH, MID_PAGE_PORTRAIT_WIDTH } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyShowcaseSectionProps {
@@ -17,14 +17,18 @@ export function PropertyShowcaseSection({
   embedded = false,
 }: PropertyShowcaseSectionProps) {
   const { title, layout1Media, description, features } = property;
-  const verticalUrl = layout1Media.featureVerticalUrl
-    ? mediaOriginalUrl(layout1Media.featureVerticalUrl, layout1Media.featureVerticalUrlOriginal)
+  const verticalSource = layout1Media.featureVerticalUrl;
+  const squareSource = layout1Media.featureSquareUrl;
+  const hasCollage = Boolean(
+    verticalSource && squareSource && verticalSource !== squareSource,
+  );
+  const verticalUrl = verticalSource
+    ? mediaPreviewUrl(verticalSource, MID_PAGE_PORTRAIT_WIDTH)
     : null;
-  const squareUrl = layout1Media.featureSquareUrl
-    ? mediaOriginalUrl(layout1Media.featureSquareUrl, layout1Media.featureSquareUrlOriginal)
-    : null;
-  const hasCollage = Boolean(verticalUrl && squareUrl && verticalUrl !== squareUrl);
-  const singleUrl = verticalUrl ?? squareUrl ?? null;
+  const squareUrl = squareSource ? mediaPreviewUrl(squareSource, 360) : null;
+  const singleUrl = hasCollage
+    ? null
+    : mediaPreviewUrl(verticalSource ?? squareSource, MID_PAGE_MEDIA_WIDTH);
 
   const lifestyleBody =
     features.length > 0
