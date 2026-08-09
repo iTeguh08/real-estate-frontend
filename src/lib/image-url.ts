@@ -9,7 +9,7 @@
 export interface SizedImageOptions {
   /** Hard cap on requested pixel width. */
   maxWidth?: number;
-  /** JPEG/WebP quality — default 80 (visually lossless for web). */
+  /** JPEG/WebP quality — default 100. */
   quality?: number;
 }
 
@@ -54,7 +54,7 @@ export function sizedImage(
 
   try {
     const u = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
-    const quality = options?.quality ?? 80;
+    const quality = options?.quality ?? 100;
     const width = previewRequestWidth(displayWidth, options?.maxWidth);
 
     if (isApiImagesUrl(u)) {
