@@ -1,6 +1,5 @@
 import type { PropertyDetail } from '@/types';
 import { MediaImage } from '@/components/ui/media-image';
-import { sizedImage } from '@/lib/image-url';
 
 export interface PropertyOverviewBackgroundProps {
   imageUrl: string;
@@ -10,7 +9,10 @@ export function PropertyOverviewBackground({ imageUrl }: PropertyOverviewBackgro
   return (
     <div className="pointer-events-none absolute inset-0 max-md:hidden" aria-hidden="true">
       <MediaImage
-        src={sizedImage(imageUrl, 720)}
+        mediaUrl={imageUrl}
+        fitCover
+        coverEstimate={{ width: 720, height: 900 }}
+        coverMaxWidth={1200}
         alt=""
         loading="lazy"
         decoding="async"

@@ -1,10 +1,5 @@
 import { Bed, Bathtub, ArrowsOut, CalendarBlank, MapPin } from '@phosphor-icons/react';
 import { MediaImage } from '@/components/ui/media-image';
-import {
-  mediaPreviewUrl,
-  MID_PAGE_PORTRAIT_WIDTH,
-  MID_PAGE_WIDE_WIDTH,
-} from '@/lib/image-url';
 import { formatPropertyLocation } from '@/lib/format-property';
 import type { PropertyDetail } from '@/types';
 import type { PropertyVillaUtilityAction } from '@/components/property/PropertyVillaHighlights';
@@ -49,7 +44,7 @@ function UtilityPillButton({
   );
 }
 
-function PortraitImage({ src, title }: { src: string; title: string }) {
+function PortraitImage({ mediaUrl, title }: { mediaUrl: string; title: string }) {
   return (
     <div className="relative w-[min(78vw,240px)] shrink-0 sm:w-[260px] md:w-[290px] lg:w-[320px]">
       <div
@@ -58,7 +53,10 @@ function PortraitImage({ src, title }: { src: string; title: string }) {
       />
       <div className="relative aspect-[3/4] overflow-hidden">
         <MediaImage
-          src={src}
+          mediaUrl={mediaUrl}
+          fitCover
+          coverEstimate={{ width: 320, height: 427 }}
+          coverMaxWidth={640}
           alt={`${title} — property overview`}
           loading="lazy"
           decoding="async"
@@ -160,11 +158,14 @@ function InteriorCopy({
   );
 }
 
-function LandscapeImage({ src, title }: { src: string; title: string }) {
+function LandscapeImage({ mediaUrl, title }: { mediaUrl: string; title: string }) {
   return (
     <div className="relative z-0 aspect-video w-full overflow-hidden lg:-mt-[6.5rem] lg:min-h-[300px] lg:w-full xl:-mt-[8rem] xl:min-h-[340px]">
       <MediaImage
-        src={src}
+        mediaUrl={mediaUrl}
+        fitCover
+        coverEstimate={{ width: 720, height: 405 }}
+        coverMaxWidth={1200}
         alt={`${title} — landscape view`}
         loading="lazy"
         decoding="async"
@@ -183,16 +184,8 @@ export function PropertyVillaEditorialSection({
   onUtilityAction,
 }: PropertyVillaEditorialSectionProps) {
   const { title, layout2Media } = property;
-  const portraitImage = mediaPreviewUrl(
-    layout2Media.splitVerticalUrl,
-    MID_PAGE_PORTRAIT_WIDTH,
-    property.imageUrl,
-  );
-  const wideImage = mediaPreviewUrl(
-    layout2Media.splitLandscapeUrl,
-    MID_PAGE_WIDE_WIDTH,
-    property.imageUrl,
-  );
+  const portraitMedia = layout2Media.splitVerticalUrl || property.imageUrl;
+  const wideMedia = layout2Media.splitLandscapeUrl || property.imageUrl;
 
   return (
     <section
@@ -201,17 +194,17 @@ export function PropertyVillaEditorialSection({
     >
       <div className="section-container">
         <div className="flex flex-col gap-12 lg:hidden">
-          <PortraitImage src={portraitImage} title={title} />
+          <PortraitImage mediaUrl={portraitMedia} title={title} />
           <OverviewCopy property={property} />
           <InteriorCopy property={property} onUtilityAction={onUtilityAction} />
-          <LandscapeImage src={wideImage} title={title} />
+          <LandscapeImage mediaUrl={wideMedia} title={title} />
         </div>
 
         <div className="hidden lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
-          <PortraitImage src={portraitImage} title={title} />
+          <PortraitImage mediaUrl={portraitMedia} title={title} />
           <OverviewCopy property={property} />
           <InteriorCopy property={property} onUtilityAction={onUtilityAction} />
-          <LandscapeImage src={wideImage} title={title} />
+          <LandscapeImage mediaUrl={wideMedia} title={title} />
         </div>
       </div>
     </section>

@@ -47,7 +47,10 @@ export function PropertyMediaSlotField({
       {previewUrl ? (
         <div className="relative h-36 overflow-hidden rounded-hz ring-1 ring-hz-border">
           <MediaImage
-            src={previewUrl}
+            mediaUrl={previewUrl}
+            fitCover
+            coverEstimate={{ width: 320, height: 144 }}
+            coverMaxWidth={640}
             alt={label}
             className="object-cover"
           />

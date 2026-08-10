@@ -8,7 +8,6 @@ import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
 import { propertyCard } from '@/lib/cva';
-import { propertyPreviewUrl, GRID_CARD_PREVIEW_WIDTH } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { Property } from '@/types';
@@ -106,10 +105,12 @@ export function PropertyCard({
         )}
       >
         <MediaImage
-          src={propertyPreviewUrl(
-            { imageUrl },
-            isListVariant ? 180 : GRID_CARD_PREVIEW_WIDTH
-          )}
+          mediaUrl={imageUrl}
+          fitCover
+          coverEstimate={
+            isListVariant ? { width: 180, height: 140 } : { width: 320, height: 200 }
+          }
+          coverMaxWidth={640}
           alt={`${title} — ${locationLabel}`}
           loading={imageLoadPriority === 'auto' ? 'lazy' : 'eager'}
           fetchPriority={imageLoadPriority === 'high' ? 'high' : imageLoadPriority === 'low' ? 'low' : undefined}

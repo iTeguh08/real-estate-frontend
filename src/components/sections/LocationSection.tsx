@@ -7,7 +7,6 @@ import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
 import { useHomepageQuery } from '@/hooks/queries';
-import { sizedImage } from '@/lib/image-url';
 import type { Location } from '@/types';
 
 type LocationCardVariant = 'square' | 'wide';
@@ -24,7 +23,10 @@ interface LocationCardProps {
 function LocationCard({ location, variant, lightSurface = false }: LocationCardProps) {
   const label = `${location.city}, ${location.country}`;
   const locationQuery = location.city.trim();
-  const displayWidth = variant === 'wide' ? 790 : 340;
+  const coverEstimate =
+    variant === 'wide'
+      ? { width: 790, height: 395 }
+      : { width: 340, height: 340 };
 
   return (
     <Link
@@ -42,7 +44,10 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
         )}
       >
         <MediaImage
-          src={sizedImage(location.imageUrl, displayWidth)}
+          mediaUrl={location.imageUrl}
+          fitCover
+          coverEstimate={coverEstimate}
+          coverMaxWidth={variant === 'wide' ? 1200 : 680}
           alt={label}
           loading="lazy"
           decoding="async"

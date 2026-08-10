@@ -29,6 +29,9 @@ export type AtmosphereImage =
   | 'best-value'
   | 'agents-plants'
   | 'related-plants'
+  | 'contact-topo'
+  | 'blog-arches'
+  | 'news-contours'
   | 'auto'
   | 'none';
 
@@ -88,6 +91,9 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   'best-value': 'bg/bg-light-best-value-edges-v2.webp',
   'agents-plants': 'bg/bg-light-agents-plants-v1.webp',
   'related-plants': 'bg/bg-light-related-plants.webp',
+  'contact-topo': 'bg/bg-light-contact-topo-v1.webp',
+  'blog-arches': 'bg/bg-light-blog-arches-v1.webp',
+  'news-contours': 'bg/bg-light-news-contours-v1.webp',
 };
 
 function resolveImage(tone: Tone, image: AtmosphereImage): Exclude<AtmosphereImage, 'auto'> {

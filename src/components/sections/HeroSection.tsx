@@ -4,7 +4,7 @@ import { MediaImage } from '@/components/ui/media-image';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
-import { sizedImage, HERO_PREVIEW_WIDTH } from '@/lib/image-url';
+import { withCoverBox } from '@/lib/image-url';
 import { preloadImage } from '@/lib/preload-image';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useHomepageQuery } from '@/hooks/queries';
@@ -25,14 +25,13 @@ export function HeroSection() {
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
-  const heroSrc = sizedImage(hero?.backgroundImage ?? heroImage, HERO_PREVIEW_WIDTH, {
-    maxWidth: 1440,
-  });
+  const heroMediaUrl = hero?.backgroundImage ?? heroImage;
+  const heroPreloadSrc = withCoverBox(heroMediaUrl, 640, 551, { maxEdge: 1440 });
   const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
 
   useEffect(() => {
-    return preloadImage(heroSrc);
-  }, [heroSrc]);
+    return preloadImage(heroPreloadSrc);
+  }, [heroPreloadSrc]);
 
   const [activeTab, setActiveTab] = useState<HeroTab>('For Rent');
   const [keyword, setKeywordLocal] = useState('');
@@ -384,10 +383,11 @@ export function HeroSection() {
         {/* Full-bleed hero photo — outside hero-container (not capped at 1560px) */}
         <div className="relative aspect-[1280/1103] w-full overflow-hidden bg-hz-sunken lg:absolute lg:inset-y-0 lg:right-0 lg:z-0 lg:aspect-auto lg:h-full lg:w-1/2">
           <MediaImage
-            src={heroSrc}
+            mediaUrl={heroMediaUrl}
+            fitCover
+            coverEstimate={{ width: 640, height: 551 }}
+            coverMaxWidth={1440}
             alt="Modern luxury residential home"
-            width={1280}
-            height={1103}
             className="object-cover object-center"
             wrapperClassName="absolute inset-0"
             loading="eager"

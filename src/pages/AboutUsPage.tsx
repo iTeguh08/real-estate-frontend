@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Award, Check, Target, Users, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { sizedImage } from '@/lib/image-url';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { CmsPageSkeleton } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
@@ -90,7 +89,10 @@ export function AboutUsPage() {
 
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-sm">
               <MediaImage
-                src={sizedImage(hero.image, 720)}
+                mediaUrl={hero.image}
+                fitCover
+                coverEstimate={{ width: 720, height: 540 }}
+                coverMaxWidth={1200}
                 alt="Modern luxury home exterior"
                 className="object-cover"
                 loading="eager"

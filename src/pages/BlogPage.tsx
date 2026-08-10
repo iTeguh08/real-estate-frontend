@@ -15,7 +15,18 @@ export function BlogPage() {
 
   return (
     <main id="main-content" className="relative overflow-hidden bg-hz-elevated py-16 md:py-20">
-      <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
+      <SectionAtmosphere
+        tone="soft"
+        surface="elevated"
+        intensity="default"
+        variant="ambient"
+        side="left"
+        image="blog-arches"
+        photoOpacity={0.05}
+        photoScrimMix={32}
+        photoFade="balanced"
+        className="max-md:hidden"
+      />
       <div className="section-container relative z-10">
         <header className="mb-12 max-w-2xl">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

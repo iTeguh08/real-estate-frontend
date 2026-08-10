@@ -6,7 +6,6 @@ import {
   getArticleTagPath,
 } from '@/lib/articles';
 import { sanitizeHtml } from '@/lib/sanitize-html';
-import { sizedImage } from '@/lib/image-url';
 import { CmsPageSkeleton } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useArticleQuery } from '@/hooks/queries';
@@ -79,7 +78,10 @@ export function ArticleDetailPage() {
 
         <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
           <MediaImage
-            src={sizedImage(article.imageUrl, 900)}
+            mediaUrl={article.imageUrl}
+            fitCover
+            coverEstimate={{ width: 900, height: 562 }}
+            coverMaxWidth={1400}
             alt={article.title}
             decoding="async"
             className="object-cover"

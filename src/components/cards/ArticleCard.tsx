@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getArticleCategoryLabel, getArticlePath, getArticleTagPath } from '@/lib/articles';
 import { MediaImage } from '@/components/ui/media-image';
-import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { Article } from '@/types';
 
@@ -27,7 +26,10 @@ export function ArticleCard({ article, className, tone = 'default' }: ArticleCar
         )}
       >
         <MediaImage
-          src={sizedImage(imageUrl, 400)}
+          mediaUrl={imageUrl}
+          fitCover
+          coverEstimate={{ width: 400, height: 225 }}
+          coverMaxWidth={800}
           alt=""
           loading="lazy"
           decoding="async"

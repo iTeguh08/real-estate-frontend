@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
-import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -17,11 +16,7 @@ export function PropertyCtaSection({
   onScheduleViewing,
   onContactAgent,
 }: PropertyCtaSectionProps) {
-  const bannerSrc = mediaPreviewUrl(
-    property.layout1Media.bannerUrl,
-    MID_PAGE_MEDIA_WIDTH,
-    property.imageUrl,
-  );
+  const bannerMedia = property.layout1Media.bannerUrl || property.imageUrl;
 
   return (
     <section aria-labelledby="property-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
@@ -29,7 +24,10 @@ export function PropertyCtaSection({
         <div className="grid overflow-hidden rounded-hz bg-hz-elevated lg:grid-cols-2">
           <div className="relative hidden min-h-[280px] lg:block">
             <MediaImage
-              src={bannerSrc}
+              mediaUrl={bannerMedia}
+              fitCover
+              coverEstimate={{ width: 560, height: 360 }}
+              coverMaxWidth={1000}
               alt={`${property.title} — schedule a viewing`}
               loading="lazy"
               decoding="async"

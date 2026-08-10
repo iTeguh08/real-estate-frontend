@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Dialog,
   DialogClose,
@@ -9,13 +9,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { ImageLightboxPanel, LightboxCloseButton } from '@/components/ui/image-lightbox';
 import { MediaImage } from '@/components/ui/media-image';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import {
   PROPERTY_GALLERY_COUNT,
   PROPERTY_GALLERY_PAGE_SIZE,
 } from '@/lib/property-gallery';
-import { galleryLightboxUrl, galleryPreviewUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { PropertyGalleryImage } from '@/types';
 
@@ -34,34 +34,17 @@ function chunkFullPages(images: PropertyGalleryImage[], size: number) {
   return pages;
 }
 
-function GalleryLightboxImage({ image }: { image: PropertyGalleryImage }) {
-  const [src, setSrc] = useState(() => galleryLightboxUrl(image));
-
-  useEffect(() => {
-    setSrc(galleryLightboxUrl(image));
-  }, [image]);
-
-  return (
-    <img
-      src={src}
-      alt={image.alt}
-      decoding="async"
-      onError={() => setSrc(galleryPreviewUrl(image, 880))}
-      className="block h-auto max-h-[min(85vh,760px)] w-auto max-w-[min(92vw,880px)]"
-    />
-  );
-}
-
 function GalleryTile({
   image,
   onOpen,
   className,
-  imageSize = 720,
+  coverEstimate = { width: 720, height: 500 },
 }: {
   image: PropertyGalleryImage;
   onOpen: () => void;
   className?: string;
-  imageSize?: number;
+  /** First-paint estimate only — real size comes from ResizeObserver via fitCover. */
+  coverEstimate?: { width: number; height: number };
 }) {
   return (
     <button
@@ -75,7 +58,10 @@ function GalleryTile({
       aria-label={`Open gallery image: ${image.alt}`}
     >
       <MediaImage
-        src={galleryPreviewUrl(image, imageSize)}
+        mediaUrl={image.url}
+        fitCover
+        coverEstimate={coverEstimate}
+        coverMaxWidth={1100}
         alt={image.alt}
         loading="lazy"
         decoding="async"
@@ -110,29 +96,39 @@ function GalleryBentoPage({
           image={b}
           onOpen={() => openAt(1)}
           className="min-h-0 md:col-span-5 md:col-start-1 md:row-start-1"
-          imageSize={560}
+          coverEstimate={{ width: 480, height: 240 }}
         />
         <GalleryTile
           image={c}
           onOpen={() => openAt(2)}
           className="col-start-1 row-start-2 min-h-0 md:hidden"
-          imageSize={480}
+          coverEstimate={{ width: 360, height: 180 }}
         />
         <GalleryTile
           image={d}
           onOpen={() => openAt(3)}
           className="col-start-1 row-start-3 min-h-0 md:hidden"
-          imageSize={480}
+          coverEstimate={{ width: 360, height: 180 }}
         />
         <div className="hidden min-h-0 grid-cols-2 gap-4 md:col-span-5 md:col-start-1 md:row-start-2 md:grid">
-          <GalleryTile image={c} onOpen={() => openAt(2)} className="min-h-0" imageSize={480} />
-          <GalleryTile image={d} onOpen={() => openAt(3)} className="min-h-0" imageSize={480} />
+          <GalleryTile
+            image={c}
+            onOpen={() => openAt(2)}
+            className="min-h-0"
+            coverEstimate={{ width: 240, height: 240 }}
+          />
+          <GalleryTile
+            image={d}
+            onOpen={() => openAt(3)}
+            className="min-h-0"
+            coverEstimate={{ width: 240, height: 240 }}
+          />
         </div>
         <GalleryTile
           image={a}
           onOpen={() => openAt(0)}
           className="col-start-2 row-span-3 min-h-0 md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1"
-          imageSize={900}
+          coverEstimate={{ width: 720, height: 500 }}
         />
       </div>
     );
@@ -144,29 +140,39 @@ function GalleryBentoPage({
         image={a}
         onOpen={() => openAt(0)}
         className="min-h-0 md:col-span-7 md:row-span-2"
-        imageSize={900}
+        coverEstimate={{ width: 720, height: 500 }}
       />
       <GalleryTile
         image={b}
         onOpen={() => openAt(1)}
         className="min-h-0 md:col-span-5"
-        imageSize={560}
+        coverEstimate={{ width: 480, height: 240 }}
       />
       <GalleryTile
         image={c}
         onOpen={() => openAt(2)}
         className="min-h-0 md:col-span-5 md:hidden"
-        imageSize={480}
+        coverEstimate={{ width: 360, height: 180 }}
       />
       <GalleryTile
         image={d}
         onOpen={() => openAt(3)}
         className="min-h-0 md:hidden"
-        imageSize={480}
+        coverEstimate={{ width: 360, height: 180 }}
       />
       <div className="hidden min-h-0 grid-cols-2 gap-4 md:col-span-5 md:grid">
-        <GalleryTile image={c} onOpen={() => openAt(2)} className="min-h-0" imageSize={480} />
-        <GalleryTile image={d} onOpen={() => openAt(3)} className="min-h-0" imageSize={480} />
+        <GalleryTile
+          image={c}
+          onOpen={() => openAt(2)}
+          className="min-h-0"
+          coverEstimate={{ width: 240, height: 240 }}
+        />
+        <GalleryTile
+          image={d}
+          onOpen={() => openAt(3)}
+          className="min-h-0"
+          coverEstimate={{ width: 240, height: 240 }}
+        />
       </div>
     </div>
   );
@@ -275,17 +281,15 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
               <DialogDescription>Expanded gallery view for {title}</DialogDescription>
             </DialogHeader>
 
-            <figure className="relative m-0 inline-block max-w-[min(92vw,880px)] leading-none">
-              <GalleryLightboxImage key={selected.id} image={selected} />
-
+            <ImageLightboxPanel
+              key={selected.id}
+              previewUrl={selected.url}
+              originalUrl={selected.originalUrl}
+              alt={selected.alt}
+              size="gallery"
+            >
               <DialogClose asChild>
-                <button
-                  type="button"
-                  aria-label="Close gallery"
-                  className="absolute top-2.5 right-2.5 z-10 flex size-8 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75"
-                >
-                  <X size={16} strokeWidth={2} aria-hidden="true" />
-                </button>
+                <LightboxCloseButton aria-label="Close gallery" />
               </DialogClose>
 
               {images.length > 1 ? (
@@ -294,7 +298,7 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
                     type="button"
                     onClick={goLightboxPrev}
                     aria-label="Previous gallery image"
-                    className="absolute top-1/2 left-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65 md:size-10"
+                    className="absolute top-1/2 left-3 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-hz-elevated text-hz-ink shadow-hz-sm ring-1 ring-hz-border transition-colors hover:bg-hz-sunken md:size-10"
                   >
                     <ChevronLeft size={18} strokeWidth={1.85} aria-hidden="true" />
                   </button>
@@ -302,16 +306,16 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
                     type="button"
                     onClick={goLightboxNext}
                     aria-label="Next gallery image"
-                    className="absolute top-1/2 right-2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65 md:size-10"
+                    className="absolute top-1/2 right-3 z-20 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-hz-elevated text-hz-ink shadow-hz-sm ring-1 ring-hz-border transition-colors hover:bg-hz-sunken md:size-10"
                   >
                     <ChevronRight size={18} strokeWidth={1.85} aria-hidden="true" />
                   </button>
-                  <figcaption className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 font-poppins text-xs text-white">
+                  <figcaption className="pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-full bg-hz-elevated/95 px-3 py-1 font-poppins text-xs font-medium text-hz-ink shadow-hz-sm ring-1 ring-hz-border">
                     {lightboxIndex + 1} / {images.length}
                   </figcaption>
                 </>
               ) : null}
-            </figure>
+            </ImageLightboxPanel>
           </DialogContent>
         </Dialog>
       ) : null}

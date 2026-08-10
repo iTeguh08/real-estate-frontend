@@ -6,7 +6,6 @@ import { InquiryDialog } from '@/components/forms/InquiryDialog';
 import { AgentProfileSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useAgentQuery, usePropertySearchQuery } from '@/hooks/queries';
-import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { DEFAULT_LISTING_FILTERS } from '@/types';
@@ -65,7 +64,10 @@ export function AgentProfilePage() {
           <div className="grid gap-0 md:grid-cols-[minmax(0,320px)_1fr]">
             <div className="relative aspect-[16/10] w-full bg-hz-bg-soft md:aspect-auto md:min-h-[320px]">
               <MediaImage
-                src={sizedImage(avatarUrl, 420)}
+                mediaUrl={avatarUrl}
+                fitCover
+                coverEstimate={{ width: 420, height: 262 }}
+                coverMaxWidth={840}
                 alt={name}
                 decoding="async"
                 className="object-cover"

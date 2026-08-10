@@ -5,7 +5,6 @@ import { ArrowLeft, ArrowLeftRight, Heart, Loader2, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
-import { mediaOriginalUrl, propertyOriginalUrl, sizedImage } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { VILLA_SECTION_GUTTERS } from '@/lib/property-layout';
@@ -20,13 +19,12 @@ export interface PropertyDetailHeroProps {
 
 type ShowcaseThumb = {
   preview: string;
-  original: string;
   alt: string;
 };
 
 /**
- * Custom Layout 1 hero. Cover starts from original `imageUrlOriginal`;
- * showcase thumbs use soft preview; swapping loads the matching original.
+ * Custom Layout 1 hero. Background uses fitCover (measured w×h + crop);
+ * showcase thumbs stay soft width-only previews.
  */
 export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDetailHeroProps) {
   const { title, status, type, imageUrl, layout1Media, id, tagline } = property;
@@ -37,27 +35,21 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
   const saved = isWishlisted(id);
   const compared = isCompared(id);
 
-  const coverOriginal = propertyOriginalUrl(property);
-
   const showcaseThumbs: ShowcaseThumb[] = [
     {
       preview: imageUrl,
-      original: coverOriginal,
       alt: `${title} — cover`,
     },
     {
       preview: layout1Media.showcaseOneUrl ?? '',
-      original: mediaOriginalUrl(layout1Media.showcaseOneUrl, layout1Media.showcaseOneUrlOriginal),
       alt: `${title} — showcase 1`,
     },
     {
       preview: layout1Media.showcaseTwoUrl ?? '',
-      original: mediaOriginalUrl(layout1Media.showcaseTwoUrl, layout1Media.showcaseTwoUrlOriginal),
       alt: `${title} — showcase 2`,
     },
     {
       preview: layout1Media.showcaseThreeUrl ?? '',
-      original: mediaOriginalUrl(layout1Media.showcaseThreeUrl, layout1Media.showcaseThreeUrlOriginal),
       alt: `${title} — showcase 3`,
     },
   ].filter(
@@ -66,7 +58,7 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
       list.findIndex((t) => t.preview === thumb.preview) === index
   );
 
-  const [activeOriginal, setActiveOriginal] = useState(coverOriginal);
+  const [activePreview, setActivePreview] = useState(imageUrl);
 
   return (
     <section aria-labelledby="property-hero-heading" className="bg-hz-elevated">
@@ -74,8 +66,11 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
         <div className="relative min-h-[min(72vh,680px)] overflow-hidden bg-hz-inverse md:min-h-[min(80vh,780px)]">
           <div className="absolute inset-0" aria-hidden="true">
             <MediaImage
-              key={activeOriginal}
-              src={activeOriginal}
+              key={activePreview}
+              mediaUrl={activePreview}
+              fitCover
+              coverEstimate={{ width: 1280, height: 720 }}
+              coverMaxWidth={1600}
               alt=""
               fetchPriority="high"
               decoding="async"
@@ -86,96 +81,96 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
           </div>
 
           <div className="absolute top-5 right-5 z-20 flex gap-2 md:top-8 md:right-8">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={compareTogglingId === id}
-            onClick={() => toggleCompare(id)}
-            aria-label={compared ? `Remove ${title} from compare` : `Add ${title} to compare`}
-            aria-pressed={compared}
-            aria-busy={compareTogglingId === id}
-            className={cn(
-              'size-10 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white md:size-11',
-              compared && 'border-hz-primary bg-hz-primary/90 hover:bg-hz-primary',
-              compareTogglingId === id && 'cursor-wait opacity-90'
-            )}
-          >
-            {compareTogglingId === id ? (
-              <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <ArrowLeftRight size={17} strokeWidth={1.75} />
-            )}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={wishlistTogglingId === id}
-            onClick={() => toggleWishlist(id)}
-            aria-label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
-            aria-pressed={saved}
-            aria-busy={wishlistTogglingId === id}
-            className={cn(
-              'size-10 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white md:size-11',
-              wishlistTogglingId === id && 'cursor-wait opacity-90'
-            )}
-          >
-            {wishlistTogglingId === id ? (
-              <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <Heart
-                size={17}
-                strokeWidth={1.75}
-                className={cn(saved && 'fill-hz-primary text-hz-primary')}
-              />
-            )}
-          </Button>
-        </div>
-
-        <div className="relative z-10 flex flex-col">
-          <div className="flex w-full max-w-[min(100%,500px)] flex-col items-center bg-hz-elevated/90 px-6 py-7 text-center backdrop-blur-[2px] sm:max-w-[min(100%,520px)] sm:px-8 sm:py-8 md:max-w-[min(44%,560px)] md:px-10 md:py-9 lg:max-w-[min(42%,580px)]">
-            <Link
-              to={{ pathname: routes.home, hash: 'listings' }}
-              className="mb-5 inline-flex items-center justify-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors duration-200 hover:text-hz-primary md:mb-6"
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              disabled={compareTogglingId === id}
+              onClick={() => toggleCompare(id)}
+              aria-label={compared ? `Remove ${title} from compare` : `Add ${title} to compare`}
+              aria-pressed={compared}
+              aria-busy={compareTogglingId === id}
+              className={cn(
+                'size-10 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white md:size-11',
+                compared && 'border-hz-primary bg-hz-primary/90 hover:bg-hz-primary',
+                compareTogglingId === id && 'cursor-wait opacity-90'
+              )}
             >
-              <ArrowLeft size={16} aria-hidden="true" />
-              Back to listings
-            </Link>
-
-            <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
-              {type} · {statusLabel(status)}
-            </p>
-            <h1
-              id="property-hero-heading"
-              className="mt-2 font-poppins text-[clamp(1.5rem,3.5vw,2.5rem)] font-semibold uppercase leading-[1.12] tracking-[-0.02em] text-hz-dark text-balance"
+              {compareTogglingId === id ? (
+                <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
+              ) : (
+                <ArrowLeftRight size={17} strokeWidth={1.75} />
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              disabled={wishlistTogglingId === id}
+              onClick={() => toggleWishlist(id)}
+              aria-label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
+              aria-pressed={saved}
+              aria-busy={wishlistTogglingId === id}
+              className={cn(
+                'size-10 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white md:size-11',
+                wishlistTogglingId === id && 'cursor-wait opacity-90'
+              )}
             >
-              {title}
-            </h1>
-            <p className="mt-3 flex items-center justify-center gap-2 font-poppins text-sm text-hz-muted">
-              <MapPin size={15} className="shrink-0 text-hz-primary" strokeWidth={1.5} aria-hidden="true" />
-              {locationLabel}
-            </p>
-            <p className="mt-3 max-w-md font-poppins text-sm leading-[1.65] text-hz-body text-pretty">
-              {tagline}
-            </p>
-
-            <p className="mt-5 font-poppins text-xl font-semibold text-hz-dark md:text-2xl">
-              {formatPropertyPrice(property)}
-            </p>
-
-            {onScheduleViewing ? (
-              <Button
-                type="button"
-                onClick={onScheduleViewing}
-                className="mt-5 h-auto w-fit gap-2 rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover"
-              >
-                <CalendarBlank size={17} weight="fill" aria-hidden="true" />
-                Schedule a Viewing
-              </Button>
-            ) : null}
+              {wishlistTogglingId === id ? (
+                <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
+              ) : (
+                <Heart
+                  size={17}
+                  strokeWidth={1.75}
+                  className={cn(saved && 'fill-hz-primary text-hz-primary')}
+                />
+              )}
+            </Button>
           </div>
-        </div>
+
+          <div className="relative z-10 flex flex-col">
+            <div className="flex w-full max-w-[min(100%,500px)] flex-col items-center bg-hz-elevated/90 px-6 py-7 text-center backdrop-blur-[2px] sm:max-w-[min(100%,520px)] sm:px-8 sm:py-8 md:max-w-[min(44%,560px)] md:px-10 md:py-9 lg:max-w-[min(42%,580px)]">
+              <Link
+                to={{ pathname: routes.home, hash: 'listings' }}
+                className="mb-5 inline-flex items-center justify-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors duration-200 hover:text-hz-primary md:mb-6"
+              >
+                <ArrowLeft size={16} aria-hidden="true" />
+                Back to listings
+              </Link>
+
+              <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
+                {type} · {statusLabel(status)}
+              </p>
+              <h1
+                id="property-hero-heading"
+                className="mt-2 font-poppins text-[clamp(1.5rem,3.5vw,2.5rem)] font-semibold uppercase leading-[1.12] tracking-[-0.02em] text-hz-dark text-balance"
+              >
+                {title}
+              </h1>
+              <p className="mt-3 flex items-center justify-center gap-2 font-poppins text-sm text-hz-muted">
+                <MapPin size={15} className="shrink-0 text-hz-primary" strokeWidth={1.5} aria-hidden="true" />
+                {locationLabel}
+              </p>
+              <p className="mt-3 max-w-md font-poppins text-sm leading-[1.65] text-hz-body text-pretty">
+                {tagline}
+              </p>
+
+              <p className="mt-5 font-poppins text-xl font-semibold text-hz-dark md:text-2xl">
+                {formatPropertyPrice(property)}
+              </p>
+
+              {onScheduleViewing ? (
+                <Button
+                  type="button"
+                  onClick={onScheduleViewing}
+                  className="mt-5 h-auto w-fit gap-2 rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover"
+                >
+                  <CalendarBlank size={17} weight="fill" aria-hidden="true" />
+                  Schedule a Viewing
+                </Button>
+              ) : null}
+            </div>
+          </div>
         </div>
 
         {showcaseThumbs.length > 1 && (
@@ -183,18 +178,20 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
             <div className="mx-auto max-w-4xl">
               <div
                 className="grid gap-2.5 sm:gap-3"
-                style={{ gridTemplateColumns: `repeat(${Math.min(showcaseThumbs.length, 4)}, minmax(0, 1fr))` }}
+                style={{
+                  gridTemplateColumns: `repeat(${Math.min(showcaseThumbs.length, 4)}, minmax(0, 1fr))`,
+                }}
                 role="list"
                 aria-label="Property showcase photos"
               >
                 {showcaseThumbs.map((thumb, index) => {
-                  const isActive = thumb.original === activeOriginal;
+                  const isActive = thumb.preview === activePreview;
                   return (
                     <button
                       key={thumb.preview}
                       type="button"
                       role="listitem"
-                      onClick={() => setActiveOriginal(thumb.original)}
+                      onClick={() => setActivePreview(thumb.preview)}
                       aria-label={`Show ${thumb.alt}`}
                       aria-pressed={isActive}
                       aria-current={isActive ? 'true' : undefined}
@@ -205,7 +202,10 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
                     >
                       <span className="relative block aspect-[5/4] overflow-hidden rounded-hz">
                         <MediaImage
-                          src={sizedImage(thumb.preview, 280)}
+                          mediaUrl={thumb.preview}
+                          fitCover
+                          coverEstimate={{ width: 220, height: 176 }}
+                          coverMaxWidth={480}
                           alt={thumb.alt}
                           loading="lazy"
                           decoding="async"

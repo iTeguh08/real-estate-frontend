@@ -8,7 +8,6 @@ import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { queryKeys } from '@/lib/query-keys';
 import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
-import { propertyPreviewUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { clearCompare, getCompareProperties, MAX_COMPARE_ITEMS } from '@/services/compare.service';
 
@@ -160,7 +159,10 @@ export function ComparePage() {
                         </button>
                         <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-hz-bg-soft">
                           <MediaImage
-                            src={propertyPreviewUrl(property, 280)}
+                            mediaUrl={property.imageUrl}
+                            fitCover
+                            coverEstimate={{ width: 280, height: 175 }}
+                            coverMaxWidth={480}
                             alt={property.title}
                             loading="lazy"
                             decoding="async"

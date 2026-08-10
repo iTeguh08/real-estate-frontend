@@ -15,7 +15,18 @@ export function NewsPage() {
 
   return (
     <main id="main-content" className="relative overflow-hidden bg-hz-elevated py-16 md:py-20">
-      <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="right" image="aerial" className="max-md:hidden" />
+      <SectionAtmosphere
+        tone="soft"
+        surface="elevated"
+        intensity="default"
+        variant="ambient"
+        side="right"
+        image="news-contours"
+        photoOpacity={0.07}
+        photoScrimMix={32}
+        photoFade="balanced"
+        className="max-md:hidden"
+      />
       <div className="section-container relative z-10">
         <header className="mb-12 max-w-2xl">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">

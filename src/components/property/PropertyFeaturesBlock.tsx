@@ -1,7 +1,6 @@
 import { Check } from 'lucide-react';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { MediaImage } from '@/components/ui/media-image';
-import { mediaPreviewUrl, MID_PAGE_WIDE_WIDTH } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyFeaturesBlockProps {
@@ -10,11 +9,7 @@ export interface PropertyFeaturesBlockProps {
 
 export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) {
   const { title, features, layout1Media } = property;
-  const bannerUrl = mediaPreviewUrl(
-    layout1Media.bannerUrl,
-    MID_PAGE_WIDE_WIDTH,
-    property.imageUrl,
-  );
+  const bannerMedia = layout1Media.bannerUrl || property.imageUrl;
 
   return (
     <section
@@ -68,7 +63,10 @@ export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) 
         <div className="relative">
           <div className="relative aspect-[5/4] w-full overflow-hidden border-hz-elevated/90 shadow-2xl lg:aspect-[4/3]">
             <MediaImage
-              src={bannerUrl}
+              mediaUrl={bannerMedia}
+              fitCover
+              coverEstimate={{ width: 640, height: 480 }}
+              coverMaxWidth={1200}
               alt={`${title} — featured interior`}
               loading="lazy"
               decoding="async"

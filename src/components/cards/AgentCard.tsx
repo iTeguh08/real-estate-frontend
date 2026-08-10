@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
-import { sizedImage } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import type { Agent } from '@/types';
@@ -19,7 +18,10 @@ export function AgentCard({ agent, className }: AgentCardProps) {
     <article className={cn('group relative', className)}>
       <div className="relative aspect-[16/10] overflow-hidden rounded-hz border-hz-border">
         <MediaImage
-          src={sizedImage(avatarUrl, 340)}
+          mediaUrl={avatarUrl}
+          fitCover
+          coverEstimate={{ width: 340, height: 212 }}
+          coverMaxWidth={680}
           alt={name}
           className="object-cover transition-transform duration-400 group-hover:scale-105"
           style={{ objectPosition: avatarObjectPosition }}

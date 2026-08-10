@@ -20,7 +20,6 @@ import { TYPE_SELECT_OPTIONS } from '@/data/property-types';
 import { formatPerSqftPrice } from '@/lib/format-property';
 import { filtersToSearchParams, searchParamsToFilters } from '@/lib/listing-filter-params';
 import { routes } from '@/lib/routes';
-import { propertyPreviewUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { ListingFilters, Property, PropertySort, PropertyStatus, PropertyType, PropertyWithAgent } from '@/types';
 
@@ -107,7 +106,10 @@ function SidebarRecentProperty({ property }: { property: Property }) {
     >
       <div className="relative h-[74px] w-[74px] shrink-0 overflow-hidden rounded-hz">
         <MediaImage
-          src={propertyPreviewUrl(property, 74)}
+          mediaUrl={property.imageUrl}
+          fitCover
+          coverEstimate={{ width: 74, height: 74 }}
+          coverMaxWidth={192}
           alt={property.title}
           decoding="async"
           loading="lazy"

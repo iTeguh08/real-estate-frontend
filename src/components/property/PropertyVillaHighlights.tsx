@@ -1,7 +1,6 @@
 import { ChatsCircle } from '@phosphor-icons/react';
 import { Check } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
-import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export type PropertyVillaUtilityAction = 'schedule' | 'inquire' | 'location';
@@ -38,11 +37,7 @@ function UtilityPillButton({
  */
 export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyVillaHighlightsProps) {
   const { title, features, layout2Media } = property;
-  const bottomImage = mediaPreviewUrl(
-    layout2Media.bannerUrl,
-    MID_PAGE_MEDIA_WIDTH,
-    property.imageUrl,
-  );
+  const bottomMedia = layout2Media.bannerUrl || property.imageUrl;
 
   return (
     <section
@@ -53,7 +48,10 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
           <div className="relative aspect-[4/3] min-h-[280px] overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm lg:min-h-[420px]">
             <MediaImage
-              src={bottomImage}
+              mediaUrl={bottomMedia}
+              fitCover
+              coverEstimate={{ width: 560, height: 420 }}
+              coverMaxWidth={1000}
               alt={`${title} — featured exterior`}
               loading="lazy"
               decoding="async"

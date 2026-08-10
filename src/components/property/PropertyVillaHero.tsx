@@ -5,7 +5,6 @@ import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
-import { propertyOriginalUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { VILLA_SECTION_GUTTERS } from '@/lib/property-layout';
@@ -51,7 +50,10 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
           {/* Background image */}
           <div className="absolute inset-0" aria-hidden="true">
             <MediaImage
-              src={propertyOriginalUrl(property)}
+              mediaUrl={property.imageUrl}
+              fitCover
+              coverEstimate={{ width: 1280, height: 720 }}
+              coverMaxWidth={1600}
               alt=""
               fetchPriority="high"
               decoding="async"

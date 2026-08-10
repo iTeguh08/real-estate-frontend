@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bed, Bathtub, ArrowsOut, Car } from '@phosphor-icons/react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Maximize2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -9,8 +10,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import {
+  ImageLightboxOverlay,
+  ImageLightboxPanel,
+  LightboxCloseButton,
+  preloadLightboxCover,
+} from '@/components/ui/image-lightbox';
 import { MediaImage } from '@/components/ui/media-image';
-import { propertyOriginalUrl } from '@/lib/image-url';
 import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import type { Property } from '@/types';
 import { routes } from '@/lib/routes';
@@ -48,33 +54,108 @@ export function PropertyDetailDialog({
   open,
   onOpenChange,
 }: PropertyDetailDialogProps) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) setLightboxOpen(false);
+  }, [open]);
+
+  const locationLabel = property ? formatPropertyLocation(property) : '';
+  const imageAlt = property ? `${property.title} — ${locationLabel}` : '';
+
+  const openLightbox = () => {
+    if (!property) return;
+    preloadLightboxCover(property.imageUrl, property.imageUrlOriginal, 'modal');
+    setLightboxOpen(true);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {property && (
-        <DialogContent className="flex max-h-[min(92vh,820px)] flex-col overflow-hidden p-0 sm:max-w-lg">
-          <PropertyDetailBody property={property} />
-        </DialogContent>
-      )}
-    </Dialog>
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && lightboxOpen) {
+            setLightboxOpen(false);
+            return;
+          }
+          onOpenChange(nextOpen);
+        }}
+      >
+        {property && (
+          <DialogContent className="flex max-h-[min(92vh,820px)] flex-col overflow-hidden p-0 sm:max-w-lg">
+            <PropertyDetailBody property={property} onMaximize={openLightbox} />
+          </DialogContent>
+        )}
+      </Dialog>
+
+      {property && lightboxOpen ? (
+        <ImageLightboxOverlay
+          open={lightboxOpen}
+          onOpenChange={setLightboxOpen}
+          aria-label={`Enlarged image: ${imageAlt}`}
+        >
+          <ImageLightboxPanel
+            previewUrl={property.imageUrl}
+            originalUrl={property.imageUrlOriginal}
+            alt={imageAlt}
+            size="modal"
+          >
+            <LightboxCloseButton
+              aria-label="Close enlarged image"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setLightboxOpen(false);
+              }}
+            />
+          </ImageLightboxPanel>
+        </ImageLightboxOverlay>
+      ) : null}
+    </>
   );
 }
 
-function PropertyDetailBody({ property }: { property: Property }) {
-  const { title, status, type, specs } = property;
+function PropertyDetailBody({
+  property,
+  onMaximize,
+}: {
+  property: Property;
+  onMaximize: () => void;
+}) {
+  const { title, status, type, specs, imageUrl } = property;
   const locationLabel = formatPropertyLocation(property);
+  const imageAlt = `${title} — ${locationLabel}`;
 
   return (
     <>
       <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-hz bg-hz-bg-soft">
-        <MediaImage
-          src={propertyOriginalUrl(property)}
-          alt={`${title} — ${locationLabel}`}
-          decoding="async"
-          className="object-cover"
-        />
-        <span className="absolute top-4 left-4 z-10 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
+        <button
+          type="button"
+          onClick={onMaximize}
+          className="group absolute inset-0 z-0 block size-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary focus-visible:ring-inset"
+          aria-label={`View enlarged image: ${imageAlt}`}
+        >
+          <MediaImage
+            mediaUrl={imageUrl}
+            fitCover
+            coverEstimate={{ width: 512, height: 320 }}
+            coverMaxWidth={800}
+            alt={imageAlt}
+            decoding="async"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+          />
+        </button>
+        <span className="pointer-events-none absolute top-4 left-4 z-10 rounded-hz bg-hz-primary px-2.5 py-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-white">
           {status}
         </span>
+        <button
+          type="button"
+          onClick={onMaximize}
+          aria-label="Maximize image"
+          className="absolute right-3 bottom-3 z-10 flex size-8 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75"
+        >
+          <Maximize2 size={15} strokeWidth={2} aria-hidden="true" />
+        </button>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
@@ -110,16 +191,16 @@ function PropertyDetailBody({ property }: { property: Property }) {
           )}
         </div>
 
-          <Link
-            to={routes.propertyById(property.id)}
-            className={cn(
-              'flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3',
-              'font-poppins text-sm font-semibold text-white no-underline',
-              'transition-colors duration-200 hover:bg-hz-primary-hover'
-            )}
-          >
-            View Full Listing
-          </Link>
+        <Link
+          to={routes.propertyById(property.id)}
+          className={cn(
+            'flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3',
+            'font-poppins text-sm font-semibold text-white no-underline',
+            'transition-colors duration-200 hover:bg-hz-primary-hover'
+          )}
+        >
+          View Full Listing
+        </Link>
       </div>
     </>
   );

@@ -1,7 +1,6 @@
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { MediaImage } from '@/components/ui/media-image';
 import { Skeleton } from '@/components/ui/skeleton';
-import { mediaPreviewUrl, MID_PAGE_MEDIA_WIDTH, MID_PAGE_PORTRAIT_WIDTH } from '@/lib/image-url';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyShowcaseSectionProps {
@@ -11,6 +10,7 @@ export interface PropertyShowcaseSectionProps {
 
 /**
  * Single visual essay for Layout 1 — collage + CMS-backed copy, no mid-scroll CTA.
+ * Collage frames use fitCover so portrait/landscape sources size to the real box.
  */
 export function PropertyShowcaseSection({
   property,
@@ -22,13 +22,7 @@ export function PropertyShowcaseSection({
   const hasCollage = Boolean(
     verticalSource && squareSource && verticalSource !== squareSource,
   );
-  const verticalUrl = verticalSource
-    ? mediaPreviewUrl(verticalSource, MID_PAGE_PORTRAIT_WIDTH)
-    : null;
-  const squareUrl = squareSource ? mediaPreviewUrl(squareSource, 360) : null;
-  const singleUrl = hasCollage
-    ? null
-    : mediaPreviewUrl(verticalSource ?? squareSource, MID_PAGE_MEDIA_WIDTH);
+  const singleSource = verticalSource ?? squareSource ?? null;
 
   const lifestyleBody =
     features.length > 0
@@ -44,7 +38,10 @@ export function PropertyShowcaseSection({
           <>
             <div className="relative z-[1] aspect-[3/4] w-[62%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
               <MediaImage
-                src={verticalUrl!}
+                mediaUrl={verticalSource!}
+                fitCover
+                coverEstimate={{ width: 420, height: 560 }}
+                coverMaxWidth={900}
                 alt={`${title} — interior`}
                 loading="lazy"
                 decoding="async"
@@ -54,7 +51,10 @@ export function PropertyShowcaseSection({
             </div>
             <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
               <MediaImage
-                src={squareUrl!}
+                mediaUrl={squareSource!}
+                fitCover
+                coverEstimate={{ width: 360, height: 450 }}
+                coverMaxWidth={800}
                 alt={`${title} — detail`}
                 loading="lazy"
                 decoding="async"
@@ -63,10 +63,13 @@ export function PropertyShowcaseSection({
               />
             </div>
           </>
-        ) : singleUrl ? (
+        ) : singleSource ? (
           <div className="aspect-[4/5] w-full max-w-md overflow-hidden rounded-hz shadow-hz-md lg:max-w-none">
             <MediaImage
-              src={singleUrl}
+              mediaUrl={singleSource}
+              fitCover
+              coverEstimate={{ width: 480, height: 600 }}
+              coverMaxWidth={1000}
               alt={`${title} — interior`}
               loading="lazy"
               decoding="async"
