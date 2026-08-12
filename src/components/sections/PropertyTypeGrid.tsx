@@ -58,8 +58,8 @@ function PropertyTypeCard({
       aria-pressed={isActive}
       aria-label={`${type}: ${count} ${countLabel.toLowerCase()}`}
       className={cn(
-        'group flex h-auto min-h-[108px] w-full cursor-pointer flex-col items-center justify-center gap-3',
-        'rounded-hz px-4 py-5 focus-visible:outline-none md:h-[220px] md:gap-6 md:py-4',
+        'group flex h-auto min-h-[120px] w-full cursor-pointer flex-col items-center justify-center gap-2.5',
+        'rounded-hz px-3 py-4 focus-visible:outline-none md:h-[220px] md:gap-6 md:px-4 md:py-4',
         isActive
           ? 'border border-hz-primary bg-hz-primary text-white shadow-hz-sm'
           : cn(
@@ -70,18 +70,21 @@ function PropertyTypeCard({
             )
       )}
     >
-      <div className="hidden h-[88px] w-full items-center justify-center md:flex" aria-hidden="true">
+      <div
+        className="flex h-11 w-full items-center justify-center md:h-[88px]"
+        aria-hidden="true"
+      >
         <Illustration
           className="flex h-full w-full items-center justify-center"
           iconClassName={cn(
-            'h-[80px] w-[80px] max-w-none translate-y-0 object-contain',
+            'h-10 w-10 max-w-none translate-y-0 object-contain md:h-[80px] md:w-[80px]',
             isActive ? 'hz-raster-icon-on-primary' : 'hz-raster-icon-on-surface'
           )}
         />
       </div>
 
-      <div className="flex w-full flex-col items-center gap-2 text-center md:gap-3">
-        <span className="font-poppins text-base font-semibold leading-none md:text-lg">{type}</span>
+      <div className="flex w-full flex-col items-center gap-1.5 text-center md:gap-3">
+        <span className="font-poppins text-[15px] font-semibold leading-none md:text-lg">{type}</span>
         <span
           className={cn(
             'font-poppins text-[12px] leading-none',
@@ -219,8 +222,8 @@ export function PropertyTypeGrid() {
                 data-type-card
                 role="listitem"
                 className={cn(
-                  // Mobile: ~2 cards visible + sliver of the next (peek affordance before swipe)
-                  'max-md:w-[calc((100%-0.75rem-2.25rem)/2)] max-md:min-w-[158px] max-md:shrink-0 max-md:snap-start',
+                  // Mobile: ~2 cards + clearer third-card spill so swipe is obvious
+                  'max-md:w-[calc((100%-0.75rem-5rem)/2)] max-md:min-w-[132px] max-md:shrink-0 max-md:snap-start',
                   needsDesktopScroll
                     ? 'md:w-[calc((100%-60px)/6)] md:min-w-[140px] md:shrink-0'
                     : 'md:flex-1'
