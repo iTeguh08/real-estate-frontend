@@ -1,3 +1,4 @@
+import { resolveListingAgent } from '@/lib/listing-agent';
 import type { Property, PropertyDetail, PropertyGalleryImage } from '@/types';
 import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
 import { originalImage, sizedImage } from '@/lib/image-url';
@@ -228,5 +229,6 @@ export function enrichPropertyDetail(property: Property): PropertyDetail {
     ],
     amenities: copy?.amenities ?? ['Climate control', 'Storage', 'Parking'],
     relatedPropertyIds: copy?.relatedPropertyIds,
+    agent: resolveListingAgent(property),
   };
 }

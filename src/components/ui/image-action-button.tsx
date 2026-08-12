@@ -34,7 +34,7 @@ export function ImageActionButton({
         'flex cursor-pointer items-center justify-center rounded-full text-white transition-colors duration-200',
         'bg-black/55 hover:bg-black/70',
         loading && 'cursor-wait opacity-90',
-        size === 'sm' ? 'h-8 w-8' : 'h-9 w-9'
+        size === 'sm' ? 'h-8 w-8 max-lg:h-11 max-lg:w-11' : 'h-9 w-9 max-lg:h-11 max-lg:w-11'
       )}
     >
       {loading ? (

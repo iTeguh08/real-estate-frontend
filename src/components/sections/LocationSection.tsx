@@ -225,22 +225,22 @@ export function LocationSection({
           variant="dual"
           side="left"
           image="location-plants"
-          photoOpacity={0.9}
-          photoScrimMix={42}
+          photoOpacity={0.88}
+          photoScrimMix={38}
           photoFade="exit-soft"
           lightGlow="white"
           className="max-md:hidden"
         />
       )}
       <div className="section-container relative z-10">
-        <div className="mb-12 flex flex-col items-center text-center">
+        <div className="mb-8 flex flex-col items-center text-center md:mb-12">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             {eyebrow}
           </p>
           <h2
             id="locations-heading"
             className={cn(
-              'font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] md:text-[36px] lg:text-[40px]',
+              'font-poppins hz-h2 font-semibold leading-[1.2] tracking-[-0.3px] lg:text-[40px]',
               isNavy ? 'text-hz-footer-fg' : 'text-hz-ink'
             )}
           >

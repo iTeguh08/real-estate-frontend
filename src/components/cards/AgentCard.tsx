@@ -45,7 +45,7 @@ export function AgentCard({ agent, className }: AgentCardProps) {
           <a
             href={`tel:${phone.replace(/\s/g, '')}`}
             className={cn(
-              'relative z-10 flex h-10 w-10 shrink-0 items-center justify-center',
+              'relative z-10 flex h-11 w-11 shrink-0 items-center justify-center',
               'text-hz-dark transition-colors duration-200',
               'hover:text-hz-primary'
             )}
@@ -55,7 +55,7 @@ export function AgentCard({ agent, className }: AgentCardProps) {
           </a>
         ) : (
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center text-hz-muted/50"
+            className="flex h-11 w-11 shrink-0 items-center justify-center text-hz-muted/50"
             aria-hidden="true"
           >
             <Phone size={22} strokeWidth={2.25} />

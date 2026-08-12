@@ -65,7 +65,7 @@ export function WhatPeopleSaySection({
           </p>
           <h2
             id="testimonials-heading"
-            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg md:text-[36px]"
+            className="font-poppins hz-h2 font-semibold leading-[1.2] tracking-[-0.3px] text-hz-footer-fg"
           >
             {title}
           </h2>
@@ -74,7 +74,7 @@ export function WhatPeopleSaySection({
 
       <div className="section-container relative z-20">
         <div
-          className="-mt-32 touch-pan-y md:-mt-40"
+          className="-mt-28 touch-pan-y md:-mt-40"
           {...swipeHandlers}
         >
           <div

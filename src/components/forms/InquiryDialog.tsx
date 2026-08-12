@@ -24,6 +24,12 @@ type ContextIcon = ComponentType<{
   'aria-hidden'?: boolean | 'true' | 'false';
 }>;
 
+export interface InquiryContextBlock {
+  title: string;
+  subtitle?: string;
+  icon?: ContextIcon;
+}
+
 export interface InquiryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -44,6 +50,8 @@ export interface InquiryDialogProps {
   /** Prefix for field ids when multiple dialogs mount on one page. */
   idPrefix?: string;
   ContextIcon?: ContextIcon;
+  /** When set, renders stacked context chips (e.g. listing + listing agent). */
+  contextBlocks?: InquiryContextBlock[];
 }
 
 /**
@@ -64,6 +72,7 @@ export function InquiryDialog({
   contextMeta,
   idPrefix = 'inq',
   ContextIcon = MapPin,
+  contextBlocks,
 }: InquiryDialogProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -144,6 +153,10 @@ export function InquiryDialog({
 
   const submitDisabled = mutation.isPending || (turnstileRequired && !turnstileToken);
 
+  const resolvedContextBlocks: InquiryContextBlock[] = contextBlocks?.length
+    ? contextBlocks
+    : [{ title: contextTitle, subtitle: contextSubtitle, icon: ContextIcon }];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
@@ -160,19 +173,29 @@ export function InquiryDialog({
             </DialogDescription>
           </div>
 
-          <div className="flex items-start gap-2.5 rounded-hz bg-hz-sunken px-3 py-2.5">
-            <ContextIcon
-              size={15}
-              strokeWidth={1.75}
-              className="mt-0.5 shrink-0 text-hz-primary"
-              aria-hidden="true"
-            />
-            <div className="min-w-0">
-              <p className="truncate font-poppins text-sm font-semibold text-hz-ink">{contextTitle}</p>
-              {contextSubtitle ? (
-                <p className="mt-0.5 truncate font-poppins text-xs text-hz-muted">{contextSubtitle}</p>
-              ) : null}
-            </div>
+          <div className="space-y-2">
+            {resolvedContextBlocks.map((block, index) => {
+              const BlockIcon = block.icon ?? MapPin;
+              return (
+                <div
+                  key={`${block.title}-${index}`}
+                  className="flex items-start gap-2.5 rounded-hz bg-hz-sunken px-3 py-2.5"
+                >
+                  <BlockIcon
+                    size={15}
+                    strokeWidth={1.75}
+                    className="mt-0.5 shrink-0 text-hz-primary"
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate font-poppins text-sm font-semibold text-hz-ink">{block.title}</p>
+                    {block.subtitle ? (
+                      <p className="mt-0.5 truncate font-poppins text-xs text-hz-muted">{block.subtitle}</p>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </DialogHeader>
 

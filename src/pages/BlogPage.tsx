@@ -22,7 +22,7 @@ export function BlogPage() {
         variant="ambient"
         side="left"
         image="blog-arches"
-        photoOpacity={0.05}
+        photoOpacity={0.1}
         photoScrimMix={32}
         photoFade="balanced"
         className="max-md:hidden"

@@ -87,7 +87,12 @@ export interface PropertyDetail extends Property {
   layout1Media: PropertyLayout1Media;
   layout2Media: PropertyLayout2Media;
   relatedPropertyIds?: string[];
+  /** Primary listing agent — one per property. */
+  agent?: ListingAgent;
 }
+
+/** Assigned listing agent embedded on property detail and inquiry flows. */
+export type ListingAgent = Pick<Agent, 'id' | 'slug' | 'name' | 'role' | 'avatarUrl'>;
 
 /** Property listing with assigned agent — used in Best Property Value rows */
 export interface PropertyWithAgent extends Property {

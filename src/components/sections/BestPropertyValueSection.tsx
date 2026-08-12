@@ -26,14 +26,14 @@ export function BestPropertyValueSection({
       aria-labelledby="best-value-heading"
     >
       <div className="section-container relative z-10">
-        <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end md:mb-10">
           <div>
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               Top Picks
             </p>
             <h2
               id="best-value-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+              className="font-poppins hz-h2 font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark"
             >
               Best Property Value
             </h2>

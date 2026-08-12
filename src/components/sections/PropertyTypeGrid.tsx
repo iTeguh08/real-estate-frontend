@@ -168,7 +168,7 @@ export function PropertyTypeGrid() {
             </p>
             <h2
               id="property-type-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-ink md:text-[36px]"
+              className="font-poppins hz-h2 font-semibold leading-[1.2] tracking-[-0.3px] text-hz-ink"
             >
               Try Searching For
             </h2>
@@ -206,7 +206,7 @@ export function PropertyTypeGrid() {
             className={cn(
               'flex items-stretch gap-3 overflow-x-auto scroll-smooth',
               'max-md:section-bleed-x',
-              'max-md:snap-x max-md:snap-mandatory',
+              'max-md:snap-x max-md:snap-proximity',
               'max-md:[&::-webkit-scrollbar]:hidden max-md:scrollbar-none',
               needsDesktopScroll && 'md:[&::-webkit-scrollbar]:hidden md:scrollbar-none'
             )}
@@ -219,7 +219,8 @@ export function PropertyTypeGrid() {
                 data-type-card
                 role="listitem"
                 className={cn(
-                  'max-md:w-[calc((100%-12px)/2)] max-md:min-w-[172px] max-md:max-w-[190px] max-md:shrink-0 max-md:snap-start',
+                  // Mobile: ~2 cards visible + sliver of the next (peek affordance before swipe)
+                  'max-md:w-[calc((100%-0.75rem-2.25rem)/2)] max-md:min-w-[158px] max-md:shrink-0 max-md:snap-start',
                   needsDesktopScroll
                     ? 'md:w-[calc((100%-60px)/6)] md:min-w-[140px] md:shrink-0'
                     : 'md:flex-1'

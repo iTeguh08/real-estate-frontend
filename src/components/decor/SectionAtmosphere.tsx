@@ -83,7 +83,7 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   'location-light': 'bg/bg-light-location-atmosphere-v4.webp',
   'location-edge': 'bg/bg-light-location-edge-v6.webp',
   'location-edge-dark': 'bg/bg-dark-location-edge-v1.webp',
-  'location-plants': 'bg/bg-light-location-plants-v3.webp',
+  'location-plants': 'bg/bg-light-location-plants-v6.webp',
   'location-plants-dark': 'bg/bg-dark-location-plants-v1.webp',
   property: 'bg/bg-hero-left-property-v1.webp',
   'listings-property': 'bg/bg-light-listings-interior-v3.webp',

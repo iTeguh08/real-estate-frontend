@@ -1,11 +1,13 @@
 import { AGENTS } from '@/data/agents';
 import { ARTICLES } from '@/data/articles';
 import { enrichPropertyDetail } from '@/data/property-details';
+import { resolveListingAgent } from '@/lib/listing-agent';
 import { BEST_VALUE_PROPERTIES, FEATURED_PROPERTIES } from '@/data/properties';
 import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
 import type {
   Agent,
   Article,
+  ListingAgent,
   Property,
   PropertyDetail,
   PropertyGalleryImage,
@@ -106,7 +108,7 @@ export function mergePropertyDetailWithFallback(cms: PropertyDetail): PropertyDe
     ? enrichPropertyDetail(fallbackProperty)
     : enrichPropertyDetail(mergedBase);
 
-  return {
+  const detail: PropertyDetail = {
     ...fallbackDetail,
     ...cms,
     ...mergedBase,
@@ -132,6 +134,29 @@ export function mergePropertyDetailWithFallback(cms: PropertyDetail): PropertyDe
     relatedPropertyIds: cms.relatedPropertyIds?.length
       ? cms.relatedPropertyIds
       : fallbackDetail.relatedPropertyIds,
+    agent: mergeListingAgent(cms.agent, fallbackDetail.agent),
+  };
+
+  return {
+    ...detail,
+    agent: detail.agent ?? resolveListingAgent(detail),
+  };
+}
+
+function mergeListingAgent(
+  cms: ListingAgent | undefined,
+  fallback: ListingAgent | undefined,
+): ListingAgent | undefined {
+  if (!fallback && !cms) return undefined;
+  if (!fallback) return cms;
+  if (!cms) return fallback;
+
+  return {
+    id: coalesce(cms.id, fallback.id),
+    slug: coalesce(cms.slug, fallback.slug),
+    name: coalesce(cms.name, fallback.name),
+    role: coalesce(cms.role, fallback.role),
+    avatarUrl: coalesce(cms.avatarUrl, fallback.avatarUrl),
   };
 }
 

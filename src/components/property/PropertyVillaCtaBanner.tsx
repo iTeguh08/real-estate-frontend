@@ -3,13 +3,14 @@ import { Button } from '@/components/ui/button';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
+import { contactAgentLabel, resolveListingAgent } from '@/lib/listing-agent';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyVillaCtaBannerProps {
   property: Pick<
     PropertyDetail,
-    'slug' | 'title' | 'layout2Media' | 'imageUrl' | 'imageUrlOriginal' | 'price' | 'currency' | 'status'
+    'id' | 'slug' | 'title' | 'layout2Media' | 'imageUrl' | 'imageUrlOriginal' | 'price' | 'currency' | 'status' | 'agent'
   >;
   onScheduleViewing?: () => void;
   onContactAgent?: () => void;
@@ -27,6 +28,7 @@ export function PropertyVillaCtaBanner({
   onContactAgent,
 }: PropertyVillaCtaBannerProps) {
   const bannerMedia = property.layout2Media.bannerUrl || property.imageUrl;
+  const agent = property.agent ?? resolveListingAgent(property);
 
   return (
     <section aria-labelledby="property-villa-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
@@ -76,7 +78,7 @@ export function PropertyVillaCtaBanner({
                 onClick={onContactAgent}
                 className="h-auto rounded-hz border-hz-footer-fg/30 bg-transparent px-8 py-3 font-poppins text-sm font-medium text-hz-footer-fg hover:border-hz-footer-fg hover:bg-hz-elevated/10 hover:text-hz-footer-fg"
               >
-                Contact an Agent
+                {contactAgentLabel(agent)}
               </Button>
             </div>
             <p className="mt-5 font-poppins text-xs text-hz-footer-fg/55">

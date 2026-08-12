@@ -1,10 +1,14 @@
 import { CalendarBlank, ChatsCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { formatPropertyLocation } from '@/lib/format-property';
+import { askAgentLabel, resolveListingAgent } from '@/lib/listing-agent';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyContactStripProps {
-  property: Pick<PropertyDetail, 'title' | 'location' | 'street' | 'city' | 'countryCode'>;
+  property: Pick<
+    PropertyDetail,
+    'id' | 'slug' | 'title' | 'location' | 'street' | 'city' | 'countryCode' | 'agent'
+  >;
   onContactAgent?: () => void;
   onScheduleViewing?: () => void;
 }
@@ -18,6 +22,7 @@ export function PropertyContactStrip({
   onScheduleViewing,
 }: PropertyContactStripProps) {
   const locationLabel = formatPropertyLocation(property);
+  const agent = property.agent ?? resolveListingAgent(property);
 
   return (
     <section aria-label="Contact an agent" className="bg-hz-elevated">
@@ -56,7 +61,7 @@ export function PropertyContactStrip({
               className="h-auto w-full gap-2 rounded-hz border-hz-border px-6 py-3 font-poppins text-sm font-medium text-hz-dark hover:border-hz-primary hover:text-hz-primary sm:w-auto"
             >
               <ChatsCircle size={17} weight="fill" aria-hidden="true" />
-              Ask an Agent
+              {askAgentLabel(agent)}
             </Button>
           ) : null}
         </div>

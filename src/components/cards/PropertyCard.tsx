@@ -100,7 +100,7 @@ export function PropertyCard({
       <div
         className={cn(
           'relative shrink-0 overflow-hidden bg-hz-bg-soft',
-          isListVariant ? 'w-[180px] shrink-0 rounded-l-hz' : 'rounded-t-hz',
+          isListVariant ? 'w-[180px] shrink-0 rounded-l-hz max-lg:rounded-l-xl' : 'rounded-t-hz max-lg:rounded-t-xl',
           !isListVariant && 'aspect-[16/10]'
         )}
       >

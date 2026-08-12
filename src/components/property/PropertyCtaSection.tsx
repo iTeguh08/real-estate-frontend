@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyPrice } from '@/lib/format-property';
+import { contactAgentLabel, resolveListingAgent } from '@/lib/listing-agent';
 import { routes } from '@/lib/routes';
 import type { PropertyDetail } from '@/types';
 
@@ -17,6 +18,7 @@ export function PropertyCtaSection({
   onContactAgent,
 }: PropertyCtaSectionProps) {
   const bannerMedia = property.layout1Media.bannerUrl || property.imageUrl;
+  const agent = property.agent ?? resolveListingAgent(property);
 
   return (
     <section aria-labelledby="property-cta-heading" className="bg-hz-sunken pt-5 pb-20 md:pt-6 md:pb-24">
@@ -65,7 +67,7 @@ export function PropertyCtaSection({
                 onClick={onContactAgent}
                 className="h-auto rounded-hz border-hz-border px-8 py-3 font-poppins text-sm font-medium text-hz-dark hover:border-hz-primary hover:text-hz-primary"
               >
-                Contact an Agent
+                {contactAgentLabel(agent)}
               </Button>
             </div>
             <p className="mt-5 font-poppins text-xs text-hz-muted">

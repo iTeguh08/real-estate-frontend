@@ -181,15 +181,35 @@
     /* Section container — Fairfield-aligned responsive gutters */
     --hz-section-max: 90rem; /* 1440px — site-wide sections */
     --hz-hero-max: 97.5rem; /* 1560px — hero content canvas only */
-    --hz-hero-gutter: 4rem; /* 64px — hero horizontal padding */
+    --hz-hero-gutter: 1.25rem; /* 20px — mobile hero padding */
     --hz-paragraph-size: 1rem; /* 16px — body / lead paragraphs */
     --hz-paragraph-sm-size: 0.875rem; /* 14px — secondary paragraph copy */
-    --hz-section-gutter: 1.75rem; /* 28px — mobile & tablet (<1024) */
+    --hz-section-gutter: 1.75rem; /* 28px — mobile */
+    --hz-h1-size: 2rem; /* 32px — hero H1 mobile */
+    --hz-h2-size: 1.875rem; /* 30px — section H2 mobile */
+}
+
+@media (min-width: 640px) {
+    :root {
+        --hz-hero-gutter: 1.75rem; /* 28px */
+        --hz-h1-size: 2.25rem; /* 36px */
+    }
+}
+
+@media (min-width: 768px) {
+    :root {
+        --hz-hero-gutter: 2.5rem; /* 40px — tablet */
+        --hz-section-gutter: 2.5rem; /* 40px — tablet */
+        --hz-h1-size: 2.625rem; /* 42px */
+        --hz-h2-size: 2.25rem; /* 36px */
+    }
 }
 
 @media (min-width: 1024px) {
     :root {
+        --hz-hero-gutter: 4rem; /* 64px — desktop hero */
         --hz-section-gutter: 5rem; /* 80px — desktop */
+        --hz-h1-size: 3rem; /* 48px */
     }
 }
 
@@ -344,11 +364,28 @@ html {
   line-height: 1.6;
 }
 
+/** Responsive hero H1 — driven by --hz-h1-size on :root. */
+@utility hz-h1 {
+  font-size: var(--hz-h1-size);
+}
+
+/** Responsive section H2 — driven by --hz-h2-size on :root. */
+@utility hz-h2 {
+  font-size: var(--hz-h2-size);
+}
+
 /** Edge-bleed scroll rows inside section-container (mobile carousels). */
 @utility section-bleed-x {
   margin-inline: calc(-1 * var(--hz-section-gutter));
   padding-inline: var(--hz-section-gutter);
   scroll-padding-inline: var(--hz-section-gutter);
+}
+
+/** Edge-bleed scroll rows inside hero-container (mobile chip row). */
+@utility hero-bleed-x {
+  margin-inline: calc(-1 * var(--hz-hero-gutter));
+  padding-inline: var(--hz-hero-gutter);
+  scroll-padding-inline: var(--hz-hero-gutter);
 }
 
 /**

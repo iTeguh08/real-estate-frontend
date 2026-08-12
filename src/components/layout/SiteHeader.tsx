@@ -193,13 +193,13 @@ function MobileNavGroup({
         />
       </button>
       {isOpen && (
-        <div className="pb-3 pl-2 space-y-4">
+        <div className="space-y-4 pb-3 pl-6">
           {groups.map((group) => (
             <div key={group.title}>
               <p className="mb-1 font-poppins text-[10px] font-semibold uppercase tracking-wider text-hz-primary">
                 {group.title}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-1 pl-4">
                 {group.items.map((item) => {
                   const itemActive = checkNavItem(item.href, item.label);
                   return (
@@ -433,14 +433,21 @@ export function SiteHeader() {
       </div>
 
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="right" className="w-full font-poppins sm:max-w-sm" showCloseButton>
-          <SheetHeader>
+        <SheetContent
+          side="right"
+          className="flex h-full max-h-dvh w-full min-h-0 flex-col overflow-hidden font-poppins sm:max-w-sm"
+          showCloseButton
+        >
+          <SheetHeader className="shrink-0">
             <SheetTitle className="font-poppins text-lg font-semibold text-hz-dark">
               Menu
             </SheetTitle>
           </SheetHeader>
 
-          <nav aria-label="Mobile navigation" className="flex flex-col px-4">
+          <nav
+            aria-label="Mobile navigation"
+            className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4"
+          >
             <Link
               to={routes.home}
               onClick={closeMobile}
@@ -489,7 +496,7 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="mt-auto flex flex-col gap-3 px-4 pb-4">
+          <div className="flex shrink-0 flex-col gap-3 border-t border-hz-border px-4 pt-4 pb-4">
             <div className="flex gap-2">
               <Link
                 to={routes.wishlist}

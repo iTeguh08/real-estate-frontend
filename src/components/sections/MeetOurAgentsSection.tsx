@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { AgentCard } from '@/components/cards/AgentCard';
@@ -10,20 +11,44 @@ import { routes } from '@/lib/routes';
 import { AgentCardSkeleton } from '@/components/skeletons';
 import type { Agent } from '@/types';
 
-const AGENTS_PER_SLIDE = 3;
-
 interface MeetOurAgentsSectionProps {
   agents?: Agent[];
 }
 
-function buildAgentSlides(agents: Agent[]): Agent[][] {
-  if (agents.length === 0) return [];
+function buildAgentSlides(agents: Agent[], perSlide: number): Agent[][] {
+  if (agents.length === 0 || perSlide < 1) return [];
 
   const slides: Agent[][] = [];
-  for (let index = 0; index < agents.length; index += AGENTS_PER_SLIDE) {
-    slides.push(agents.slice(index, index + AGENTS_PER_SLIDE));
+  for (let index = 0; index < agents.length; index += perSlide) {
+    slides.push(agents.slice(index, index + perSlide));
   }
   return slides;
+}
+
+function useAgentsPerSlide() {
+  const [perSlide, setPerSlide] = useState(1);
+
+  useEffect(() => {
+    const mqSm = window.matchMedia('(min-width: 640px)');
+    const mqLg = window.matchMedia('(min-width: 1024px)');
+
+    const update = () => {
+      if (mqLg.matches) setPerSlide(3);
+      else if (mqSm.matches) setPerSlide(2);
+      else setPerSlide(1);
+    };
+
+    update();
+    mqSm.addEventListener('change', update);
+    mqLg.addEventListener('change', update);
+
+    return () => {
+      mqSm.removeEventListener('change', update);
+      mqLg.removeEventListener('change', update);
+    };
+  }, []);
+
+  return perSlide;
 }
 
 export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectionProps) {
@@ -31,18 +56,26 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
   const isNavy = theme === 'navy';
   const { data: fetchedAgents = [], isLoading } = useAgentsQuery();
   const agents = agentsProp ?? fetchedAgents;
-  const agentSlides = buildAgentSlides(agents);
+  const agentsPerSlide = useAgentsPerSlide();
+  const agentSlides = useMemo(
+    () => buildAgentSlides(agents, agentsPerSlide),
+    [agents, agentsPerSlide]
+  );
 
   const { activeIndex, setActiveIndex, goPrev, goNext, swipeHandlers } = useDotCarousel(
     agentSlides.length
   );
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [agentsPerSlide, setActiveIndex]);
 
   const visibleAgents = agentSlides[activeIndex] ?? [];
 
   return (
     <section
       id="agents"
-      className="section-defer relative w-full overflow-hidden bg-hz-sunken pb-16 pt-12 md:pb-20 md:pt-14"
+      className="section-defer relative w-full overflow-hidden bg-hz-sunken py-16 md:py-20"
       aria-labelledby="agents-heading"
     >
       {isNavy ? (
@@ -66,19 +99,19 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           side="left"
           image="agents-plants"
           photoFade="balanced"
-          photoOpacity={0.4}
+          photoOpacity={0.2}
           photoScrimMix={38}
           className="max-md:hidden"
         />
       )}
       <div className="section-container relative z-10">
-        <header className="mb-12 text-center">
+        <header className="mb-8 text-center md:mb-12">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
             Our Team
           </p>
           <h2
             id="agents-heading"
-            className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+            className="font-poppins hz-h2 font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark"
           >
             Meet Our Agents
           </h2>
@@ -92,7 +125,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
         </header>
 
         {isLoading && !agentsProp ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <AgentCardSkeleton key={i} />
             ))}

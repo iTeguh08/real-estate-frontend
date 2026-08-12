@@ -1,12 +1,16 @@
 import { ChatsCircle } from '@phosphor-icons/react';
 import { Check } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
+import { askAgentLabel, resolveListingAgent } from '@/lib/listing-agent';
 import type { PropertyDetail } from '@/types';
 
 export type PropertyVillaUtilityAction = 'schedule' | 'inquire' | 'location';
 
 export interface PropertyVillaHighlightsProps {
-  property: Pick<PropertyDetail, 'title' | 'features' | 'layout2Media' | 'imageUrl' | 'imageUrlOriginal'>;
+  property: Pick<
+    PropertyDetail,
+    'id' | 'slug' | 'title' | 'features' | 'layout2Media' | 'imageUrl' | 'imageUrlOriginal' | 'agent'
+  >;
   onUtilityAction?: (actionId: PropertyVillaUtilityAction) => void;
 }
 
@@ -38,6 +42,7 @@ function UtilityPillButton({
 export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyVillaHighlightsProps) {
   const { title, features, layout2Media } = property;
   const bottomMedia = layout2Media.bannerUrl || property.imageUrl;
+  const agent = property.agent ?? resolveListingAgent(property);
 
   return (
     <section
@@ -90,7 +95,7 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
             <div className="mt-6">
               <UtilityPillButton
                 icon={<ChatsCircle size={16} weight="fill" aria-hidden="true" />}
-                label="Ask an Agent"
+                label={askAgentLabel(agent)}
                 onClick={() => onUtilityAction?.('inquire')}
               />
             </div>

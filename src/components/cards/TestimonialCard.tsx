@@ -31,7 +31,7 @@ export function TestimonialCard({ testimonial, className }: TestimonialCardProps
       </div>
 
       <blockquote className="flex-1">
-        <p className="font-poppins text-[13.5px] leading-[1.7] text-hz-body sm:text-sm">
+        <p className="font-poppins text-sm leading-[1.7] text-hz-body">
           {quote}
         </p>
       </blockquote>

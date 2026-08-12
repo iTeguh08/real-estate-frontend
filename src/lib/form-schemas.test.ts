@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   contactSchema,
   loginSchema,
+  newsletterSchema,
   registerSchema,
 } from '@/lib/form-schemas';
 
@@ -55,5 +56,11 @@ describe('form-schemas', () => {
         message: 'Hello',
       }).success,
     ).toBe(false);
+  });
+
+  it('validates newsletter email', () => {
+    expect(newsletterSchema.safeParse({ email: 'sub@test.com' }).success).toBe(true);
+    expect(newsletterSchema.safeParse({ email: '' }).success).toBe(false);
+    expect(newsletterSchema.safeParse({ email: 'not-an-email' }).success).toBe(false);
   });
 });

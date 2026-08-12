@@ -116,7 +116,7 @@ export function ExpertiseSection() {
   return (
     <section
       id="expertise"
-      className="relative w-full overflow-hidden bg-hz-sunken py-16 md:py-24"
+      className="relative w-full overflow-hidden bg-hz-sunken py-16 md:py-20"
       aria-labelledby="expertise-heading"
     >
       <SectionAtmosphere
@@ -137,7 +137,7 @@ export function ExpertiseSection() {
               </p>
               <h2
                 id="expertise-heading"
-                className="max-w-[420px] font-poppins text-[30px] font-semibold leading-[1.15] tracking-[-0.4px] text-hz-dark md:text-[38px]"
+                className="max-w-[420px] font-poppins hz-h2 font-semibold leading-[1.15] tracking-[-0.4px] text-hz-dark md:text-[38px]"
               >
                 {expertise.title}
               </h2>

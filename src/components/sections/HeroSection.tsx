@@ -19,6 +19,15 @@ type HeroTab = (typeof TABS)[number];
 
 const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES] as const;
 
+const chipButtonClass = (active: boolean) =>
+  cn(
+    'shrink-0 font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent px-0',
+    'transition-colors duration-200 whitespace-nowrap',
+    active
+      ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
+      : 'text-hz-body hover:text-hz-primary'
+  );
+
 export function HeroSection() {
   const { theme } = useTheme();
   const isLight = theme === 'light';
@@ -99,6 +108,9 @@ export function HeroSection() {
   const fieldClassName =
     'flex min-h-[52px] flex-col justify-center px-4 border-hz-border max-lg:border-b max-lg:px-3 max-lg:py-3 lg:min-w-[140px] lg:border-r';
 
+  const inputClassName =
+    'font-poppins font-normal text-base lg:text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-hz-muted w-full min-w-0 truncate';
+
   const searchFields = (
     <>
       <div className={fieldClassName}>
@@ -114,7 +126,7 @@ export function HeroSection() {
           placeholder="e.g. Villa, Brooklyn, Office"
           value={keyword}
           onChange={(e) => setKeywordLocal(e.target.value)}
-          className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-hz-muted w-full min-w-0 truncate"
+          className={inputClassName}
         />
       </div>
 
@@ -132,7 +144,7 @@ export function HeroSection() {
             placeholder="e.g. New York, Los Angeles"
             value={location}
             onChange={(e) => setLocationLocal(e.target.value)}
-            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent placeholder:text-hz-muted w-full min-w-0 truncate"
+            className={inputClassName}
           />
           <LocateFixed
             size={16}
@@ -155,7 +167,7 @@ export function HeroSection() {
             id="hero-type"
             value={propertyType}
             onChange={(e) => setPropertyTypeLocal(e.target.value)}
-            className="font-poppins font-normal text-[14px] text-hz-dark border-none outline-none bg-transparent appearance-none cursor-pointer w-full min-w-0 truncate"
+            className={cn(inputClassName, 'appearance-none cursor-pointer')}
           >
             {TYPE_OPTIONS.map((type) => (
               <option key={type} value={type}>
@@ -182,9 +194,8 @@ export function HeroSection() {
 
       <h1
         className={cn(
-          'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px]',
-          'text-[36px] md:text-[42px] lg:text-[48px] 3xl:text-[56px]',
-          'max-w-[500px] 3xl:max-w-[580px]'
+          'font-poppins font-bold text-hz-dark leading-[1.15] tracking-[-0.5px] hz-h1',
+          'max-w-[500px] 3xl:max-w-[580px] 3xl:text-[56px]'
         )}
       >
         {(hero?.headline ?? 'Find A Home That\nFits Your Dream').split('\n').map((line, index) => (
@@ -195,7 +206,7 @@ export function HeroSection() {
         ))}
       </h1>
 
-      <p className="font-poppins font-normal hz-paragraph text-hz-muted max-w-[460px] 3xl:max-w-[520px] mb-6">
+      <p className="font-poppins font-normal hz-paragraph text-hz-muted max-w-[460px] 3xl:max-w-[520px] mb-6 max-sm:line-clamp-2">
         {hero?.subheadline ??
           'We are a real estate agency that will help you find the best residence for you at an affordable price.'}
       </p>
@@ -289,14 +300,14 @@ export function HeroSection() {
     </div>
   );
 
-  const heroFooter = (
+  const heroFooterDesktop = (
     <>
       <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted max-md:hidden">
         Your search preferences are saved and shared via the URL. Matching listings load live from
         our database — scroll down to browse results.
       </p>
 
-      <div className="mt-4 flex max-w-[620px] flex-wrap items-center gap-3 3xl:max-w-[720px] max-md:hidden">
+      <div className="mt-4 hidden max-w-[620px] flex-wrap items-center gap-3 md:flex 3xl:max-w-[720px]">
         <span className="font-poppins font-normal text-[13px] text-hz-muted">
           When you are looking for:
         </span>
@@ -311,13 +322,7 @@ export function HeroSection() {
               type="button"
               onClick={() => handleChipClick(type)}
               aria-pressed={activeChip === type}
-              className={cn(
-                'font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent p-0',
-                'transition-colors duration-200',
-                activeChip === type
-                  ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
-                  : 'text-hz-body hover:text-hz-primary'
-              )}
+              className={chipButtonClass(activeChip === type)}
             >
               {type}
             </button>
@@ -325,6 +330,57 @@ export function HeroSection() {
         ))}
       </div>
     </>
+  );
+
+  const heroFooterMobile = (
+    <div className="mt-4 md:hidden">
+      <p className="mb-2 font-poppins text-[12px] text-hz-muted">When you are looking for:</p>
+      <div
+        className={cn(
+          'hero-bleed-x flex gap-4 overflow-x-auto scroll-smooth',
+          'snap-x snap-proximity pb-1',
+          '[&::-webkit-scrollbar]:hidden scrollbar-none'
+        )}
+        role="list"
+        aria-label="Quick property type filters"
+      >
+        {PROPERTY_TYPES.map((type) => (
+          <button
+            key={type}
+            type="button"
+            role="listitem"
+            onClick={() => handleChipClick(type)}
+            aria-pressed={activeChip === type}
+            className={cn(chipButtonClass(activeChip === type), 'snap-start')}
+          >
+            {type}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const heroImageBlock = (
+    <div
+      className={cn(
+        'relative w-full overflow-hidden bg-hz-sunken',
+        'order-2 aspect-[16/10] max-h-[240px] md:max-h-[280px]',
+        'lg:absolute lg:inset-y-0 lg:right-0 lg:z-0 lg:order-none lg:aspect-auto lg:h-full lg:max-h-none lg:w-1/2'
+      )}
+    >
+      <MediaImage
+        mediaUrl={heroMediaUrl}
+        fitCover
+        coverEstimate={{ width: 640, height: 551 }}
+        coverMaxWidth={1440}
+        alt="Modern luxury residential home"
+        className="object-cover object-center"
+        wrapperClassName="absolute inset-0"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+      />
+    </div>
   );
 
   return (
@@ -379,32 +435,18 @@ export function HeroSection() {
         />
       )}
 
-      <div className="relative z-10 lg:aspect-[2560/1103] lg:min-h-0">
-        {/* Full-bleed hero photo — outside hero-container (not capped at 1560px) */}
-        <div className="relative aspect-[1280/1103] w-full overflow-hidden bg-hz-sunken lg:absolute lg:inset-y-0 lg:right-0 lg:z-0 lg:aspect-auto lg:h-full lg:w-1/2">
-          <MediaImage
-            mediaUrl={heroMediaUrl}
-            fitCover
-            coverEstimate={{ width: 640, height: 551 }}
-            coverMaxWidth={1440}
-            alt="Modern luxury residential home"
-            className="object-cover object-center"
-            wrapperClassName="absolute inset-0"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </div>
-
-        {/* max-width: 1560px, padding: 4rem — inspect [data-hero-container]; tweak --hz-hero-max / --hz-hero-gutter on :root */}
+      <div className="relative z-10 flex flex-col lg:aspect-[2560/1103] lg:min-h-0">
         <div
           data-hero-container
-          className="hero-container relative z-10 flex flex-col justify-center py-12 lg:h-full lg:min-h-0 lg:py-10"
+          className="hero-container relative z-10 order-1 flex flex-col justify-center py-8 md:py-12 lg:order-none lg:h-full lg:min-h-0 lg:py-10"
         >
           {heroCopy}
           {searchBlock}
-          {heroFooter}
+          {heroFooterDesktop}
+          {heroFooterMobile}
         </div>
+
+        {heroImageBlock}
       </div>
     </section>
   );

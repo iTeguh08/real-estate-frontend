@@ -28,9 +28,24 @@ export default defineConfig({
   server: {
     proxy: {
       '/graphql': 'http://localhost:8080',
-      '/newsletter': 'http://localhost:8080',
-      '/contact': 'http://localhost:8080',
-      '/property-submissions': 'http://localhost:8080',
+      '/newsletter/subscribe': {
+        target: 'http://localhost:8080',
+        bypass(req) {
+          if (req.method !== 'POST') return '/index.html'
+        },
+      },
+      '/contact': {
+        target: 'http://localhost:8080',
+        bypass(req) {
+          if (req.method !== 'POST') return '/index.html'
+        },
+      },
+      '/property-submissions': {
+        target: 'http://localhost:8080',
+        bypass(req) {
+          if (req.method !== 'POST') return '/index.html'
+        },
+      },
       '/wishlist': 'http://localhost:8080',
       '/compare': 'http://localhost:8080',
       '/security': 'http://localhost:8080',

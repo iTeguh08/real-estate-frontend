@@ -51,9 +51,9 @@ export const propertyCard = cva(
   {
     variants: {
       variant: {
-        grid: 'rounded-hz hover:shadow-hz-md hover:-translate-y-1',
-        list: 'rounded-hz hover:shadow-hz-md flex flex-row',
-        featured: 'rounded-hz shadow-hz-md hover:shadow-hz-elevated hover:-translate-y-1',
+        grid: 'rounded-hz max-lg:rounded-xl hover:shadow-hz-md hover:-translate-y-1',
+        list: 'rounded-hz max-lg:rounded-xl hover:shadow-hz-md flex flex-row',
+        featured: 'rounded-hz max-lg:rounded-xl shadow-hz-md hover:shadow-hz-elevated hover:-translate-y-1',
       },
       size: {
         sm: 'max-w-[260px]',

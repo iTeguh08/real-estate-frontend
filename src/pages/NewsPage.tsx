@@ -22,7 +22,7 @@ export function NewsPage() {
         variant="ambient"
         side="right"
         image="news-contours"
-        photoOpacity={0.07}
+        photoOpacity={0.1}
         photoScrimMix={32}
         photoFade="balanced"
         className="max-md:hidden"

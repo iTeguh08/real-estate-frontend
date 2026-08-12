@@ -24,14 +24,14 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
       aria-labelledby="news-heading"
     >
       <div className="section-container relative z-10">
-        <div className="mb-12 flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-8 flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-12">
           <header className="text-center sm:text-left">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
               Latest News
             </p>
             <h2
               id="news-heading"
-              className="font-poppins text-[30px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[36px]"
+              className="font-poppins hz-h2 font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark"
             >
               {SITE_CONFIG.brand} Market Updates
             </h2>
@@ -48,14 +48,14 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
         </div>
 
         {isLoading && !articlesProp ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: ARTICLE_PREVIEW_COUNT }).map((_, i) => (
               <ArticleCardSkeleton key={i} />
             ))}
           </div>
         ) : (
           <div
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5"
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
             role="list"
             aria-label="Latest news articles"
           >
