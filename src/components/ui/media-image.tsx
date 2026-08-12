@@ -161,6 +161,19 @@ export function MediaImage({
   const revealed = imageReady && minElapsed;
   // Show shimmer even while cover URL is still resolving (avoid flat soft-bg flash).
   const showSkeleton = !noSkeleton && !revealed;
+  /**
+   * Chromium skips lazy-loading images with computed opacity 0, so opacity-0
+   * until onLoad creates an endless skeleton. Keep lazy imgs opaque under the
+   * shimmer; only fade eager/priority imgs in after decode.
+   */
+  const fadeInReveal = loading !== 'lazy';
+
+  // Failsafe: if decode never signals (broken lazy edge cases), drop shimmer.
+  useEffect(() => {
+    if (noSkeleton || imageReady || !srcKey) return;
+    const timer = window.setTimeout(() => setImageReady(true), 8000);
+    return () => window.clearTimeout(timer);
+  }, [noSkeleton, imageReady, srcKey]);
 
   return (
     <div
@@ -186,7 +199,7 @@ export function MediaImage({
           onError={handleError}
           className={cn(
             'absolute inset-0 z-[1] block h-full w-full transition-opacity duration-500 ease-out',
-            revealed ? 'opacity-100' : 'opacity-0',
+            fadeInReveal ? (revealed ? 'opacity-100' : 'opacity-0') : 'opacity-100',
             className
           )}
           {...props}

@@ -365,6 +365,7 @@ export function SectionAtmosphere({
             alt=""
             loading="lazy"
             decoding="async"
+            noSkeleton
             className="object-cover"
             wrapperClassName={cn(
               'absolute inset-0',

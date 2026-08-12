@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import {
+  clearMyListingGallery,
   clearMyListingMedia,
   deleteMyListing,
   publishMyListing,
   unpublishMyListing,
   updateMyListing,
+  uploadMyListingGallery,
   uploadMyListingMedia,
   type AgentListingUpdateInput,
 } from '@/services/agent-listings.service';
@@ -187,6 +189,31 @@ export function useClearMyListingMediaMutation(id: string | number) {
 
   return useMutation({
     mutationFn: (field: MediaSlotField) => clearMyListingMedia(id, field),
+    onSuccess: (property) => {
+      queryClient.setQueryData(queryKeys.myListings.detail(id), property);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.myListings.list() });
+    },
+  });
+}
+
+export function useUploadMyListingGalleryMutation(id: string | number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ index, file }: { index: number; file: File }) =>
+      uploadMyListingGallery(id, index, file),
+    onSuccess: (property) => {
+      queryClient.setQueryData(queryKeys.myListings.detail(id), property);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.myListings.list() });
+    },
+  });
+}
+
+export function useClearMyListingGalleryMutation(id: string | number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (index: number) => clearMyListingGallery(id, index),
     onSuccess: (property) => {
       queryClient.setQueryData(queryKeys.myListings.detail(id), property);
       void queryClient.invalidateQueries({ queryKey: queryKeys.myListings.list() });

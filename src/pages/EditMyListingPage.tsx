@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Pencil, SendHorizontal, EyeOff } from 'lucide-react';
 import { FormField } from '@/components/auth/AuthFormShell';
@@ -17,18 +17,22 @@ import { EditListingSkeleton } from '@/components/skeletons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import {
+  useClearMyListingGalleryMutation,
   useClearMyListingMediaMutation,
   usePublishMyListingMutation,
   useUnpublishMyListingMutation,
   useUpdateMyListingMutation,
+  useUploadMyListingGalleryMutation,
   useUploadMyListingMediaMutation,
 } from '@/hooks/mutations';
 import { useMyListingQuery } from '@/hooks/queries';
 import { isAgentUser } from '@/lib/auth-roles';
 import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
+import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import {
+  galleryPreview,
   isListingReadyToPublish,
   listingMissingFields,
   mediaPreview,
@@ -63,6 +67,8 @@ export function EditMyListingPage() {
   const unpublishMutation = useUnpublishMyListingMutation();
   const uploadMediaMutation = useUploadMyListingMediaMutation(id ?? '');
   const clearMediaMutation = useClearMyListingMediaMutation(id ?? '');
+  const uploadGalleryMutation = useUploadMyListingGalleryMutation(id ?? '');
+  const clearGalleryMutation = useClearMyListingGalleryMutation(id ?? '');
 
   const [mode, setMode] = useState<PageMode>(() =>
     searchParams.get('edit') === '1' ? 'edit' : 'view'
@@ -84,6 +90,9 @@ export function EditMyListingPage() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [notice, setNotice] = useState('');
   const [mediaBusyField, setMediaBusyField] = useState<MediaSlotField | null>(null);
+  const [galleryBusyIndex, setGalleryBusyIndex] = useState<number | null>(null);
+  /** Ignore Save for a beat after Edit — Edit and Save share the same button slot. */
+  const editArmedAtRef = useRef(0);
 
   useEffect(() => {
     if (!listing) return;
@@ -113,6 +122,7 @@ export function EditMyListingPage() {
     setFieldErrors({});
     setNotice('');
     setMode('edit');
+    editArmedAtRef.current = Date.now();
     setSearchParams({ edit: '1' }, { replace: true });
   }
 
@@ -186,25 +196,29 @@ export function EditMyListingPage() {
     publishMutation.isPending ||
     unpublishMutation.isPending ||
     uploadMediaMutation.isPending ||
-    clearMediaMutation.isPending;
+    clearMediaMutation.isPending ||
+    uploadGalleryMutation.isPending ||
+    clearGalleryMutation.isPending;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (readOnly) return;
+    // Double-click on Edit lands on Save (same slot) — ignore that accidental submit.
+    if (Date.now() - editArmedAtRef.current < 500) return;
     setError('');
     setFieldErrors({});
     setNotice('');
 
     updateMutation.mutate(
       {
-        title,
-        street: location.street.trim(),
-        city: location.city.trim(),
-        country_code: location.countryCode,
+        title: title.trim(),
+        street: (location.street ?? '').trim(),
+        city: (location.city ?? '').trim(),
+        country_code: location.countryCode || 'ID',
         latitude: location.latitude,
         longitude: location.longitude,
         price: Number(price) || 0,
-        currency,
+        currency: (currency ?? '').trim() || '$',
         status,
         type,
         custom_layout: customLayout,
@@ -212,8 +226,8 @@ export function EditMyListingPage() {
         baths: Number(baths) || 0,
         sqft: Number(sqft) || 0,
         garage: garage === '' ? null : Number(garage),
-        tagline,
-        description,
+        tagline: (tagline ?? '').trim(),
+        description: (description ?? '').trim(),
       },
       {
         onSuccess: () => {
@@ -224,6 +238,7 @@ export function EditMyListingPage() {
         onError: (err) => {
           setFieldErrors(getApiFieldErrors(err));
           setError(apiErrorMessage(err, 'Could not save property.'));
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
       }
     );
@@ -257,6 +272,37 @@ export function EditMyListingPage() {
         setError(apiErrorMessage(err, 'Could not remove image.'));
       },
       onSettled: () => setMediaBusyField(null),
+    });
+  };
+
+  const handleGalleryUpload = (index: number, file: File) => {
+    setError('');
+    setFieldErrors({});
+    setGalleryBusyIndex(index);
+    uploadGalleryMutation.mutate(
+      { index, file },
+      {
+        onSuccess: () => setNotice(`Gallery ${index + 1} uploaded.`),
+        onError: (err) => {
+          setFieldErrors(getApiFieldErrors(err));
+          setError(apiErrorMessage(err, 'Could not upload gallery image.'));
+        },
+        onSettled: () => setGalleryBusyIndex(null),
+      }
+    );
+  };
+
+  const handleGalleryClear = (index: number) => {
+    setError('');
+    setFieldErrors({});
+    setGalleryBusyIndex(index);
+    clearGalleryMutation.mutate(index, {
+      onSuccess: () => setNotice(`Gallery ${index + 1} removed.`),
+      onError: (err) => {
+        setFieldErrors(getApiFieldErrors(err));
+        setError(apiErrorMessage(err, 'Could not remove gallery image.'));
+      },
+      onSettled: () => setGalleryBusyIndex(null),
     });
   };
 
@@ -300,7 +346,29 @@ export function EditMyListingPage() {
             : '. Update the fields (same slots as CMS), then save.'}
         </p>
 
+        {mode === 'edit' ? (
+          <div className="sticky top-16 z-20 mt-4 flex flex-wrap gap-2 rounded-hz border border-hz-border bg-hz-elevated/95 p-3 shadow-hz-sm backdrop-blur-sm">
+            <button
+              type="submit"
+              form="edit-listing-form"
+              disabled={busy}
+              className="rounded-hz bg-hz-primary px-5 py-2 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover disabled:opacity-50"
+            >
+              {updateMutation.isPending ? 'Saving…' : 'Save'}
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={cancelEdit}
+              className="rounded-hz border border-hz-border px-5 py-2 font-poppins text-sm font-medium text-hz-dark disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : null}
+
         <form
+          id="edit-listing-form"
           onSubmit={handleSubmit}
           noValidate
           className="mt-8 space-y-5 rounded-hz border border-hz-border bg-hz-elevated p-5 shadow-sm md:p-8"
@@ -618,6 +686,37 @@ export function EditMyListingPage() {
             </div>
           </div>
 
+          <div className="space-y-3 border-t border-hz-border pt-5">
+            <h2 className="font-poppins text-sm font-semibold text-hz-dark">
+              Gallery — Explore every angle
+            </h2>
+            <p className="font-poppins text-xs text-hz-muted">
+              Exactly {PROPERTY_GALLERY_COUNT} photos for the detail-page bento (2 pages × 4 tiles).
+              Shared by Layout 1 and Layout 2.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {Array.from({ length: PROPERTY_GALLERY_COUNT }, (_, index) => {
+                const slot = listing.gallery?.[index];
+                return (
+                  <PropertyMediaSlotField
+                    key={`gallery-${index}`}
+                    id={`gallery-${index}`}
+                    label={slot?.label ?? `Gallery ${index + 1}`}
+                    help={
+                      slot?.help ??
+                      `Page ${index < 4 ? 1 : 2}, tile ${(index % 4) + 1}. Ratio 4:3.`
+                    }
+                    previewUrl={galleryPreview(listing, index)}
+                    disabled={readOnly}
+                    busy={busy && galleryBusyIndex === index}
+                    onUpload={(file) => handleGalleryUpload(index, file)}
+                    onClear={() => handleGalleryClear(index)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
           {error && Object.keys(fieldErrors).length === 0 ? (
             <p className="font-poppins text-sm text-red-600" role="alert">
               {error}
@@ -633,6 +732,14 @@ export function EditMyListingPage() {
           <div className="flex flex-wrap gap-3 pt-2">
             {mode === 'edit' ? (
               <>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={cancelEdit}
+                  className="rounded-hz border border-hz-border px-6 py-2.5 font-poppins text-sm font-medium text-hz-dark disabled:opacity-50"
+                >
+                  Cancel
+                </button>
                 {isPublished ? (
                   <Link
                     to={routes.property(listing.slug)}
@@ -650,14 +757,6 @@ export function EditMyListingPage() {
                   className="rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover disabled:opacity-50"
                 >
                   {updateMutation.isPending ? 'Saving…' : 'Save'}
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={cancelEdit}
-                  className="rounded-hz border border-hz-border px-6 py-2.5 font-poppins text-sm font-medium text-hz-dark disabled:opacity-50"
-                >
-                  Cancel
                 </button>
               </>
             ) : isPublished ? (
