@@ -138,12 +138,10 @@ export async function submitPropertyListing(
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    if (getStoredToken()) {
-      MOCK_SUBMISSIONS.unshift(submission);
-    }
+    MOCK_SUBMISSIONS.unshift(submission);
     return {
       message: `Thanks! "${data.title || 'Your property'}" has been submitted. Our team will review your listing and contact you shortly.`,
-      submission: getStoredToken() ? submission : null,
+      submission,
     };
   }
 
