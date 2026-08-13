@@ -1,4 +1,13 @@
-import { useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type AnimationEvent,
+  type MutableRefObject,
+  type SelectHTMLAttributes,
+  type TransitionEvent,
+} from 'react';
 import {
   Sheet,
   SheetContent,
@@ -10,6 +19,7 @@ import {
 import { ChevronDown, MapPin, Search } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { PROPERTY_TYPES } from '@/data/property-types';
+import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { cn } from '@/lib/utils';
 import type { PropertyStatus, PropertyType } from '@/types';
@@ -42,7 +52,7 @@ function SelectField({
   className,
   children,
   ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement>) {
+}: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div className="relative">
       <select
@@ -64,69 +74,214 @@ function SelectField({
   );
 }
 
-export function AdvancedSearchSheet() {
-  const {
-    filters,
-    advancedSearchOpen,
-    setAdvancedSearchOpen,
-    applySearch,
-    clearFilters,
-  } = useListingFilters();
-
-  const [keyword, setKeyword] = useState(filters.keyword);
-  const [location, setLocation] = useState(filters.location);
-  const [status, setStatus] = useState(filters.status);
-  const [beds, setBeds] = useState(filters.beds);
-  const [minPrice, setMinPrice] = useState(filters.minPrice);
-  const [maxPrice, setMaxPrice] = useState(filters.maxPrice);
-  const [propertyType, setPropertyType] = useState(filters.propertyType);
+/** Owns price draft locally so slider drag does not re-render the whole sheet form. */
+function PriceRangeSection({
+  initialMin,
+  initialMax,
+  priceRef,
+}: {
+  initialMin: string;
+  initialMax: string;
+  priceRef: MutableRefObject<{ min: string; max: string }>;
+}) {
+  const [minPrice, setMinPrice] = useState(initialMin);
+  const [maxPrice, setMaxPrice] = useState(initialMax);
 
   const minValue = parsePrice(minPrice, PRICE_MIN);
   const maxValue = parsePrice(maxPrice, PRICE_MAX);
   const sliderMin = Math.min(minValue, maxValue);
   const sliderMax = Math.max(minValue, maxValue);
 
-  const handleOpenChange = (open: boolean) => {
-    if (open) {
-      setKeyword(filters.keyword);
-      setLocation(filters.location);
-      setStatus(filters.status);
-      setBeds(filters.beds);
-      setMinPrice(filters.minPrice);
-      setMaxPrice(filters.maxPrice);
-      setPropertyType(filters.propertyType);
+  useEffect(() => {
+    priceRef.current = { min: String(sliderMin), max: String(sliderMax) };
+  }, [priceRef, sliderMin, sliderMax]);
+
+  return (
+    <div className="space-y-3 rounded-hz border border-hz-border bg-hz-sunken p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-poppins text-xs font-semibold uppercase tracking-wide text-hz-dark">
+            Price Range
+          </p>
+          <p className="mt-1 font-poppins text-xs text-hz-muted">
+            Drag both handles or enter values manually.
+          </p>
+        </div>
+        <span className="font-poppins text-xs font-semibold text-hz-primary">
+          {formatPrice(sliderMin)} - {formatPrice(sliderMax)}
+        </span>
+      </div>
+
+      <div className="px-1 py-2">
+        <Slider
+          min={PRICE_MIN}
+          max={PRICE_MAX}
+          step={500}
+          value={[sliderMin, sliderMax]}
+          onValueChange={([nextMin, nextMax]) => {
+            setMinPrice(String(clampPrice(nextMin)));
+            setMaxPrice(String(clampPrice(nextMax)));
+          }}
+          className="w-full"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <label
+            htmlFor="advanced-min-price"
+            className="font-poppins text-xs font-semibold uppercase tracking-wide text-hz-dark"
+          >
+            Min Price
+          </label>
+          <input
+            id="advanced-min-price"
+            type="text"
+            inputMode="numeric"
+            placeholder="e.g. 2,500"
+            value={sliderMin}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/[^\d]/g, '');
+              const nextValue =
+                digits === '' ? PRICE_MIN : clampPrice(Math.min(Number(digits), sliderMax));
+              setMinPrice(String(nextValue));
+            }}
+            className={cn(
+              'h-11 w-full rounded-hz border border-hz-border bg-hz-elevated px-3',
+              'font-poppins text-sm text-hz-dark outline-none placeholder:text-hz-muted',
+              'focus:border-hz-primary/60'
+            )}
+          />
+        </div>
+        <div className="space-y-2">
+          <label
+            htmlFor="advanced-max-price"
+            className="font-poppins text-xs font-semibold uppercase tracking-wide text-hz-dark"
+          >
+            Max Price
+          </label>
+          <input
+            id="advanced-max-price"
+            type="text"
+            inputMode="numeric"
+            placeholder="e.g. 12,000"
+            value={sliderMax}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/[^\d]/g, '');
+              const nextValue =
+                digits === '' ? PRICE_MAX : clampPrice(Math.max(Number(digits), sliderMin));
+              setMaxPrice(String(nextValue));
+            }}
+            className={cn(
+              'h-11 w-full rounded-hz border border-hz-border bg-hz-elevated px-3',
+              'font-poppins text-sm text-hz-dark outline-none placeholder:text-hz-muted',
+              'focus:border-hz-primary/60'
+            )}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AdvancedSearchSheet() {
+  const { filters, applySearch, clearFilters } = useListingFilters();
+  const { open, setOpen } = useAdvancedSearch();
+
+  const [keyword, setKeyword] = useState(filters.keyword);
+  const [location, setLocation] = useState(filters.location);
+  const [status, setStatus] = useState(filters.status);
+  const [beds, setBeds] = useState(filters.beds);
+  const [propertyType, setPropertyType] = useState(filters.propertyType);
+  const [formEpoch, setFormEpoch] = useState(0);
+
+  const priceRef = useRef({ min: filters.minPrice, max: filters.maxPrice });
+  const pendingActionRef = useRef<(() => void) | null>(null);
+
+  const syncDraftFromFilters = useCallback(() => {
+    setKeyword(filters.keyword);
+    setLocation(filters.location);
+    setStatus(filters.status);
+    setBeds(filters.beds);
+    setPropertyType(filters.propertyType);
+    priceRef.current = { min: filters.minPrice, max: filters.maxPrice };
+    setFormEpoch((n) => n + 1);
+  }, [filters]);
+
+  const flushPending = useCallback(() => {
+    const action = pendingActionRef.current;
+    if (!action) return;
+    pendingActionRef.current = null;
+    action();
+  }, []);
+
+  const handleOpenChange = (next: boolean) => {
+    if (next) {
+      syncDraftFromFilters();
+      setOpen(true);
+      return;
     }
-    setAdvancedSearchOpen(open);
+    setOpen(false);
+  };
+
+  const onSheetExit = (event: AnimationEvent | TransitionEvent) => {
+    if (event.target !== event.currentTarget) return;
+    if (open) return;
+    flushPending();
   };
 
   const handleApply = () => {
-    applySearch({
-      keyword,
-      location,
-      status,
-      beds,
-      minPrice,
-      maxPrice,
-      propertyType: propertyType as PropertyType | '',
-    });
-    setAdvancedSearchOpen(false);
+    const { min, max } = priceRef.current;
+    pendingActionRef.current = () => {
+      applySearch({
+        keyword,
+        location,
+        status,
+        beds,
+        minPrice: min,
+        maxPrice: max,
+        propertyType: propertyType as PropertyType | '',
+      });
+    };
+    setOpen(false);
   };
 
   const handleReset = () => {
-    clearFilters();
+    pendingActionRef.current = () => {
+      clearFilters();
+    };
     setKeyword('');
     setLocation('');
     setStatus('');
     setBeds('');
-    setMinPrice('');
-    setMaxPrice('');
     setPropertyType('');
-    setAdvancedSearchOpen(false);
+    priceRef.current = { min: '', max: '' };
+    setFormEpoch((n) => n + 1);
+    setOpen(false);
   };
 
   return (
-    <Sheet open={advancedSearchOpen} onOpenChange={handleOpenChange}>
-      <SheetContent side="right" className="w-full font-poppins sm:max-w-md">
+    <Sheet
+      open={open}
+      onOpenChange={(next) => {
+        handleOpenChange(next);
+        if (!next && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          flushPending();
+        }
+      }}
+    >
+      <SheetContent
+        side="right"
+        className="w-full font-poppins sm:max-w-md"
+        onOpenAutoFocus={(event) => {
+          if (window.matchMedia('(max-width: 767px)').matches) {
+            event.preventDefault();
+          }
+        }}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        onAnimationEnd={onSheetExit}
+        onTransitionEnd={onSheetExit}
+      >
         <SheetHeader className="border-b border-hz-border pb-4">
           <SheetTitle className="font-poppins text-lg font-semibold text-hz-dark">
             Advanced Search
@@ -255,88 +410,12 @@ export function AdvancedSearchSheet() {
             </div>
           </div>
 
-          <div className="space-y-3 rounded-hz border border-hz-border bg-hz-sunken p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-poppins text-xs font-semibold uppercase tracking-wide text-hz-dark">
-                  Price Range
-                </p>
-                <p className="mt-1 font-poppins text-xs text-hz-muted">
-                  Drag both handles or enter values manually.
-                </p>
-              </div>
-              <span className="font-poppins text-xs font-semibold text-hz-primary">
-                {formatPrice(sliderMin)} - {formatPrice(sliderMax)}
-              </span>
-            </div>
-
-            <div className="px-1 py-2">
-              <Slider
-                min={PRICE_MIN}
-                max={PRICE_MAX}
-                step={500}
-                value={[sliderMin, sliderMax]}
-                onValueChange={([nextMin, nextMax]) => {
-                  setMinPrice(String(clampPrice(nextMin)));
-                  setMaxPrice(String(clampPrice(nextMax)));
-                }}
-                className="w-full"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <label
-                  htmlFor="advanced-min-price"
-                  className="font-poppins text-xs font-semibold uppercase tracking-wide text-hz-dark"
-                >
-                  Min Price
-                </label>
-                <input
-                  id="advanced-min-price"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="e.g. 2,500"
-                  value={sliderMin}
-                  onChange={(e) => {
-                    const digits = e.target.value.replace(/[^\d]/g, '');
-                    const nextValue = digits === '' ? PRICE_MIN : clampPrice(Math.min(Number(digits), sliderMax));
-                    setMinPrice(String(nextValue));
-                  }}
-                  className={cn(
-                    'h-11 w-full rounded-hz border border-hz-border bg-hz-elevated px-3',
-                    'font-poppins text-sm text-hz-dark outline-none placeholder:text-hz-muted',
-                    'focus:border-hz-primary/60'
-                  )}
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="advanced-max-price"
-                  className="font-poppins text-xs font-semibold uppercase tracking-wide text-hz-dark"
-                >
-                  Max Price
-                </label>
-                <input
-                  id="advanced-max-price"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="e.g. 12,000"
-                  value={sliderMax}
-                  onChange={(e) => {
-                    const digits = e.target.value.replace(/[^\d]/g, '');
-                    const nextValue = digits === '' ? PRICE_MAX : clampPrice(Math.max(Number(digits), sliderMin));
-                    setMaxPrice(String(nextValue));
-                  }}
-                  className={cn(
-                    'h-11 w-full rounded-hz border border-hz-border bg-hz-elevated px-3',
-                    'font-poppins text-sm text-hz-dark outline-none placeholder:text-hz-muted',
-                    'focus:border-hz-primary/60'
-                  )}
-                />
-              </div>
-            </div>
-          </div>
+          <PriceRangeSection
+            key={formEpoch}
+            initialMin={priceRef.current.min}
+            initialMax={priceRef.current.max}
+            priceRef={priceRef}
+          />
         </div>
 
         <SheetFooter className="flex-row gap-2 border-t border-hz-border">
@@ -360,7 +439,7 @@ export function AdvancedSearchSheet() {
               'transition-colors duration-200 hover:bg-hz-primary-hover'
             )}
           >
-            Apply Preferences
+            Apply
           </button>
         </SheetFooter>
       </SheetContent>

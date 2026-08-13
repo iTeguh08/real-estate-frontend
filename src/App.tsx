@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageLoader } from '@/components/skeletons';
 import { ListingFiltersProvider } from '@/hooks/useListingFilters';
+import { completeBootstrapLoader, handoffBootstrapLoader } from '@/lib/bootstrap-loader';
 import { HomePage } from '@/pages/HomePage';
 
 const PropertyDetailPage = lazy(() =>
@@ -61,7 +62,19 @@ const NotFoundPage = lazy(() =>
   import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
 
+/** Hands off inline HTML preloader once route content is ready (fonts + paint). */
+function BootstrapLoaderComplete() {
+  useEffect(() => {
+    void completeBootstrapLoader();
+  }, []);
+  return null;
+}
+
 function RouteFallback() {
+  useEffect(() => {
+    requestAnimationFrame(() => requestAnimationFrame(() => handoffBootstrapLoader()));
+  }, []);
+
   return <PageLoader variant="route" />;
 }
 
@@ -70,6 +83,7 @@ export default function App() {
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <ListingFiltersProvider>
         <Suspense fallback={<RouteFallback />}>
+          <BootstrapLoaderComplete />
           <Routes>
             <Route element={<AppShell />}>
               <Route index element={<HomePage />} />

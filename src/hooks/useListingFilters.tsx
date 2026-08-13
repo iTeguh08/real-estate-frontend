@@ -24,8 +24,6 @@ import {
 interface ListingFiltersContextValue {
   /** URL-synced search preferences — not applied client-side. */
   filters: ListingFilters;
-  advancedSearchOpen: boolean;
-  setAdvancedSearchOpen: (open: boolean) => void;
   setKeyword: (keyword: string) => void;
   setLocation: (location: string) => void;
   setPropertyType: (propertyType: PropertyType | '') => void;
@@ -64,7 +62,6 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
   const [filters, setFilters] = useState<ListingFilters>(() =>
     isListingsContextPath ? searchParamsToFilters(searchParams) : DEFAULT_LISTING_FILTERS
   );
-  const [advancedSearchOpen, setAdvancedSearchOpen] = useState(false);
 
   const syncUrl = useCallback(
     (next: ListingFilters) => {
@@ -223,8 +220,6 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       filters,
-      advancedSearchOpen,
-      setAdvancedSearchOpen,
       setKeyword,
       setLocation: setLocationFilter,
       setPropertyType,
@@ -238,7 +233,6 @@ export function ListingFiltersProvider({ children }: { children: ReactNode }) {
     }),
     [
       filters,
-      advancedSearchOpen,
       setKeyword,
       setLocationFilter,
       setPropertyType,

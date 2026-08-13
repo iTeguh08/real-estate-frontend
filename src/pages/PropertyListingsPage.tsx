@@ -8,7 +8,7 @@ import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { BestValueCardSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { Slider } from '@/components/ui/slider';
-import { useListingFilters } from '@/hooks/useListingFilters';
+import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useListingsAsideStickyTop } from '@/hooks/useListingsAsideStickyTop';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -131,15 +131,16 @@ function SidebarRecentProperty({ property }: { property: Property }) {
 
 function SelectField({
   className,
+  wrapperClassName,
   children,
   ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement>) {
+}: React.SelectHTMLAttributes<HTMLSelectElement> & { wrapperClassName?: string }) {
   return (
-    <div className="relative">
+    <div className={cn('relative min-w-0', wrapperClassName)}>
       <select
         {...props}
         className={cn(
-          'h-11 w-full cursor-pointer appearance-none rounded-hz border border-hz-border bg-hz-elevated px-3 pr-12 font-poppins text-[13px] outline-none focus:border-hz-primary/50',
+          'h-11 w-full cursor-pointer appearance-none rounded-hz border border-hz-border bg-hz-elevated px-3 pr-12 font-poppins text-[13px] text-hz-dark outline-none focus:border-hz-primary/50',
           className
         )}
       >
@@ -162,7 +163,7 @@ export function PropertyListingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [gridColumns, setGridColumns] = useState<1 | 2 | 3>(3);
-  const { setAdvancedSearchOpen } = useListingFilters();
+  const { setOpen: setAdvancedSearchOpen } = useAdvancedSearch();
 
   const filters = useMemo(
     () => {
@@ -268,7 +269,7 @@ export function PropertyListingsPage() {
         stickyViewport
         className="max-md:hidden"
       />
-      <div className="section-container relative z-10 col-start-1 row-start-1 py-12 md:py-16">
+      <div className="section-container relative z-10 col-start-1 row-start-1 py-8 md:py-12 lg:py-16">
         <div className="grid gap-8 lg:grid-cols-[290px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           <aside
             ref={asideRef}
@@ -486,16 +487,43 @@ export function PropertyListingsPage() {
           </aside>
 
           <section>
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center justify-between gap-3 lg:block">
-                <h1 className="font-poppins text-[30px] font-semibold text-hz-ink lg:text-[32px]">
+            {/* Mobile — stacked title, rent/sale toggle, filters + sort toolbar */}
+            <div className="mb-6 space-y-4 lg:hidden">
+              <div>
+                <h1 className="font-poppins text-[26px] font-semibold leading-[1.15] tracking-[-0.3px] text-hz-ink">
                   Property listing
                 </h1>
+                {!isLoading && total > 0 ? (
+                  <p className="mt-1.5 font-poppins text-sm text-hz-muted">
+                    {total.toLocaleString()} {total === 1 ? 'listing' : 'listings'}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="grid grid-cols-2 overflow-hidden rounded-hz border border-hz-border bg-hz-elevated">
+                {(['For Rent', 'For Sale'] as const).map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => updateFilters({ status, page: 1 })}
+                    className={cn(
+                      'cursor-pointer px-3 py-2.5 font-poppins text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors',
+                      activeStatus === status
+                        ? 'bg-hz-primary text-white'
+                        : 'bg-hz-elevated text-hz-body hover:bg-hz-sunken'
+                    )}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setAdvancedSearchOpen(true)}
                   className={cn(
-                    'inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-hz border px-4 font-poppins text-[13px] font-semibold transition-colors lg:hidden',
+                    'inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-hz border px-3 font-poppins text-[13px] font-semibold transition-colors',
                     filtersActive
                       ? 'border-hz-primary bg-hz-primary/10 text-hz-primary'
                       : 'border-hz-border bg-hz-elevated text-hz-ink hover:border-hz-primary/40 hover:text-hz-primary'
@@ -505,9 +533,28 @@ export function PropertyListingsPage() {
                   <SlidersHorizontal size={16} strokeWidth={1.85} aria-hidden="true" />
                   Filters
                 </button>
+                <SelectField
+                  value={filters.sort}
+                  onChange={(event) => updateFilters({ sort: event.target.value as PropertySort | '' })}
+                  className="border-hz-border text-hz-body"
+                  aria-label="Sort listings"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.label} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </SelectField>
               </div>
+            </div>
+
+            {/* Desktop — title + grid/per-page/sort controls */}
+            <div className="mb-6 hidden flex-col gap-4 lg:flex lg:flex-row lg:items-center lg:justify-between">
+              <h1 className="font-poppins text-[32px] font-semibold text-hz-ink">
+                Property listing
+              </h1>
               <div className="ml-auto flex flex-wrap items-center gap-3">
-                <div className="hidden items-center gap-3 md:flex">
+                <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setGridColumns(1)}
@@ -561,7 +608,8 @@ export function PropertyListingsPage() {
                 <SelectField
                   value={String(filters.perPage)}
                   onChange={(event) => updateFilters({ perPage: Number(event.target.value), page: 1 })}
-                  className="hidden min-w-[130px] border-hz-border text-hz-body md:block"
+                  wrapperClassName="min-w-[130px]"
+                  className="border-hz-border text-hz-body"
                 >
                   {PER_PAGE_OPTIONS.map((option) => (
                     <option key={option} value={option}>
@@ -573,7 +621,8 @@ export function PropertyListingsPage() {
                 <SelectField
                   value={filters.sort}
                   onChange={(event) => updateFilters({ sort: event.target.value as PropertySort | '' })}
-                  className="min-w-[170px] border-hz-border text-hz-body"
+                  wrapperClassName="min-w-[170px]"
+                  className="border-hz-border text-hz-body"
                 >
                   {SORT_OPTIONS.map((option) => (
                     <option key={option.label} value={option.value}>
