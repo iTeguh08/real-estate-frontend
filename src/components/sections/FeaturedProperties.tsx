@@ -43,7 +43,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
   return (
     <section
       id="listings"
-      className="relative grid scroll-mt-24 grid-cols-1 bg-hz-elevated"
+      className="relative grid scroll-mt-[var(--header-anchor-offset,5.5rem)] grid-cols-1 bg-hz-elevated"
       aria-labelledby="featured-properties-heading"
     >
       <SectionAtmosphere

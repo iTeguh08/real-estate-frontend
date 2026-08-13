@@ -6,12 +6,16 @@ import { ScrollToHash } from '@/components/layout/ScrollToHash';
 import { AdvancedSearchSheet } from '@/components/search/AdvancedSearchSheet';
 import { CompareBar } from '@/components/compare/CompareBar';
 import { useCompareBarVisible } from '@/hooks/useCompareBarVisible';
+import { AdvancedSearchProvider } from '@/hooks/useAdvancedSearch';
+import { SiteHeaderProvider, SiteHeaderSpacer } from '@/hooks/useSiteHeader';
 import { cn } from '@/lib/utils';
 
 export function AppShell() {
   const showCompareBar = useCompareBarVisible();
 
   return (
+    <SiteHeaderProvider>
+    <AdvancedSearchProvider>
     <div className="min-h-screen bg-hz-page">
       <a
         href="#main-content"
@@ -23,6 +27,7 @@ export function AppShell() {
       <ScrollToHash />
       <SiteBrandingEffect />
       <SiteHeader />
+      <SiteHeaderSpacer />
       {/* Spacer below footer so the fixed Compare bar doesn't cover footer chrome */}
       <div className={cn(showCompareBar && 'pb-[72px]')}>
         <Outlet />
@@ -31,5 +36,7 @@ export function AppShell() {
       <CompareBar />
       <AdvancedSearchSheet />
     </div>
+    </AdvancedSearchProvider>
+    </SiteHeaderProvider>
   );
 }

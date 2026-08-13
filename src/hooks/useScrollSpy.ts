@@ -4,9 +4,7 @@ import {
   HOME_SCROLL_SECTIONS,
   type HomeScrollSection,
 } from '@/data/navigation';
-
-/** Sticky header height + small buffer for scroll-spy line. */
-const HEADER_OFFSET = 88;
+import { useSiteHeader } from '@/hooks/useSiteHeader';
 
 function isHomePath(pathname: string): boolean {
   const path = pathname.replace(/\/$/, '') || '/';
@@ -15,6 +13,7 @@ function isHomePath(pathname: string): boolean {
 
 export function useScrollSpy() {
   const { pathname } = useLocation();
+  const { scrollOffset } = useSiteHeader();
   const onHome = isHomePath(pathname);
   const [activeSection, setActiveSection] = useState<HomeScrollSection>('home');
   const topRef = useRef<Map<HomeScrollSection, number>>(new Map());
@@ -40,7 +39,7 @@ export function useScrollSpy() {
     };
 
     const resolveActive = (): HomeScrollSection => {
-      const scrollLine = window.scrollY + HEADER_OFFSET;
+      const scrollLine = window.scrollY + scrollOffset;
       let active: HomeScrollSection = 'home';
       for (const id of HOME_SCROLL_SECTIONS) {
         const top = topRef.current.get(id);
@@ -77,7 +76,7 @@ export function useScrollSpy() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', recomputeTops);
     };
-  }, [onHome]);
+  }, [onHome, scrollOffset]);
 
   return { onHome, activeSection: onHome ? activeSection : null };
 }

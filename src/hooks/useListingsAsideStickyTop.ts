@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState, type RefObject } from 'react';
+import { useSiteHeader } from '@/hooks/useSiteHeader';
 
-const HEADER_OFFSET_PX = 92;
 const BOTTOM_GAP_PX = 16;
 const LG_BREAKPOINT = 1024;
 
@@ -15,6 +15,7 @@ export function useListingsAsideStickyTop(
   /** Remeasure when listings change height (loading, pagination, etc.). */
   measureKey?: unknown,
 ): number | undefined {
+  const { scrollOffset } = useSiteHeader();
   const [stickyTop, setStickyTop] = useState<number | undefined>(undefined);
 
   useLayoutEffect(() => {
@@ -36,7 +37,7 @@ export function useListingsAsideStickyTop(
       // Bottom-aligned when taller than viewport: delays stick until Latest is visible.
       // Header-capped when shorter: sits under the site header.
       const bottomAligned = window.innerHeight - leftHeight - BOTTOM_GAP_PX;
-      setStickyTop(Math.min(HEADER_OFFSET_PX, bottomAligned));
+      setStickyTop(Math.min(scrollOffset, bottomAligned));
     };
 
     update();
@@ -49,7 +50,7 @@ export function useListingsAsideStickyTop(
       resizeObserver.disconnect();
       window.removeEventListener('resize', update);
     };
-  }, [asideRef, measureKey]);
+  }, [asideRef, measureKey, scrollOffset]);
 
   return stickyTop;
 }

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type AnimationEvent, type MouseEvent, type TransitionEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Building2, ChevronDown, Heart, ArrowLeftRight, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { useSiteHeader } from '@/hooks/useSiteHeader';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -166,7 +167,7 @@ function MobileNavGroup({
   groups: NavLinkGroup[];
   isOpen: boolean;
   onToggle: () => void;
-  onNavigate: () => void;
+  onNavigate: (action: () => void) => void;
   isSectionActive?: boolean;
 }) {
   const navigate = useNavigate();
@@ -210,24 +211,25 @@ function MobileNavGroup({
                         e.preventDefault();
                         const mapping = PROPERTY_NAV_FILTER_MAP[item.label];
                         if (mapping) {
-                          applyNavFilter({
-                            propertyType: mapping.propertyType ?? '',
-                            status: mapping.status ?? '',
-                          });
-                          onNavigate();
+                          onNavigate(() =>
+                            applyNavFilter({
+                              propertyType: mapping.propertyType ?? '',
+                              status: mapping.status ?? '',
+                            })
+                          );
                           return;
                         }
                         if (item.label === 'Browse All Types') {
-                          applyNavFilter({});
-                          onNavigate();
+                          onNavigate(() => applyNavFilter({}));
                           return;
                         }
-                        if (item.href.startsWith('#')) {
-                          navigate({ pathname: routes.home, hash: item.href });
-                        } else {
-                          navigate(item.href);
-                        }
-                        onNavigate();
+                        onNavigate(() => {
+                          if (item.href.startsWith('#')) {
+                            navigate({ pathname: routes.home, hash: item.href });
+                          } else {
+                            navigate(item.href);
+                          }
+                        });
                       }}
                       className={cn(
                         'block py-1.5 font-poppins text-sm no-underline',
@@ -275,7 +277,9 @@ function ThemeToggleButton({ className }: { className?: string }) {
 
 export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [navMenuOpen, setNavMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<'properties' | 'pages' | null>(null);
+  const { headerRef, isVisible, reducedMotion, setLocked } = useSiteHeader();
   const { data: siteConfig } = useSiteConfig();
   const brand = siteConfig?.brand ?? SITE_CONFIG.brand;
   const tagline = siteConfig?.tagline ?? SITE_CONFIG.tagline;
@@ -283,17 +287,71 @@ export function SiteHeader() {
   const { compareCount } = useCompare();
   const { isActive } = useActiveNav();
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+  const pendingMobileNavRef = useRef<(() => void) | null>(null);
   const accountLabel = isAuthenticated
     ? user?.name?.split(' ')[0] || 'Account'
     : 'Login / Register';
 
-  const closeMobile = () => {
+  const flushPendingMobileNav = useCallback(() => {
+    const action = pendingMobileNavRef.current;
+    if (!action) return;
+    pendingMobileNavRef.current = null;
+    action();
+  }, []);
+
+  const closeMobileThen = useCallback((action?: () => void) => {
+    pendingMobileNavRef.current = action ?? null;
     setMobileOpen(false);
     setMobileExpanded(null);
+  }, []);
+
+  const onMobileSheetExit = (event: AnimationEvent | TransitionEvent) => {
+    if (event.target !== event.currentTarget) return;
+    if (mobileOpen) return;
+    flushPendingMobileNav();
   };
 
+  const deferMobileNav = (to: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    closeMobileThen(() => navigate(to));
+  };
+
+  useEffect(() => {
+    setLocked(mobileOpen || navMenuOpen);
+  }, [mobileOpen, navMenuOpen, setLocked]);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const syncNavOpen = () => {
+      const open =
+        header.querySelector('[data-slot="navigation-menu"] [data-open]') !== null;
+      setNavMenuOpen(open);
+    };
+
+    syncNavOpen();
+    const observer = new MutationObserver(syncNavOpen);
+    observer.observe(header, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-open', 'data-state'],
+    });
+
+    return () => observer.disconnect();
+  }, [headerRef]);
+
   return (
-    <header className="sticky top-0 z-100 w-full border-b border-hz-border/80 bg-hz-elevated font-poppins shadow-hz-sm">
+    <header
+      ref={headerRef}
+      className={cn(
+        'fixed top-0 z-100 w-full border-b border-hz-border/80 bg-hz-elevated font-poppins shadow-hz-sm',
+        'transition-transform duration-300 ease-out will-change-transform',
+        !isVisible && '-translate-y-full',
+        reducedMotion && 'transition-none'
+      )}
+    >
       <div className="section-container flex h-[76px] items-center justify-between">
         <Link to={routes.home} className="flex shrink-0 items-center gap-1.5 no-underline">
           <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
@@ -432,11 +490,23 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+      <Sheet
+        open={mobileOpen}
+        onOpenChange={(open) => {
+          setMobileOpen(open);
+          if (!open) {
+            setMobileExpanded(null);
+            if (reducedMotion) flushPendingMobileNav();
+          }
+        }}
+      >
         <SheetContent
           side="right"
           className="flex h-full max-h-dvh w-full min-h-0 flex-col overflow-hidden font-poppins sm:max-w-sm"
           showCloseButton
+          onCloseAutoFocus={(event) => event.preventDefault()}
+          onAnimationEnd={onMobileSheetExit}
+          onTransitionEnd={onMobileSheetExit}
         >
           <SheetHeader className="shrink-0">
             <SheetTitle className="font-poppins text-lg font-semibold text-hz-dark">
@@ -450,7 +520,7 @@ export function SiteHeader() {
           >
             <Link
               to={routes.home}
-              onClick={closeMobile}
+              onClick={deferMobileNav(routes.home)}
               className={mobileNavLinkClasses(isActive('home'))}
             >
               Home
@@ -464,12 +534,12 @@ export function SiteHeader() {
               onToggle={() =>
                 setMobileExpanded((prev) => (prev === 'properties' ? null : 'properties'))
               }
-              onNavigate={closeMobile}
+              onNavigate={closeMobileThen}
             />
 
             <Link
               to={routes.listings}
-              onClick={closeMobile}
+              onClick={deferMobileNav(routes.listings)}
               className={mobileNavLinkClasses(isActive('listings'))}
             >
               Listings
@@ -481,14 +551,14 @@ export function SiteHeader() {
               isOpen={mobileExpanded === 'pages'}
               isSectionActive={isActive('pages')}
               onToggle={() => setMobileExpanded((prev) => (prev === 'pages' ? null : 'pages'))}
-              onNavigate={closeMobile}
+              onNavigate={closeMobileThen}
             />
 
             {SIMPLE_NAV_LINKS.slice(2).map((link) => (
               <Link
                 key={link.label}
                 to={link.href}
-                onClick={closeMobile}
+                onClick={deferMobileNav(link.href)}
                 className={mobileNavLinkClasses(isActive('blog'))}
               >
                 {link.label}
@@ -500,7 +570,7 @@ export function SiteHeader() {
             <div className="flex gap-2">
               <Link
                 to={routes.wishlist}
-                onClick={closeMobile}
+                onClick={deferMobileNav(routes.wishlist)}
                 className={cn(
                   'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
                   'font-poppins text-[13px] font-medium text-hz-body no-underline',
@@ -515,7 +585,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 to={routes.compare}
-                onClick={closeMobile}
+                onClick={deferMobileNav(routes.compare)}
                 className={cn(
                   'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
                   'font-poppins text-[13px] font-medium text-hz-body no-underline',
@@ -531,7 +601,7 @@ export function SiteHeader() {
             </div>
             <Link
               to={isAuthenticated ? routes.dashboard : routes.login}
-              onClick={closeMobile}
+              onClick={deferMobileNav(isAuthenticated ? routes.dashboard : routes.login)}
               className={cn(
                 'w-full text-center no-underline rounded-hz border border-hz-border bg-transparent py-[10px]',
                 'font-poppins text-[13px] font-medium text-hz-dark',
@@ -542,7 +612,7 @@ export function SiteHeader() {
             </Link>
             <Link
               to={routes.submitProperty}
-              onClick={closeMobile}
+              onClick={deferMobileNav(routes.submitProperty)}
               className={cn(
                 'w-full text-center no-underline rounded-hz border-none bg-hz-primary py-[10px]',
                 'font-poppins text-[13px] font-semibold text-white',

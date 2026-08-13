@@ -133,6 +133,11 @@
     --hz-shadow-md: 0 4px 16px rgb(26 26 46 / 0.08);
     --hz-shadow-elevated: 0 8px 28px rgb(26 26 46 / 0.1);
 
+    /* Fixed site header — updated at runtime by SiteHeaderProvider */
+    --header-height: 76px;
+    --header-scroll-offset: 88px;
+    --header-anchor-offset: 88px;
+
     --luxury-dark: oklch(0.14 0 0);
     --luxury-cream: oklch(0.978 0.004 80);
     --luxury-muted: oklch(0.55 0 0);

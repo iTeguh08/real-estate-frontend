@@ -1,21 +1,48 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useSiteHeader } from '@/hooks/useSiteHeader';
 
-/** Scroll to top on route change, or to hash target on the home page. */
+const HASH_SCROLL_RETRY_MS = 50;
+const HASH_SCROLL_MAX_ATTEMPTS = 40;
+
+function scrollToElement(id: string, anchorOffset: number) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  const top = el.getBoundingClientRect().top + window.scrollY - anchorOffset;
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  return true;
+}
+
+/** Scroll to top on route change, or smoothly to a hash target once it exists in the DOM. */
 export function ScrollToHash() {
   const { pathname, hash } = useLocation();
+  const { anchorOffset, showHeader } = useSiteHeader();
 
   useEffect(() => {
     if (hash) {
       const id = hash.replace('#', '');
-      requestAnimationFrame(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      });
-      return;
+      showHeader();
+
+      let attempts = 0;
+      let timeoutId = 0;
+
+      const tryScroll = () => {
+        if (scrollToElement(id, anchorOffset)) return;
+        attempts += 1;
+        if (attempts < HASH_SCROLL_MAX_ATTEMPTS) {
+          timeoutId = window.setTimeout(tryScroll, HASH_SCROLL_RETRY_MS);
+        }
+      };
+
+      requestAnimationFrame(tryScroll);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
 
-    window.scrollTo(0, 0);
-  }, [pathname, hash]);
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname, hash, anchorOffset, showHeader]);
 
   return null;
 }

@@ -16,6 +16,7 @@ import {
 import { EditListingSkeleton } from '@/components/skeletons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
+import { useSiteHeader } from '@/hooks/useSiteHeader';
 import {
   useClearMyListingGalleryMutation,
   useClearMyListingMediaMutation,
@@ -60,6 +61,7 @@ export function EditMyListingPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { scrollOffset } = useSiteHeader();
   const isAgent = isAgentUser(user);
   const { data: listing, isLoading, isError } = useMyListingQuery(id, isAuthenticated && isAgent);
   const updateMutation = useUpdateMyListingMutation(id ?? '');
@@ -347,7 +349,10 @@ export function EditMyListingPage() {
         </p>
 
         {mode === 'edit' ? (
-          <div className="sticky top-16 z-20 mt-4 flex flex-wrap gap-2 rounded-hz border border-hz-border bg-hz-elevated/95 p-3 shadow-hz-sm backdrop-blur-sm">
+          <div
+            className="sticky z-20 mt-4 flex flex-wrap gap-2 rounded-hz border border-hz-border bg-hz-elevated/95 p-3 shadow-hz-sm backdrop-blur-sm"
+            style={{ top: scrollOffset }}
+          >
             <button
               type="submit"
               form="edit-listing-form"
