@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { NewsletterForm } from '@/components/layout/NewsletterForm';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { SITE_CONFIG } from '@/data/site-config';
+import { useAuth } from '@/hooks/useAuth';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { useTheme } from '@/hooks/useTheme';
 import { routes } from '@/lib/routes';
@@ -81,6 +82,7 @@ function FooterNavLink({
   label: string;
   isLight: boolean;
 }) {
+  const { isAuthenticated } = useAuth();
   const className = cn(
     'inline-block font-poppins text-[14px] font-medium leading-snug no-underline transition-colors duration-200',
     isLight
@@ -90,6 +92,20 @@ function FooterNavLink({
 
   if (href.startsWith('/')) {
     const hashIndex = href.indexOf('#');
+    const pathname = hashIndex === -1 ? href : href.slice(0, hashIndex);
+    const requiresAuth =
+      pathname === routes.submitProperty ||
+      pathname === routes.wishlist ||
+      pathname === routes.compare;
+
+    if (requiresAuth && !isAuthenticated) {
+      return (
+        <Link to={routes.login} state={{ from: href }} className={className}>
+          {label}
+        </Link>
+      );
+    }
+
     const to =
       hashIndex === -1
         ? href

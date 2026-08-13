@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
+import { useAuth } from '@/hooks/useAuth';
 import { formatPropertyPrice } from '@/lib/format-property';
 import { contactAgentLabel, resolveListingAgent } from '@/lib/listing-agent';
 import { routes } from '@/lib/routes';
@@ -17,6 +18,8 @@ export function PropertyCtaSection({
   onScheduleViewing,
   onContactAgent,
 }: PropertyCtaSectionProps) {
+  const { isAuthenticated } = useAuth();
+  const submitHref = `${routes.submitProperty}?property=${encodeURIComponent(property.slug)}`;
   const bannerMedia = property.layout1Media.bannerUrl || property.imageUrl;
   const agent = property.agent ?? resolveListingAgent(property);
 
@@ -73,7 +76,8 @@ export function PropertyCtaSection({
             <p className="mt-5 font-poppins text-xs text-hz-muted">
               Selling something similar?{' '}
               <Link
-                to={`${routes.submitProperty}?property=${encodeURIComponent(property.slug)}`}
+                to={isAuthenticated ? submitHref : routes.login}
+                state={isAuthenticated ? undefined : { from: submitHref }}
                 className="font-medium text-hz-primary no-underline hover:underline"
               >
                 List your property

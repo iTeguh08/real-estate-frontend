@@ -1,18 +1,25 @@
 import { useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { useToggleCompareMutation } from '@/hooks/mutations';
 import { queryKeys } from '@/lib/query-keys';
+import { routes } from '@/lib/routes';
 import { MAX_COMPARE_ITEMS, getCompareIds } from '@/services/compare.service';
 
 const LIMIT_NOTICE_MS = 5000;
 
 export function useCompare() {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: compareIds = [] } = useQuery({
     queryKey: queryKeys.compare.all(),
     queryFn: getCompareIds,
     staleTime: Infinity,
+    enabled: isAuthenticated,
   });
 
   const { data: limitNotice = false } = useQuery({
@@ -21,6 +28,7 @@ export function useCompare() {
       queryClient.getQueryData<boolean>(queryKeys.compare.limitNotice()) ?? false,
     staleTime: Infinity,
     initialData: false,
+    enabled: isAuthenticated,
   });
 
   const toggleMutation = useToggleCompareMutation();
@@ -34,6 +42,13 @@ export function useCompare() {
 
   const toggleCompare = useCallback(
     (propertyId: string) => {
+      if (!isAuthenticated) {
+        navigate(routes.login, {
+          state: { from: `${location.pathname}${location.search}` },
+        });
+        return;
+      }
+
       if (toggleMutation.isPending) return;
 
       const id = String(propertyId);
@@ -54,7 +69,15 @@ export function useCompare() {
 
       toggleMutation.mutate(id);
     },
-    [toggleMutation, queryClient, compareIds],
+    [
+      isAuthenticated,
+      location.pathname,
+      location.search,
+      navigate,
+      toggleMutation,
+      queryClient,
+      compareIds,
+    ],
   );
 
   useEffect(() => {

@@ -96,15 +96,15 @@ export default function App() {
               <Route path="blog/:slug" element={<ArticleDetailPage />} />
               <Route path="agents" element={<AgentsListingPage />} />
               <Route path="agents/:slug" element={<AgentProfilePage />} />
-              <Route path="compare" element={<ComparePage />} />
-              <Route path="wishlist" element={<WishlistPage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
-              <Route path="submit-property" element={<SubmitPropertyPage />} />
               <Route path="about" element={<AboutUsPage />} />
               <Route path="contact" element={<ContactUsPage />} />
               <Route path="privacy" element={<PrivacyPolicyPage />} />
               <Route element={<ProtectedRoute />}>
+                <Route path="compare" element={<ComparePage />} />
+                <Route path="wishlist" element={<WishlistPage />} />
+                <Route path="submit-property" element={<SubmitPropertyPage />} />
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="dashboard/my-property" element={<MyListingsPage />} />
                 <Route path="dashboard/my-property/:id" element={<EditMyListingPage />} />

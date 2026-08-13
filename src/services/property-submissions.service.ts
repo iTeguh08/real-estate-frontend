@@ -1,5 +1,4 @@
 import { apiFetch, isMockDataEnabled } from '@/services/api-client';
-import { getStoredToken } from '@/services/auth-storage';
 import { withGuestSpamFields } from '@/services/security.service';
 import type { PropertyStatus, PropertyType } from '@/types';
 
@@ -74,8 +73,8 @@ const MOCK_SUBMISSIONS: MyPropertySubmission[] = [
 ];
 
 function submitPath(): string {
-  // Authenticated agents use the Sanctum API so the lead is linked to their account.
-  return getStoredToken() ? '/api/property-submissions' : '/property-submissions';
+  // Property submissions require Sanctum auth (members + agents).
+  return '/api/property-submissions';
 }
 
 export async function fetchMyPropertySubmissions(): Promise<MyPropertySubmission[]> {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { useCompare } from '@/hooks/useCompare';
 import { routes } from '@/lib/routes';
 
@@ -37,6 +38,7 @@ function hasBlockingOverlay(): boolean {
  */
 export function useCompareBarVisible(): boolean {
   const { pathname } = useLocation();
+  const { isAuthenticated } = useAuth();
   const { compareCount, limitNotice } = useCompare();
   const [overlayOpen, setOverlayOpen] = useState(false);
 
@@ -55,6 +57,7 @@ export function useCompareBarVisible(): boolean {
     return () => observer.disconnect();
   }, []);
 
+  if (!isAuthenticated) return false;
   if (isHiddenPath(pathname)) return false;
   if (overlayOpen) return false;
   return compareCount > 0 || Boolean(limitNotice);

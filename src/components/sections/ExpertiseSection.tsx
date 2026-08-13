@@ -3,6 +3,7 @@ import { ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { listingsHref } from '@/data/navigation';
+import { useAuth } from '@/hooks/useAuth';
 import { useHomepageQuery } from '@/hooks/queries';
 import { useTheme } from '@/hooks/useTheme';
 import type { HomepageExpertiseItem } from '@/data/cms-fallbacks';
@@ -18,16 +19,19 @@ const SERVICE_META = {
     Illustration: VillaIllustration,
     href: listingsHref({ status: 'For Sale' }),
     cta: 'Browse homes for sale',
+    requiresAuth: false,
   },
   rent: {
     Illustration: ApartmentIllustration,
     href: listingsHref({ status: 'For Rent' }),
     cta: 'Explore rentals',
+    requiresAuth: false,
   },
   sell: {
     Illustration: CommercialIllustration,
     href: routes.submitProperty,
     cta: 'List your property',
+    requiresAuth: true,
   },
 } as const;
 
@@ -35,6 +39,7 @@ type ExpertiseItem = HomepageExpertiseItem & {
   Illustration: React.ComponentType<{ className?: string; iconClassName?: string }>;
   href: string;
   cta: string;
+  requiresAuth: boolean;
 };
 
 const KEY_DIFFERENTIATORS = [
@@ -56,11 +61,15 @@ function ExpertiseMetric({ value, label }: { value: string; label: string }) {
 }
 
 function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
-  const { Illustration, label, description, href, cta } = item;
+  const { isAuthenticated } = useAuth();
+  const { Illustration, label, description, href, cta, requiresAuth } = item;
+  const to = requiresAuth && !isAuthenticated ? routes.login : href;
+  const state = requiresAuth && !isAuthenticated ? { from: href } : undefined;
 
   return (
     <Link
-      to={href}
+      to={to}
+      state={state}
       className={cn(
         'group relative flex w-full items-center gap-5 no-underline',
         'overflow-hidden rounded-hz border border-hz-border bg-hz-elevated p-5 md:gap-6 md:p-6',

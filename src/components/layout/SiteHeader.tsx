@@ -425,36 +425,40 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggleButton />
-          <Link
-            to={routes.compare}
-            className={cn(
-              'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
-              'text-hz-body no-underline transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
-            )}
-            aria-label={`Compare properties${compareCount ? `, ${compareCount} selected` : ''}`}
-          >
-            <ArrowLeftRight size={18} strokeWidth={1.75} />
-            {compareCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-hz-primary px-1 font-poppins text-[10px] font-semibold text-white">
-                {compareCount}
-              </span>
-            )}
-          </Link>
-          <Link
-            to={routes.wishlist}
-            className={cn(
-              'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
-              'text-hz-body no-underline transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
-            )}
-            aria-label={`Wishlist${wishlistIds.length ? `, ${wishlistIds.length} saved` : ''}`}
-          >
-            <Heart size={18} strokeWidth={1.75} />
-            {wishlistIds.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-hz-primary px-1 font-poppins text-[10px] font-semibold text-white">
-                {wishlistIds.length}
-              </span>
-            )}
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link
+                to={routes.compare}
+                className={cn(
+                  'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
+                  'text-hz-body no-underline transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
+                )}
+                aria-label={`Compare properties${compareCount ? `, ${compareCount} selected` : ''}`}
+              >
+                <ArrowLeftRight size={18} strokeWidth={1.75} />
+                {compareCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-hz-primary px-1 font-poppins text-[10px] font-semibold text-white">
+                    {compareCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                to={routes.wishlist}
+                className={cn(
+                  'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
+                  'text-hz-body no-underline transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
+                )}
+                aria-label={`Wishlist${wishlistIds.length ? `, ${wishlistIds.length} saved` : ''}`}
+              >
+                <Heart size={18} strokeWidth={1.75} />
+                {wishlistIds.length > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-hz-primary px-1 font-poppins text-[10px] font-semibold text-white">
+                    {wishlistIds.length}
+                  </span>
+                )}
+              </Link>
+            </>
+          ) : null}
           <Link
             to={isAuthenticated ? routes.dashboard : routes.login}
             className={cn(
@@ -466,7 +470,8 @@ export function SiteHeader() {
             {accountLabel}
           </Link>
           <Link
-            to={routes.submitProperty}
+            to={isAuthenticated ? routes.submitProperty : routes.login}
+            state={isAuthenticated ? undefined : { from: routes.submitProperty }}
             className={cn(
               'no-underline rounded-hz border-none bg-hz-primary px-5 py-[9px] outline-none',
               'font-poppins text-[13px] font-semibold text-white',
@@ -567,38 +572,40 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex shrink-0 flex-col gap-3 border-t border-hz-border px-4 pt-4 pb-4">
-            <div className="flex gap-2">
-              <Link
-                to={routes.wishlist}
-                onClick={deferMobileNav(routes.wishlist)}
-                className={cn(
-                  'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
-                  'font-poppins text-[13px] font-medium text-hz-body no-underline',
-                  'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
-                )}
-              >
-                <Heart size={16} strokeWidth={1.75} />
-                Wishlist
-                {wishlistIds.length > 0 && (
-                  <span className="font-semibold text-hz-primary">({wishlistIds.length})</span>
-                )}
-              </Link>
-              <Link
-                to={routes.compare}
-                onClick={deferMobileNav(routes.compare)}
-                className={cn(
-                  'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
-                  'font-poppins text-[13px] font-medium text-hz-body no-underline',
-                  'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
-                )}
-              >
-                <ArrowLeftRight size={16} strokeWidth={1.75} />
-                Compare
-                {compareCount > 0 && (
-                  <span className="font-semibold text-hz-primary">({compareCount})</span>
-                )}
-              </Link>
-            </div>
+            {isAuthenticated ? (
+              <div className="flex gap-2">
+                <Link
+                  to={routes.wishlist}
+                  onClick={deferMobileNav(routes.wishlist)}
+                  className={cn(
+                    'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
+                    'font-poppins text-[13px] font-medium text-hz-body no-underline',
+                    'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
+                  )}
+                >
+                  <Heart size={16} strokeWidth={1.75} />
+                  Wishlist
+                  {wishlistIds.length > 0 && (
+                    <span className="font-semibold text-hz-primary">({wishlistIds.length})</span>
+                  )}
+                </Link>
+                <Link
+                  to={routes.compare}
+                  onClick={deferMobileNav(routes.compare)}
+                  className={cn(
+                    'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
+                    'font-poppins text-[13px] font-medium text-hz-body no-underline',
+                    'transition-colors duration-200 hover:border-hz-primary hover:text-hz-primary'
+                  )}
+                >
+                  <ArrowLeftRight size={16} strokeWidth={1.75} />
+                  Compare
+                  {compareCount > 0 && (
+                    <span className="font-semibold text-hz-primary">({compareCount})</span>
+                  )}
+                </Link>
+              </div>
+            ) : null}
             <Link
               to={isAuthenticated ? routes.dashboard : routes.login}
               onClick={deferMobileNav(isAuthenticated ? routes.dashboard : routes.login)}
@@ -611,8 +618,9 @@ export function SiteHeader() {
               {accountLabel}
             </Link>
             <Link
-              to={routes.submitProperty}
-              onClick={deferMobileNav(routes.submitProperty)}
+              to={isAuthenticated ? routes.submitProperty : routes.login}
+              state={isAuthenticated ? undefined : { from: routes.submitProperty }}
+              onClick={deferMobileNav(isAuthenticated ? routes.submitProperty : routes.login)}
               className={cn(
                 'w-full text-center no-underline rounded-hz border-none bg-hz-primary py-[10px]',
                 'font-poppins text-[13px] font-semibold text-white',
