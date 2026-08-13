@@ -7,6 +7,7 @@ import { publicAsset } from '@/lib/public-asset';
 import { withCoverBox } from '@/lib/image-url';
 import { preloadImage } from '@/lib/preload-image';
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useHomepageQuery } from '@/hooks/queries';
 import { useTheme } from '@/hooks/useTheme';
 import type { PropertyStatus, PropertyType } from '@/types';
@@ -19,15 +20,6 @@ type HeroTab = (typeof TABS)[number];
 
 const TYPE_OPTIONS = ['All', ...PROPERTY_TYPES] as const;
 
-const chipButtonClass = (active: boolean) =>
-  cn(
-    'shrink-0 font-poppins font-medium text-[13px] cursor-pointer border-none bg-transparent px-0',
-    'transition-colors duration-200 whitespace-nowrap',
-    active
-      ? 'text-hz-primary underline underline-offset-4 decoration-hz-primary decoration-1'
-      : 'text-hz-body hover:text-hz-primary'
-  );
-
 export function HeroSection() {
   const { theme } = useTheme();
   const isLight = theme === 'light';
@@ -36,7 +28,8 @@ export function HeroSection() {
   const hero = homepage?.hero;
   const heroMediaUrl = hero?.backgroundImage ?? heroImage;
   const heroPreloadSrc = withCoverBox(heroMediaUrl, 640, 551, { maxEdge: 1440 });
-  const { filters, applySearch, setAdvancedSearchOpen } = useListingFilters();
+  const { filters, applySearch } = useListingFilters();
+  const { setOpen: setAdvancedSearchOpen } = useAdvancedSearch();
 
   useEffect(() => {
     return preloadImage(heroPreloadSrc);
@@ -46,7 +39,6 @@ export function HeroSection() {
   const [keyword, setKeywordLocal] = useState('');
   const [location, setLocationLocal] = useState('');
   const [propertyType, setPropertyTypeLocal] = useState<string>('All');
-  const [activeChip, setActiveChip] = useState<PropertyType>('Apartment');
 
   useEffect(() => {
     setKeywordLocal(filters.keyword);
@@ -80,23 +72,6 @@ export function HeroSection() {
         location: trimmedLocation,
         status: activeTab,
         propertyType: typeFilter,
-        beds: '',
-        minPrice: '',
-        maxPrice: '',
-      },
-      { resetOthers: true }
-    );
-  };
-
-  const handleChipClick = (type: PropertyType) => {
-    setActiveChip(type);
-    setPropertyTypeLocal(type);
-    applySearch(
-      {
-        keyword: keyword.trim(),
-        location: location.trim(),
-        status: activeTab,
-        propertyType: type,
         beds: '',
         minPrice: '',
         maxPrice: '',
@@ -301,63 +276,10 @@ export function HeroSection() {
   );
 
   const heroFooterDesktop = (
-    <>
-      <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted max-md:hidden">
-        Your search preferences are saved and shared via the URL. Matching listings load live from
-        our database — scroll down to browse results.
-      </p>
-
-      <div className="mt-4 hidden max-w-[620px] flex-wrap items-center gap-3 md:flex 3xl:max-w-[720px]">
-        <span className="font-poppins font-normal text-[13px] text-hz-muted">
-          When you are looking for:
-        </span>
-        {PROPERTY_TYPES.map((type, idx) => (
-          <span key={type} className="flex items-center gap-3">
-            {idx > 0 && (
-              <span className="text-hz-border select-none" aria-hidden="true">
-                |
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={() => handleChipClick(type)}
-              aria-pressed={activeChip === type}
-              className={chipButtonClass(activeChip === type)}
-            >
-              {type}
-            </button>
-          </span>
-        ))}
-      </div>
-    </>
-  );
-
-  const heroFooterMobile = (
-    <div className="mt-4 md:hidden">
-      <p className="mb-2 font-poppins text-[12px] text-hz-muted">When you are looking for:</p>
-      <div
-        className={cn(
-          'hero-bleed-x flex gap-4 overflow-x-auto scroll-smooth',
-          'snap-x snap-proximity pb-1',
-          '[&::-webkit-scrollbar]:hidden scrollbar-none'
-        )}
-        role="list"
-        aria-label="Quick property type filters"
-      >
-        {PROPERTY_TYPES.map((type) => (
-          <button
-            key={type}
-            type="button"
-            role="listitem"
-            onClick={() => handleChipClick(type)}
-            aria-pressed={activeChip === type}
-            className={cn(chipButtonClass(activeChip === type), 'snap-start')}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
-    </div>
+    <p className="mt-3 max-w-[520px] font-poppins text-[12px] leading-relaxed text-hz-muted max-md:hidden">
+      Your search preferences are saved and shared via the URL. Matching listings load live from
+      our database — scroll down to browse results.
+    </p>
   );
 
   const heroImageBlock = (
@@ -443,7 +365,6 @@ export function HeroSection() {
           {heroCopy}
           {searchBlock}
           {heroFooterDesktop}
-          {heroFooterMobile}
         </div>
 
         {heroImageBlock}

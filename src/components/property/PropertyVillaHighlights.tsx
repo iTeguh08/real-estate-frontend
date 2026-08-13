@@ -47,11 +47,11 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
   return (
     <section
       aria-labelledby="property-villa-key-highlights-heading"
-      className="bg-hz-sunken py-12 md:py-16"
+      className="overflow-x-clip bg-hz-sunken pt-6 pb-16 md:py-16"
     >
-      <div className="section-container">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
-          <div className="relative aspect-[4/3] min-h-[280px] overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm lg:min-h-[420px]">
+      <div className="section-container min-w-0">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
+          <div className="relative mx-auto aspect-[4/3] w-full min-h-[240px] min-w-0 max-w-lg overflow-hidden rounded-hz border border-hz-border bg-hz-elevated shadow-hz-sm lg:mx-0 lg:max-w-none lg:min-h-[420px]">
             <MediaImage
               mediaUrl={bottomMedia}
               fitCover
@@ -65,7 +65,7 @@ export function PropertyVillaHighlights({ property, onUtilityAction }: PropertyV
             />
           </div>
 
-          <div className="flex flex-col justify-center">
+          <div className="flex min-w-0 flex-col justify-center">
             <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
               Key Highlights
             </p>

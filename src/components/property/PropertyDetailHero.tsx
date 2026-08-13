@@ -22,13 +22,202 @@ type ShowcaseThumb = {
   alt: string;
 };
 
+interface HeroContentPanelProps {
+  property: PropertyDetail;
+  onScheduleViewing?: () => void;
+  headingId: string;
+  className?: string;
+}
+
+function HeroContentPanel({
+  property,
+  onScheduleViewing,
+  headingId,
+  className,
+}: HeroContentPanelProps) {
+  const { title, status, type, tagline } = property;
+  const locationLabel = formatPropertyLocation(property);
+
+  return (
+    <div className={cn('flex w-full flex-col items-center text-center', className)}>
+      <Link
+        to={{ pathname: routes.home, hash: 'listings' }}
+        className="mb-4 inline-flex items-center justify-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors duration-200 hover:text-hz-primary md:mb-6"
+      >
+        <ArrowLeft size={16} aria-hidden="true" />
+        Back to listings
+      </Link>
+
+      <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
+        {type} · {statusLabel(status)}
+      </p>
+      <h1
+        id={headingId}
+        className="mt-2 font-poppins text-[clamp(1.375rem,4.5vw,2.5rem)] font-semibold uppercase leading-[1.12] tracking-[-0.02em] text-hz-dark text-balance"
+      >
+        {title}
+      </h1>
+      <p className="mt-3 flex items-center justify-center gap-2 font-poppins text-sm text-hz-muted">
+        <MapPin size={15} className="shrink-0 text-hz-primary" strokeWidth={1.5} aria-hidden="true" />
+        {locationLabel}
+      </p>
+      <p className="mt-3 max-w-md font-poppins text-sm leading-[1.65] text-hz-body text-pretty">
+        {tagline}
+      </p>
+
+      <p className="mt-5 font-poppins text-xl font-semibold text-hz-dark md:text-2xl">
+        {formatPropertyPrice(property)}
+      </p>
+
+      {onScheduleViewing ? (
+        <Button
+          type="button"
+          onClick={onScheduleViewing}
+          className="mt-5 h-auto w-fit gap-2 rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover"
+        >
+          <CalendarBlank size={17} weight="fill" aria-hidden="true" />
+          Schedule a Viewing
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+interface HeroActionButtonsProps {
+  propertyId: string;
+  title: string;
+  saved: boolean;
+  compared: boolean;
+  wishlistTogglingId: string | undefined;
+  compareTogglingId: string | undefined;
+  onToggleWishlist: () => void;
+  onToggleCompare: () => void;
+}
+
+function HeroActionButtons({
+  propertyId,
+  title,
+  saved,
+  compared,
+  wishlistTogglingId,
+  compareTogglingId,
+  onToggleWishlist,
+  onToggleCompare,
+}: HeroActionButtonsProps) {
+  return (
+    <div className="absolute top-4 right-4 z-20 flex gap-2 md:top-8 md:right-8">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={compareTogglingId === propertyId}
+        onClick={onToggleCompare}
+        aria-label={compared ? `Remove ${title} from compare` : `Add ${title} to compare`}
+        aria-pressed={compared}
+        aria-busy={compareTogglingId === propertyId}
+        className={cn(
+          'size-11 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white',
+          compared && 'border-hz-primary bg-hz-primary/90 hover:bg-hz-primary',
+          compareTogglingId === propertyId && 'cursor-wait opacity-90'
+        )}
+      >
+        {compareTogglingId === propertyId ? (
+          <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
+        ) : (
+          <ArrowLeftRight size={17} strokeWidth={1.75} />
+        )}
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={wishlistTogglingId === propertyId}
+        onClick={onToggleWishlist}
+        aria-label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
+        aria-pressed={saved}
+        aria-busy={wishlistTogglingId === propertyId}
+        className={cn(
+          'size-11 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white',
+          wishlistTogglingId === propertyId && 'cursor-wait opacity-90'
+        )}
+      >
+        {wishlistTogglingId === propertyId ? (
+          <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
+        ) : (
+          <Heart
+            size={17}
+            strokeWidth={1.75}
+            className={cn(saved && 'fill-hz-primary text-hz-primary')}
+          />
+        )}
+      </Button>
+    </div>
+  );
+}
+
+interface ShowcaseThumbGridProps {
+  thumbs: ShowcaseThumb[];
+  activePreview: string;
+  onSelect: (preview: string) => void;
+}
+
+function ShowcaseThumbGrid({ thumbs, activePreview, onSelect }: ShowcaseThumbGridProps) {
+  return (
+    <div className="mx-auto max-w-4xl">
+      <div
+        className="grid gap-2.5 sm:gap-3"
+        style={{
+          gridTemplateColumns: `repeat(${Math.min(thumbs.length, 4)}, minmax(0, 1fr))`,
+        }}
+        role="list"
+        aria-label="Property showcase photos"
+      >
+        {thumbs.map((thumb, index) => {
+          const isActive = thumb.preview === activePreview;
+          return (
+            <button
+              key={thumb.preview}
+              type="button"
+              role="listitem"
+              onClick={() => onSelect(thumb.preview)}
+              aria-label={`Show ${thumb.alt}`}
+              aria-pressed={isActive}
+              aria-current={isActive ? 'true' : undefined}
+              className={cn(
+                'group relative w-full',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary focus-visible:ring-offset-2'
+              )}
+            >
+              <span className="relative block aspect-[5/4] overflow-hidden rounded-hz max-md:rounded-xl">
+                <MediaImage
+                  mediaUrl={thumb.preview}
+                  fitCover
+                  coverEstimate={{ width: 220, height: 176 }}
+                  coverMaxWidth={480}
+                  alt={thumb.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className={cn(
+                    'object-cover transition-opacity duration-300',
+                    isActive ? 'opacity-100' : 'opacity-45 group-hover:opacity-70'
+                  )}
+                  skeletonDelayMs={index * 80}
+                />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /**
- * Custom Layout 1 hero. Background uses fitCover (measured w×h + crop);
- * showcase thumbs stay soft width-only previews.
+ * Custom Layout 1 hero. Mobile: unobstructed showcase image, then thumb strip, then
+ * solid metadata panel. Desktop: inset overlay panel on full-bleed background (unchanged).
  */
 export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDetailHeroProps) {
-  const { title, status, type, imageUrl, layout1Media, id, tagline } = property;
-  const locationLabel = formatPropertyLocation(property);
+  const { title, imageUrl, layout1Media, id } = property;
   const { isWishlisted, toggleWishlist, isTogglingId: wishlistTogglingId } = useWishlist();
   const { isCompared, toggleCompare, isTogglingId: compareTogglingId } = useCompare();
 
@@ -36,193 +225,106 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
   const compared = isCompared(id);
 
   const showcaseThumbs: ShowcaseThumb[] = [
-    {
-      preview: imageUrl,
-      alt: `${title} — cover`,
-    },
-    {
-      preview: layout1Media.showcaseOneUrl ?? '',
-      alt: `${title} — showcase 1`,
-    },
-    {
-      preview: layout1Media.showcaseTwoUrl ?? '',
-      alt: `${title} — showcase 2`,
-    },
-    {
-      preview: layout1Media.showcaseThreeUrl ?? '',
-      alt: `${title} — showcase 3`,
-    },
+    { preview: imageUrl, alt: `${title} — cover` },
+    { preview: layout1Media.showcaseOneUrl ?? '', alt: `${title} — showcase 1` },
+    { preview: layout1Media.showcaseTwoUrl ?? '', alt: `${title} — showcase 2` },
+    { preview: layout1Media.showcaseThreeUrl ?? '', alt: `${title} — showcase 3` },
   ].filter(
     (thumb, index, list) =>
-      Boolean(thumb.preview) &&
-      list.findIndex((t) => t.preview === thumb.preview) === index
+      Boolean(thumb.preview) && list.findIndex((t) => t.preview === thumb.preview) === index
   );
 
   const [activePreview, setActivePreview] = useState(imageUrl);
 
+  const actionButtons = (
+    <HeroActionButtons
+      propertyId={id}
+      title={title}
+      saved={saved}
+      compared={compared}
+      wishlistTogglingId={wishlistTogglingId}
+      compareTogglingId={compareTogglingId}
+      onToggleWishlist={() => toggleWishlist(id)}
+      onToggleCompare={() => toggleCompare(id)}
+    />
+  );
+
+  const heroImage = (
+    <MediaImage
+      key={activePreview}
+      mediaUrl={activePreview}
+      fitCover
+      coverEstimate={{ width: 1280, height: 720 }}
+      coverMaxWidth={1600}
+      alt=""
+      fetchPriority="high"
+      decoding="async"
+      className="object-cover"
+      wrapperClassName="absolute inset-0 z-0"
+    />
+  );
+
   return (
     <section aria-labelledby="property-hero-heading" className="bg-hz-elevated">
       <div className={VILLA_SECTION_GUTTERS}>
-        <div className="relative min-h-[min(72vh,680px)] overflow-hidden bg-hz-inverse md:min-h-[min(80vh,780px)]">
-          <div className="absolute inset-0" aria-hidden="true">
-            <MediaImage
-              key={activePreview}
-              mediaUrl={activePreview}
-              fitCover
-              coverEstimate={{ width: 1280, height: 720 }}
-              coverMaxWidth={1600}
-              alt=""
-              fetchPriority="high"
-              decoding="async"
-              className="object-cover"
-              wrapperClassName="absolute inset-0 z-0"
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[52%] bg-gradient-to-b from-transparent via-hz-elevated/40 via-[40%] to-hz-elevated md:h-[48%]" />
-          </div>
-
-          <div className="absolute top-5 right-5 z-20 flex gap-2 md:top-8 md:right-8">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled={compareTogglingId === id}
-              onClick={() => toggleCompare(id)}
-              aria-label={compared ? `Remove ${title} from compare` : `Add ${title} to compare`}
-              aria-pressed={compared}
-              aria-busy={compareTogglingId === id}
-              className={cn(
-                'size-10 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white md:size-11',
-                compared && 'border-hz-primary bg-hz-primary/90 hover:bg-hz-primary',
-                compareTogglingId === id && 'cursor-wait opacity-90'
-              )}
-            >
-              {compareTogglingId === id ? (
-                <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
-              ) : (
-                <ArrowLeftRight size={17} strokeWidth={1.75} />
-              )}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled={wishlistTogglingId === id}
-              onClick={() => toggleWishlist(id)}
-              aria-label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
-              aria-pressed={saved}
-              aria-busy={wishlistTogglingId === id}
-              className={cn(
-                'size-10 rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 hover:text-white md:size-11',
-                wishlistTogglingId === id && 'cursor-wait opacity-90'
-              )}
-            >
-              {wishlistTogglingId === id ? (
-                <Loader2 size={17} strokeWidth={1.75} className="animate-spin" aria-hidden="true" />
-              ) : (
-                <Heart
-                  size={17}
-                  strokeWidth={1.75}
-                  className={cn(saved && 'fill-hz-primary text-hz-primary')}
-                />
-              )}
-            </Button>
-          </div>
-
-          <div className="relative z-10 flex flex-col">
-            <div className="flex w-full max-w-[min(100%,500px)] flex-col items-center bg-hz-elevated/90 px-6 py-7 text-center backdrop-blur-[2px] sm:max-w-[min(100%,520px)] sm:px-8 sm:py-8 md:max-w-[min(44%,560px)] md:px-10 md:py-9 lg:max-w-[min(42%,580px)]">
-              <Link
-                to={{ pathname: routes.home, hash: 'listings' }}
-                className="mb-5 inline-flex items-center justify-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors duration-200 hover:text-hz-primary md:mb-6"
-              >
-                <ArrowLeft size={16} aria-hidden="true" />
-                Back to listings
-              </Link>
-
-              <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
-                {type} · {statusLabel(status)}
-              </p>
-              <h1
-                id="property-hero-heading"
-                className="mt-2 font-poppins text-[clamp(1.5rem,3.5vw,2.5rem)] font-semibold uppercase leading-[1.12] tracking-[-0.02em] text-hz-dark text-balance"
-              >
-                {title}
-              </h1>
-              <p className="mt-3 flex items-center justify-center gap-2 font-poppins text-sm text-hz-muted">
-                <MapPin size={15} className="shrink-0 text-hz-primary" strokeWidth={1.5} aria-hidden="true" />
-                {locationLabel}
-              </p>
-              <p className="mt-3 max-w-md font-poppins text-sm leading-[1.65] text-hz-body text-pretty">
-                {tagline}
-              </p>
-
-              <p className="mt-5 font-poppins text-xl font-semibold text-hz-dark md:text-2xl">
-                {formatPropertyPrice(property)}
-              </p>
-
-              {onScheduleViewing ? (
-                <Button
-                  type="button"
-                  onClick={onScheduleViewing}
-                  className="mt-5 h-auto w-fit gap-2 rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover"
-                >
-                  <CalendarBlank size={17} weight="fill" aria-hidden="true" />
-                  Schedule a Viewing
-                </Button>
-              ) : null}
+        {/* Mobile — image visible first; metadata in solid panel below thumbs */}
+        <div className="md:hidden">
+          <div className="relative h-[min(52vh,420px)] overflow-hidden bg-hz-inverse">
+            <div className="absolute inset-0" aria-hidden="true">
+              {heroImage}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-16 bg-gradient-to-t from-black/30 to-transparent" />
             </div>
+            {actionButtons}
           </div>
+
+          {showcaseThumbs.length > 1 ? (
+            <div className="relative z-20 -mt-10 pb-4">
+              <ShowcaseThumbGrid
+                thumbs={showcaseThumbs}
+                activePreview={activePreview}
+                onSelect={setActivePreview}
+              />
+            </div>
+          ) : null}
+
+          <HeroContentPanel
+            property={property}
+            onScheduleViewing={onScheduleViewing}
+            headingId="property-hero-heading"
+            className="border-t border-hz-border bg-hz-elevated px-5 py-6"
+          />
         </div>
 
-        {showcaseThumbs.length > 1 && (
-          <div className="relative z-20 -mt-20 pb-6 md:-mt-24 md:pb-8">
-            <div className="mx-auto max-w-4xl">
-              <div
-                className="grid gap-2.5 sm:gap-3"
-                style={{
-                  gridTemplateColumns: `repeat(${Math.min(showcaseThumbs.length, 4)}, minmax(0, 1fr))`,
-                }}
-                role="list"
-                aria-label="Property showcase photos"
-              >
-                {showcaseThumbs.map((thumb, index) => {
-                  const isActive = thumb.preview === activePreview;
-                  return (
-                    <button
-                      key={thumb.preview}
-                      type="button"
-                      role="listitem"
-                      onClick={() => setActivePreview(thumb.preview)}
-                      aria-label={`Show ${thumb.alt}`}
-                      aria-pressed={isActive}
-                      aria-current={isActive ? 'true' : undefined}
-                      className={cn(
-                        'group relative w-full',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary focus-visible:ring-offset-2'
-                      )}
-                    >
-                      <span className="relative block aspect-[5/4] overflow-hidden rounded-hz">
-                        <MediaImage
-                          mediaUrl={thumb.preview}
-                          fitCover
-                          coverEstimate={{ width: 220, height: 176 }}
-                          coverMaxWidth={480}
-                          alt={thumb.alt}
-                          loading="lazy"
-                          decoding="async"
-                          className={cn(
-                            'object-cover transition-opacity duration-300',
-                            isActive ? 'opacity-100' : 'opacity-45 group-hover:opacity-70'
-                          )}
-                          skeletonDelayMs={index * 80}
-                        />
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+        {/* Desktop — original overlay-on-background composition */}
+        <div className="hidden md:block">
+          <div className="relative min-h-[min(80vh,780px)] overflow-hidden bg-hz-inverse">
+            <div className="absolute inset-0" aria-hidden="true">
+              {heroImage}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[48%] bg-gradient-to-b from-transparent via-hz-elevated/40 via-[40%] to-hz-elevated" />
+            </div>
+
+            {actionButtons}
+
+            <div className="relative z-10 flex flex-col">
+              <HeroContentPanel
+                property={property}
+                onScheduleViewing={onScheduleViewing}
+                headingId="property-hero-heading"
+                className="max-w-[min(44%,560px)] bg-hz-elevated/90 px-10 py-9 backdrop-blur-[2px] lg:max-w-[min(42%,580px)]"
+              />
             </div>
           </div>
-        )}
+
+          {showcaseThumbs.length > 1 ? (
+            <div className="relative z-20 -mt-24 pb-8">
+              <ShowcaseThumbGrid
+                thumbs={showcaseThumbs}
+                activePreview={activePreview}
+                onSelect={setActivePreview}
+              />
+            </div>
+          ) : null}
+        </div>
       </div>
     </section>
   );

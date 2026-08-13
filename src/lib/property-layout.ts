@@ -13,4 +13,4 @@ export function resolvePropertyCustomLayout(
 
 /** Horizontal gutters for property detail hero backgrounds (layout 1 & 2). */
 export const VILLA_SECTION_GUTTERS =
-  'px-5 md:px-10 lg:px-16 xl:px-20 2xl:px-24';
+  'px-5 sm:px-7 md:px-10 lg:px-16 xl:px-20 2xl:px-24';

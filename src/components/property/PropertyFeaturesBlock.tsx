@@ -25,7 +25,7 @@ export function PropertyFeaturesBlock({ property }: PropertyFeaturesBlockProps) 
         image="interior-dark"
         className="max-md:hidden"
       />
-      <div className="section-container relative z-10 grid items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 xl:gap-20">
+      <div className="section-container relative z-10 grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-16 xl:gap-20">
         <div className="lg:pr-6">
           <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-footer-fg/65">
             Key Highlights

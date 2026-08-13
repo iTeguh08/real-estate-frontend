@@ -49,7 +49,7 @@ export function PropertyShowcaseSection({
                 skeletonDelayMs={0}
               />
             </div>
-            <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] overflow-hidden border-[5px] border-hz-elevated shadow-hz-md">
+            <div className="absolute top-[18%] right-0 z-[2] aspect-[4/5] w-[52%] -translate-y-6 overflow-hidden border-[5px] border-hz-elevated shadow-hz-md sm:-translate-y-8 md:-translate-y-10">
               <MediaImage
                 mediaUrl={squareSource!}
                 fitCover

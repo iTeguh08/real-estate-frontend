@@ -135,7 +135,7 @@ export function ContactUsPage() {
           variant="ambient"
           side="right"
           image="contact-topo"
-          photoOpacity={0}
+          photoOpacity={0 }
           photoScrimMix={42}
           photoFade="exit-soft"
           className="max-md:hidden"

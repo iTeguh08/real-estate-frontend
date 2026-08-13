@@ -46,7 +46,7 @@ function UtilityPillButton({
 
 function PortraitImage({ mediaUrl, title }: { mediaUrl: string; title: string }) {
   return (
-    <div className="relative w-[min(78vw,240px)] shrink-0 sm:w-[260px] md:w-[290px] lg:w-[320px]">
+    <div className="relative mx-auto w-full max-w-[240px] shrink-0 min-w-0 sm:mx-0 sm:w-[260px] sm:max-w-none md:w-[290px] lg:w-[320px]">
       <div
         className="absolute -top-3 -left-3 hidden h-[48%] w-[70%] bg-hz-sunken lg:block"
         aria-hidden="true"
@@ -75,7 +75,7 @@ function OverviewCopy({
   const { title, description, specs, type } = property;
 
   return (
-    <div>
+    <div className="min-w-0">
       <h2
         id="property-villa-overview-heading"
         className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary"
@@ -127,7 +127,7 @@ function InteriorCopy({
   const canViewLocation = Boolean(formatPropertyLocation(property));
 
   return (
-    <div className="relative z-10 flex max-w-md flex-col justify-center bg-hz-elevated pb-2 lg:pt-8 lg:pb-8">
+    <div className="relative z-10 flex max-w-md min-w-0 flex-col justify-center bg-hz-elevated pb-2 lg:pt-8 lg:pb-8">
       <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
         Interior &amp; Lifestyle
       </p>
@@ -160,7 +160,7 @@ function InteriorCopy({
 
 function LandscapeImage({ mediaUrl, title }: { mediaUrl: string; title: string }) {
   return (
-    <div className="relative z-0 aspect-video w-full overflow-hidden lg:-mt-[6.5rem] lg:min-h-[300px] lg:w-full xl:-mt-[8rem] xl:min-h-[340px]">
+    <div className="relative z-0 aspect-video w-full min-w-0 max-w-full overflow-hidden rounded-hz lg:-mt-[6.5rem] lg:min-h-[300px] xl:-mt-[8rem] xl:min-h-[340px]">
       <MediaImage
         mediaUrl={mediaUrl}
         fitCover
@@ -170,6 +170,7 @@ function LandscapeImage({ mediaUrl, title }: { mediaUrl: string; title: string }
         loading="lazy"
         decoding="async"
         className="object-cover"
+        wrapperClassName="absolute inset-0"
       />
     </div>
   );
@@ -190,17 +191,17 @@ export function PropertyVillaEditorialSection({
   return (
     <section
       aria-labelledby="property-villa-overview-heading"
-      className="overflow-visible bg-hz-elevated pt-12 md:pt-16 lg:pb-8"
+      className="overflow-x-clip bg-hz-elevated pt-16 pb-6 md:pt-16 md:pb-8 lg:overflow-visible lg:pb-8"
     >
-      <div className="section-container">
-        <div className="flex flex-col gap-12 lg:hidden">
+      <div className="section-container min-w-0">
+        <div className="flex min-w-0 flex-col gap-10 lg:hidden">
           <PortraitImage mediaUrl={portraitMedia} title={title} />
           <OverviewCopy property={property} />
           <InteriorCopy property={property} onUtilityAction={onUtilityAction} />
           <LandscapeImage mediaUrl={wideMedia} title={title} />
         </div>
 
-        <div className="hidden lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
+        <div className="hidden min-w-0 lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-x-16 lg:gap-y-10 xl:gap-x-20">
           <PortraitImage mediaUrl={portraitMedia} title={title} />
           <OverviewCopy property={property} />
           <InteriorCopy property={property} onUtilityAction={onUtilityAction} />

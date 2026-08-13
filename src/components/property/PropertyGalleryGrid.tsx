@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { MediaImage } from '@/components/ui/media-image';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import {
   PROPERTY_GALLERY_COUNT,
+  PROPERTY_GALLERY_MOBILE_PAGE_SIZE,
   PROPERTY_GALLERY_PAGE_SIZE,
 } from '@/lib/property-gallery';
 import { cn } from '@/lib/utils';
@@ -24,7 +25,7 @@ export interface PropertyGalleryGridProps {
   title: string;
 }
 
-/** Full pages of 4 only — matches the CMS requirement of exactly 8 gallery photos. */
+/** Full pages only — desktop bento requires exactly `size` tiles per page. */
 function chunkFullPages(images: PropertyGalleryImage[], size: number) {
   const pages: PropertyGalleryImage[][] = [];
   const usable = images.slice(0, Math.floor(images.length / size) * size);
@@ -32,6 +33,67 @@ function chunkFullPages(images: PropertyGalleryImage[], size: number) {
     pages.push(usable.slice(i, i + size));
   }
   return pages;
+}
+
+/** Mobile carousel — hero + 2-col row; last page may have 1–2 tiles. */
+function chunkPartialPages(images: PropertyGalleryImage[], size: number) {
+  const pages: PropertyGalleryImage[][] = [];
+  for (let i = 0; i < images.length; i += size) {
+    const slice = images.slice(i, i + size);
+    if (slice.length > 0) pages.push(slice);
+  }
+  return pages;
+}
+
+/** Mobile — row 1 full-width hero, row 2 two-up (never a third row). */
+function GalleryMobilePage({
+  pageImages,
+  pageOffset,
+  onOpen,
+}: {
+  pageImages: PropertyGalleryImage[];
+  pageOffset: number;
+  onOpen: (absoluteIndex: number) => void;
+}) {
+  const [a, b, c] = pageImages;
+  if (!a) return null;
+
+  const openAt = (localIndex: number) => onOpen(pageOffset + localIndex);
+  /** Last slide always has exactly 2 tiles — stack both full-width. */
+  const lastPairOnly = pageImages.length === 2;
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      <GalleryTile
+        image={a}
+        onOpen={() => openAt(0)}
+        className="col-span-2 aspect-[16/10] h-auto min-h-[140px]"
+        coverEstimate={{ width: 720, height: 450 }}
+      />
+      {b ? (
+        <GalleryTile
+          image={b}
+          onOpen={() => openAt(1)}
+          className={
+            lastPairOnly
+              ? 'col-span-2 aspect-[16/10] h-auto min-h-[140px]'
+              : 'aspect-[4/5] h-auto min-h-[100px]'
+          }
+          coverEstimate={
+            lastPairOnly ? { width: 720, height: 450 } : { width: 360, height: 450 }
+          }
+        />
+      ) : null}
+      {c ? (
+        <GalleryTile
+          image={c}
+          onOpen={() => openAt(2)}
+          className="aspect-[4/5] h-auto min-h-[100px]"
+          coverEstimate={{ width: 360, height: 450 }}
+        />
+      ) : null}
+    </div>
+  );
 }
 
 function GalleryTile({
@@ -91,26 +153,14 @@ function GalleryBentoPage({
 
   if (reversed) {
     return (
-      <div className="grid h-[min(120vw,560px)] grid-cols-2 grid-rows-3 gap-3 md:h-[min(42vw,500px)] md:grid-cols-12 md:grid-rows-2 md:gap-4">
+      <div className="grid h-[min(42vw,500px)] grid-cols-12 grid-rows-2 gap-4">
         <GalleryTile
           image={b}
           onOpen={() => openAt(1)}
-          className="min-h-0 md:col-span-5 md:col-start-1 md:row-start-1"
+          className="col-span-5 col-start-1 row-start-1"
           coverEstimate={{ width: 480, height: 240 }}
         />
-        <GalleryTile
-          image={c}
-          onOpen={() => openAt(2)}
-          className="col-start-1 row-start-2 min-h-0 md:hidden"
-          coverEstimate={{ width: 360, height: 180 }}
-        />
-        <GalleryTile
-          image={d}
-          onOpen={() => openAt(3)}
-          className="col-start-1 row-start-3 min-h-0 md:hidden"
-          coverEstimate={{ width: 360, height: 180 }}
-        />
-        <div className="hidden min-h-0 grid-cols-2 gap-4 md:col-span-5 md:col-start-1 md:row-start-2 md:grid">
+        <div className="col-span-5 col-start-1 row-start-2 grid min-h-0 grid-cols-2 gap-4">
           <GalleryTile
             image={c}
             onOpen={() => openAt(2)}
@@ -127,7 +177,7 @@ function GalleryBentoPage({
         <GalleryTile
           image={a}
           onOpen={() => openAt(0)}
-          className="col-start-2 row-span-3 min-h-0 md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1"
+          className="col-span-7 col-start-6 row-span-2 row-start-1"
           coverEstimate={{ width: 720, height: 500 }}
         />
       </div>
@@ -135,32 +185,20 @@ function GalleryBentoPage({
   }
 
   return (
-    <div className="grid h-[min(120vw,560px)] grid-cols-2 grid-rows-2 gap-3 md:h-[min(42vw,500px)] md:grid-cols-12 md:gap-4">
+    <div className="grid h-[min(42vw,500px)] grid-cols-12 grid-rows-2 gap-4">
       <GalleryTile
         image={a}
         onOpen={() => openAt(0)}
-        className="min-h-0 md:col-span-7 md:row-span-2"
+        className="col-span-7 row-span-2"
         coverEstimate={{ width: 720, height: 500 }}
       />
       <GalleryTile
         image={b}
         onOpen={() => openAt(1)}
-        className="min-h-0 md:col-span-5"
+        className="col-span-5"
         coverEstimate={{ width: 480, height: 240 }}
       />
-      <GalleryTile
-        image={c}
-        onOpen={() => openAt(2)}
-        className="min-h-0 md:col-span-5 md:hidden"
-        coverEstimate={{ width: 360, height: 180 }}
-      />
-      <GalleryTile
-        image={d}
-        onOpen={() => openAt(3)}
-        className="min-h-0 md:hidden"
-        coverEstimate={{ width: 360, height: 180 }}
-      />
-      <div className="hidden min-h-0 grid-cols-2 gap-4 md:col-span-5 md:grid">
+      <div className="col-span-5 grid min-h-0 grid-cols-2 gap-4">
         <GalleryTile
           image={c}
           onOpen={() => openAt(2)}
@@ -179,22 +217,22 @@ function GalleryBentoPage({
 }
 
 export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps) {
-  const pages = useMemo(
+  const desktopPages = useMemo(
     () => chunkFullPages(images, PROPERTY_GALLERY_PAGE_SIZE),
     [images]
   );
-  const pageCount = pages.length;
-  const { activeIndex, setActiveIndex, goPrev, goNext, swipeHandlers } = useDotCarousel(pageCount);
+  const mobilePages = useMemo(
+    () => chunkPartialPages(images, PROPERTY_GALLERY_MOBILE_PAGE_SIZE),
+    [images]
+  );
+  const desktopPageCount = desktopPages.length;
+  const mobilePageCount = mobilePages.length;
+  const desktopCarousel = useDotCarousel(desktopPageCount);
+  const mobileCarousel = useDotCarousel(mobilePageCount);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const selected = lightboxIndex !== null ? images[lightboxIndex] : null;
 
-  useEffect(() => {
-    if (activeIndex >= pageCount && pageCount > 0) {
-      setActiveIndex(0);
-    }
-  }, [activeIndex, pageCount, setActiveIndex]);
-
-  if (images.length < PROPERTY_GALLERY_PAGE_SIZE || pageCount === 0) {
+  if (images.length < PROPERTY_GALLERY_PAGE_SIZE || desktopPageCount === 0) {
     return null;
   }
 
@@ -232,12 +270,41 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
             </p>
           </div>
 
-          <div className="touch-pan-y overflow-hidden" {...swipeHandlers}>
+          <div className="touch-pan-y overflow-hidden md:hidden" {...mobileCarousel.swipeHandlers}>
             <div
               className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-              style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+              style={{ transform: `translateX(-${mobileCarousel.activeIndex * 100}%)` }}
             >
-              {pages.map((pageImages, pageIndex) => (
+              {mobilePages.map((pageImages, pageIndex) => (
+                <div key={pageIndex} className="w-full shrink-0">
+                  <GalleryMobilePage
+                    pageImages={pageImages}
+                    pageOffset={pageIndex * PROPERTY_GALLERY_MOBILE_PAGE_SIZE}
+                    onOpen={setLightboxIndex}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {mobilePageCount > 1 ? (
+            <CarouselControls
+              count={mobilePageCount}
+              activeIndex={mobileCarousel.activeIndex}
+              onSelect={mobileCarousel.setActiveIndex}
+              onPrev={mobileCarousel.goPrev}
+              onNext={mobileCarousel.goNext}
+              itemLabel="gallery page"
+              className="mt-8 md:hidden"
+            />
+          ) : null}
+
+          <div className="hidden touch-pan-y overflow-hidden md:block" {...desktopCarousel.swipeHandlers}>
+            <div
+              className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              style={{ transform: `translateX(-${desktopCarousel.activeIndex * 100}%)` }}
+            >
+              {desktopPages.map((pageImages, pageIndex) => (
                 <div key={pageIndex} className="w-full shrink-0">
                   <GalleryBentoPage
                     pageImages={pageImages}
@@ -250,15 +317,15 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
             </div>
           </div>
 
-          {pageCount > 1 ? (
+          {desktopPageCount > 1 ? (
             <CarouselControls
-              count={pageCount}
-              activeIndex={activeIndex}
-              onSelect={setActiveIndex}
-              onPrev={goPrev}
-              onNext={goNext}
+              count={desktopPageCount}
+              activeIndex={desktopCarousel.activeIndex}
+              onSelect={desktopCarousel.setActiveIndex}
+              onPrev={desktopCarousel.goPrev}
+              onNext={desktopCarousel.goNext}
               itemLabel="gallery page"
-              className="mt-8"
+              className="mt-8 hidden md:flex"
             />
           ) : null}
         </div>
