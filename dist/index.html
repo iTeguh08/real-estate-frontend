@@ -26,22 +26,188 @@
         } catch (e) {}
       })();
     </script>
-    <script type="module" crossorigin src="/assets/index-DSIceMb9.js"></script>
+    <script type="module" crossorigin src="/assets/index-ZwUlzq41.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-n5LQ9ujS.js">
     <link rel="modulepreload" crossorigin href="/assets/preload-helper-CZgWQFsJ.js">
     <link rel="modulepreload" crossorigin href="/assets/api-client-CJK7dMGL.js">
     <link rel="modulepreload" crossorigin href="/assets/image-url-CBw55mYV.js">
     <link rel="modulepreload" crossorigin href="/assets/properties-BM1ufD1v.js">
-    <link rel="modulepreload" crossorigin href="/assets/properties.service-Brm6eq-Q.js">
-    <link rel="modulepreload" crossorigin href="/assets/mutations-sTxOld_H.js">
-    <link rel="modulepreload" crossorigin href="/assets/useQuery-npBtgl6s.js">
-    <link rel="modulepreload" crossorigin href="/assets/routes-SG0I2i0i.js">
+    <link rel="modulepreload" crossorigin href="/assets/properties.service-BHbfNIFi.js">
+    <link rel="modulepreload" crossorigin href="/assets/mutations-BPqedN3Y.js">
+    <link rel="modulepreload" crossorigin href="/assets/useQuery-CYlfX5Zz.js">
+    <link rel="modulepreload" crossorigin href="/assets/routes-CKcWa4oi.js">
     <link rel="modulepreload" crossorigin href="/assets/skeleton-CxmviP_N.js">
     <link rel="modulepreload" crossorigin href="/assets/createLucideIcon-DN0J77WO.js">
-    <link rel="modulepreload" crossorigin href="/assets/format-property-_X-e75yv.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-C-U5MKDq.css">
+    <link rel="modulepreload" crossorigin href="/assets/format-property-DAvgAoLP.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-67sb21pF.css">
   </head>
   <body>
+    <div
+      id="hz-bootstrap-loader"
+      role="status"
+      aria-live="polite"
+      aria-label="Loading"
+    >
+      <div id="hz-bootstrap-loader-glow" aria-hidden="true"></div>
+      <div id="hz-bootstrap-loader-orbit" aria-hidden="true">
+        <span id="hz-bootstrap-loader-pulse"></span>
+        <span id="hz-bootstrap-loader-ring"></span>
+        <span id="hz-bootstrap-loader-core">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+            <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+            <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+            <path d="M10 6h4" />
+            <path d="M10 10h4" />
+            <path d="M10 14h4" />
+            <path d="M10 18h4" />
+          </svg>
+        </span>
+      </div>
+      <span class="hz-bootstrap-sr">Loading content…</span>
+    </div>
+    <style id="hz-bootstrap-loader-css">
+      #hz-bootstrap-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: oklch(0.978 0.004 80);
+        transition: opacity 0.16s ease-out, visibility 0.16s ease-out;
+      }
+
+      html[data-theme='navy'] #hz-bootstrap-loader {
+        background: oklch(0.22 0.04 255);
+      }
+
+      #hz-bootstrap-loader.hz-bootstrap-loader--out {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      #hz-bootstrap-loader-glow {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        opacity: 0.4;
+        background: radial-gradient(
+          ellipse at 50% 50%,
+          color-mix(in oklch, #e5e5e5 40%, transparent),
+          transparent 55%
+        );
+      }
+
+      html[data-theme='navy'] #hz-bootstrap-loader-glow {
+        background: radial-gradient(
+          ellipse at 50% 50%,
+          color-mix(in oklch, oklch(0.42 0.03 255) 40%, transparent),
+          transparent 55%
+        );
+      }
+
+      #hz-bootstrap-loader-orbit {
+        position: relative;
+        display: flex;
+        height: 4rem;
+        width: 4rem;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #hz-bootstrap-loader-pulse {
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        background: color-mix(in oklch, #e5e5e5 40%, transparent);
+        animation: hz-bl-pulse 1.8s ease-in-out infinite;
+      }
+
+      html[data-theme='navy'] #hz-bootstrap-loader-pulse {
+        background: color-mix(in oklch, oklch(0.42 0.03 255) 40%, transparent);
+      }
+
+      #hz-bootstrap-loader-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        border: 1px solid transparent;
+        border-top-color: color-mix(in oklch, #717171 60%, transparent);
+        border-right-color: color-mix(in oklch, #e5e5e5 40%, transparent);
+        animation: hz-bl-orbit 1.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+      }
+
+      #hz-bootstrap-loader-core {
+        position: relative;
+        display: flex;
+        height: 2.5rem;
+        width: 2.5rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: #ffffff;
+        color: #717171;
+        box-shadow: 0 4px 16px rgb(26 26 46 / 0.08);
+        outline: 1px solid #e5e5e5;
+      }
+
+      html[data-theme='navy'] #hz-bootstrap-loader-core {
+        background: oklch(0.28 0.035 255);
+        color: oklch(0.65 0.02 255);
+        outline-color: oklch(0.42 0.03 255);
+        box-shadow: 0 4px 16px rgb(0 0 0 / 0.25);
+      }
+
+      .hz-bootstrap-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @keyframes hz-bl-orbit {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes hz-bl-pulse {
+        0%,
+        100% {
+          opacity: 0.45;
+          transform: scale(0.96);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #hz-bootstrap-loader-pulse,
+        #hz-bootstrap-loader-ring {
+          animation: none;
+        }
+      }
+    </style>
     <div id="root"></div>
   </body>
 </html>
