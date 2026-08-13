@@ -17,6 +17,7 @@ import {
   PROPERTY_GALLERY_MOBILE_PAGE_SIZE,
   PROPERTY_GALLERY_PAGE_SIZE,
 } from '@/lib/property-gallery';
+import { galleryTileMediaUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { PropertyGalleryImage } from '@/types';
 
@@ -105,7 +106,7 @@ function GalleryTile({
   image: PropertyGalleryImage;
   onOpen: () => void;
   className?: string;
-  /** First-paint estimate only — real size comes from ResizeObserver via fitCover. */
+  /** Soft width hint for Unsplash fallbacks; local product URLs stay static. */
   coverEstimate?: { width: number; height: number };
 }) {
   return (
@@ -120,7 +121,7 @@ function GalleryTile({
       aria-label={`Open gallery image: ${image.alt}`}
     >
       <MediaImage
-        mediaUrl={image.url}
+        mediaUrl={galleryTileMediaUrl(image.url, coverEstimate)}
         fitCover
         coverEstimate={coverEstimate}
         coverMaxWidth={1100}

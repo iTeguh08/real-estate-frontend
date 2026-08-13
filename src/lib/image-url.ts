@@ -1,41 +1,32 @@
 /**
- * Product image URL policy:
- * - No display path uses original /storage max-res.
- * - Every product MediaImage goes through wrapper sizing (+ buffer, ≤150px over).
- * - object-cover / modal / lightbox: MediaImage `fitCover` → w×h crop/cover
- *   (portrait vs landscape sources still fill the box).
- * - Width-only helpers remain for tiny chips / non-cover fallbacks only.
+ * Product image URL policy (Plan B):
+ * - Backend stores static thumb (~450) / medium (~800) / large (~2000) max-edge WebP.
+ * - Frontend picks a URL and uses CSS object-cover — no /api/images on-the-fly.
+ * - Unsplash remote fallbacks may still use query params (their CDN, not our VPS).
  * Decorative SectionAtmosphere / public/bg are out of scope.
  */
 
 export interface SizedImageOptions {
-  /** Hard cap on requested pixel width. */
+  /** Hard cap on requested pixel width (Unsplash only). */
   maxWidth?: number;
-  /** JPEG/WebP quality — default 100. */
+  /** JPEG/WebP quality — default 100 (Unsplash only). */
   quality?: number;
 }
 
-/** Mid of the 50–100px “slightly larger than wrapper” buffer. */
+/** @deprecated Kept for call-site compatibility; no longer used for local product images. */
 export const PREVIEW_BUFFER_PX = 75;
 
-/** Hard cap: each box edge request stays within edge + this many px. */
+/** @deprecated Kept for call-site compatibility; no longer used for local product images. */
 export const PREVIEW_OVERFETCH_MAX_PX = 150;
 
 /**
- * CSS wrapper width → request width (no devicePixelRatio).
- * Example: wrapper 300 → ~375.
+ * CSS wrapper width → request width (Unsplash only).
  */
 export function previewRequestWidth(displayWidth: number, maxWidth?: number): number {
   const w = Math.round(displayWidth + PREVIEW_BUFFER_PX);
   return Math.min(maxWidth ?? 2400, Math.max(192, w));
 }
 
-/**
- * object-fit: cover — logical CSS size before buffer.
- *
- * - Known sourceAspect (width/height): max(boxW, boxH × aspect)
- * - Unknown: longer box edge
- */
 export function coverDisplaySize(
   boxWidth: number,
   boxHeight: number,
@@ -49,10 +40,6 @@ export function coverDisplaySize(
   return Math.max(w, h);
 }
 
-/**
- * Final request `w` for object-cover. Applies +buffer then clamps so
- * result ≤ max(boxW, boxH) + {@link PREVIEW_OVERFETCH_MAX_PX} (never >150px over).
- */
 export function coverRequestWidth(
   boxWidth: number,
   boxHeight: number,
@@ -65,7 +52,6 @@ export function coverRequestWidth(
   return Math.min(maxWidth ?? 2400, Math.max(192, Math.round(capped)));
 }
 
-/** Quantize measured box edges to limit ResizeObserver URL thrash. */
 export function quantizeBoxEdge(px: number, step = 16): number {
   return Math.max(step, Math.round(px / step) * step);
 }
@@ -74,29 +60,82 @@ function isUnsplashHost(hostname: string): boolean {
   return /(^|\.)unsplash\.com$/i.test(hostname);
 }
 
-/** Backend on-demand resize endpoint — /api/images/{path}?w=&q= */
 function isApiImagesUrl(url: URL): boolean {
   return /\/api\/images\//.test(url.pathname);
 }
 
-function applyWidthToApiImages(url: URL, width: number, quality: number): string {
-  url.searchParams.set('w', String(width));
-  url.searchParams.set('q', String(quality));
-  url.searchParams.delete('h');
-  url.searchParams.delete('fit');
-  return url.toString();
+/** Rewrite legacy /api/images/...?... → /storage/... (static file). */
+function toStaticStorageUrl(url: string): string {
+  try {
+    const u = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+    if (isApiImagesUrl(u)) {
+      return url.replace(/\/api\/images\//, '/storage/').replace(/\?.*$/, '');
+    }
+    return url;
+  } catch {
+    return url;
+  }
 }
 
-function clampBoxEdge(px: number, maxEdge?: number): number {
-  const buffered = Math.round(px + PREVIEW_BUFFER_PX);
-  const capped = Math.min(buffered, Math.round(px + PREVIEW_OVERFETCH_MAX_PX));
-  return Math.min(maxEdge ?? 2400, Math.max(192, capped));
+type ProductVariant = 'thumb' | 'medium' | 'large';
+
+/**
+ * Pick a static backend variant for /storage/ product URLs.
+ * Card grids should use `thumb`; detail heroes use `medium` / `large`.
+ */
+export function productVariantUrl(url: string, variant: ProductVariant): string {
+  if (!url) return url;
+
+  const staticUrl = toStaticStorageUrl(url);
+
+  try {
+    const u = new URL(staticUrl, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+
+    if (!u.pathname.includes('/storage/')) {
+      if (isUnsplashHost(u.hostname)) {
+        const edge =
+          variant === 'thumb' ? 450 : variant === 'medium' ? 800 : 2000;
+        return withImageWidth(staticUrl, edge);
+      }
+
+      return staticUrl;
+    }
+
+    const largeUrl = staticUrl.replace(/\.(thumb|medium)\.webp(?=($|\?))/i, '.webp');
+    if (variant === 'large') return largeUrl;
+    if (variant === 'medium') {
+      return largeUrl.replace(/\.webp(?=($|\?))/i, '.medium.webp');
+    }
+    return largeUrl.replace(/\.webp(?=($|\?))/i, '.thumb.webp');
+  } catch {
+    return url;
+  }
+}
+
+/** Listing / card cover — always thumb (~450px max edge). */
+export function productThumbUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  return productVariantUrl(url, 'thumb');
+}
+
+/** Mid-size section media (~800px max edge). */
+export function productMediumUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  return productVariantUrl(url, 'medium');
+}
+
+/** Gallery bento tile — thumb for ~240px slots; wider/taller frames use medium (no upscale). */
+export function galleryTileMediaUrl(
+  url: string | null | undefined,
+  coverEstimate: { width: number; height: number },
+): string {
+  if (!url) return '';
+  const displayEdge = Math.max(coverEstimate.width, coverEstimate.height);
+  return displayEdge <= 260 ? productThumbUrl(url) : productMediumUrl(url);
 }
 
 /**
- * object-fit: cover URL sized to the wrapper box (best practice).
- * Requests w×h ≈ box + buffer and crops to that aspect so landscape sources
- * still fill a portrait frame (bitmap height ≥ wrapper height).
+ * @deprecated No local on-the-fly cover. Returns static URL (storage) or Unsplash crop params.
  */
 export function withCoverBox(
   url: string,
@@ -105,25 +144,19 @@ export function withCoverBox(
   options?: Pick<SizedImageOptions, 'quality'> & { maxEdge?: number },
 ): string {
   if (!url) return url;
+  void boxWidth;
+  void boxHeight;
+  void options;
 
   try {
-    const u = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+    const staticUrl = toStaticStorageUrl(url);
+    const u = new URL(staticUrl, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+    if (!isUnsplashHost(u.hostname)) return staticUrl;
+
     const quality = options?.quality ?? 100;
-    const w = clampBoxEdge(boxWidth, options?.maxEdge);
-    const h = clampBoxEdge(boxHeight, options?.maxEdge);
-
-    if (isApiImagesUrl(u)) {
-      u.searchParams.set('w', String(w));
-      u.searchParams.set('h', String(h));
-      u.searchParams.set('q', String(quality));
-      u.searchParams.set('fit', 'cover');
-      return u.toString();
-    }
-
-    if (!isUnsplashHost(u.hostname)) return url;
-
-    u.searchParams.set('w', String(w));
-    u.searchParams.set('h', String(h));
+    const edge = Math.max(1, Math.round(options?.maxEdge ?? Math.max(boxWidth, boxHeight)));
+    u.searchParams.set('w', String(edge));
+    u.searchParams.delete('h');
     u.searchParams.set('q', String(quality));
     u.searchParams.set('auto', 'format');
     u.searchParams.set('fit', 'crop');
@@ -133,7 +166,7 @@ export function withCoverBox(
   }
 }
 
-/** Set an exact request width (no extra buffer) on Unsplash /api/images URLs. */
+/** Width hint for Unsplash only; local product URLs returned as static storage. */
 export function withImageWidth(
   url: string,
   width: number,
@@ -141,15 +174,12 @@ export function withImageWidth(
 ): string {
   if (!url) return url;
   try {
-    const u = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+    const staticUrl = toStaticStorageUrl(url);
+    const u = new URL(staticUrl, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
     const quality = options?.quality ?? 100;
     const w = Math.min(2400, Math.max(192, Math.round(width)));
 
-    if (isApiImagesUrl(u)) {
-      return applyWidthToApiImages(u, w, quality);
-    }
-
-    if (!isUnsplashHost(u.hostname)) return url;
+    if (!isUnsplashHost(u.hostname)) return staticUrl;
 
     u.searchParams.set('w', String(w));
     u.searchParams.delete('h');
@@ -163,9 +193,7 @@ export function withImageWidth(
 }
 
 /**
- * Soft-resized preview for cards / thumbs / tiles / mid-page / homepage hero.
- * Pass approximate CSS wrapper width — buffer is applied here (no DPR).
- * Supports Unsplash URLs and backend `/api/images/` resize endpoint.
+ * Soft size hint — local product URLs stay static; Unsplash may use w=.
  */
 export function sizedImage(
   url: string,
@@ -175,15 +203,12 @@ export function sizedImage(
   if (!url) return url;
 
   try {
-    const u = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
+    const staticUrl = toStaticStorageUrl(url);
+    const u = new URL(staticUrl, typeof window !== 'undefined' ? window.location.origin : 'http://localhost');
     const quality = options?.quality ?? 100;
     const width = previewRequestWidth(displayWidth, options?.maxWidth);
 
-    if (isApiImagesUrl(u)) {
-      return applyWidthToApiImages(u, width, quality);
-    }
-
-    if (!isUnsplashHost(u.hostname)) return url;
+    if (!isUnsplashHost(u.hostname)) return staticUrl;
 
     u.searchParams.set('w', String(width));
     u.searchParams.delete('h');
@@ -259,8 +284,7 @@ export const GALLERY_LIGHTBOX_HEIGHT = 780;
 export const LIGHTBOX_COVER_MAX_EDGE = 1920;
 
 /**
- * Clean resizable base for cover sizing — strips soft `w`/`h` so lightbox
- * is never stuck on a card/modal thumbnail derivative.
+ * Clean media base — prefer static /storage (no /api/images on-the-fly).
  */
 export function resizableMediaBase(url: string): string {
   if (!url) return url;
@@ -271,17 +295,8 @@ export function resizableMediaBase(url: string): string {
       typeof window !== 'undefined' ? window.location.origin : 'http://localhost',
     );
 
-    if (u.pathname.includes('/storage/')) {
-      const api = url.replace(/\/storage\//, '/api/images/').replace(/\?.*$/, '');
-      return api;
-    }
-
-    if (isApiImagesUrl(u)) {
-      u.searchParams.delete('w');
-      u.searchParams.delete('h');
-      u.searchParams.delete('q');
-      u.searchParams.delete('fit');
-      return u.toString();
+    if (isApiImagesUrl(u) || u.pathname.includes('/storage/')) {
+      return toStaticStorageUrl(url);
     }
 
     if (isUnsplashHost(u.hostname)) {
@@ -304,25 +319,24 @@ export function lightboxMediaUrl(
   return resizableMediaBase(originalUrl || previewUrl);
 }
 
-/** Cover URL locked to the lightbox frame (no ResizeObserver downsize). */
+/** Lightbox uses large/static URL + CSS object-cover (no on-the-fly). */
 export function lightboxCoverUrl(
   previewUrl: string,
   originalUrl: string | null | undefined,
   size: 'modal' | 'gallery' = 'modal',
 ): string {
-  const boxW = size === 'gallery' ? GALLERY_LIGHTBOX_WIDTH : MODAL_LIGHTBOX_WIDTH;
-  const boxH = size === 'gallery' ? GALLERY_LIGHTBOX_HEIGHT : MODAL_LIGHTBOX_HEIGHT;
-  return withCoverBox(lightboxMediaUrl(previewUrl, originalUrl), boxW, boxH, {
-    maxEdge: LIGHTBOX_COVER_MAX_EDGE,
-  });
+  void size;
+  return lightboxMediaUrl(previewUrl, originalUrl);
 }
 
-/** Preview URL for property cover — prefers API `imageUrl`, soft-sizes previews. */
+/** Preview URL for property cover — card grids use thumb variant. */
 export function propertyPreviewUrl(
   property: { imageUrl: string },
   displayWidth = GRID_CARD_PREVIEW_WIDTH,
 ): string {
-  return sizedImage(property.imageUrl, displayWidth);
+  if (displayWidth <= 480) return productThumbUrl(property.imageUrl);
+  if (displayWidth <= 1200) return productVariantUrl(property.imageUrl, 'medium');
+  return productVariantUrl(property.imageUrl, 'large');
 }
 
 /**
@@ -336,12 +350,16 @@ export function propertyOriginalUrl(property: {
   return property.imageUrlOriginal || originalImage(property.imageUrl);
 }
 
-/** Gallery tile preview (width-only fallback). */
+/** Gallery tile preview — thumb for small slots, medium for bento hero/landscape. */
 export function galleryPreviewUrl(
   image: { url: string },
   displayWidth = GRID_CARD_PREVIEW_WIDTH,
+  displayHeight?: number,
 ): string {
-  return sizedImage(image.url, displayWidth);
+  return galleryTileMediaUrl(image.url, {
+    width: displayWidth,
+    height: displayHeight ?? displayWidth,
+  });
 }
 
 /** Gallery lightbox — sized to lightbox frame (never original). */

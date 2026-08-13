@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getArticleCategoryLabel, getArticlePath, getArticleTagPath } from '@/lib/articles';
+import { productThumbUrl } from '@/lib/image-url';
 import { MediaImage } from '@/components/ui/media-image';
 import { cn } from '@/lib/utils';
 import type { Article } from '@/types';
@@ -26,7 +27,7 @@ export function ArticleCard({ article, className, tone = 'default' }: ArticleCar
         )}
       >
         <MediaImage
-          mediaUrl={imageUrl}
+          mediaUrl={productThumbUrl(imageUrl)}
           fitCover
           coverEstimate={{ width: 400, height: 225 }}
           coverMaxWidth={800}

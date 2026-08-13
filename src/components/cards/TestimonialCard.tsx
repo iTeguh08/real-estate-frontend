@@ -1,5 +1,6 @@
 import { Star } from '@phosphor-icons/react';
 import { MediaImage } from '@/components/ui/media-image';
+import { productThumbUrl } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 import type { Testimonial } from '@/types';
 
@@ -39,7 +40,7 @@ export function TestimonialCard({ testimonial, className }: TestimonialCardProps
       <footer className="mt-6 flex items-center gap-3 border-t border-hz-border pt-5">
         <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-hz-border">
           <MediaImage
-            mediaUrl={avatarUrl}
+            mediaUrl={productThumbUrl(avatarUrl)}
             fitCover
             coverEstimate={{ width: 40, height: 40 }}
             coverMaxWidth={128}

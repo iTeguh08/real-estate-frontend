@@ -18,6 +18,7 @@ import {
 } from '@/hooks/queries';
 import { TYPE_SELECT_OPTIONS } from '@/data/property-types';
 import { formatPerSqftPrice } from '@/lib/format-property';
+import { productThumbUrl } from '@/lib/image-url';
 import { filtersToSearchParams, searchParamsToFilters } from '@/lib/listing-filter-params';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
@@ -106,7 +107,7 @@ function SidebarRecentProperty({ property }: { property: Property }) {
     >
       <div className="relative h-[74px] w-[74px] shrink-0 overflow-hidden rounded-hz">
         <MediaImage
-          mediaUrl={property.imageUrl}
+          mediaUrl={productThumbUrl(property.imageUrl)}
           fitCover
           coverEstimate={{ width: 74, height: 74 }}
           coverMaxWidth={192}

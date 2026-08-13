@@ -7,6 +7,7 @@ import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
+import { productThumbUrl } from '@/lib/image-url';
 import { propertyCard } from '@/lib/cva';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
@@ -105,7 +106,7 @@ export function PropertyCard({
         )}
       >
         <MediaImage
-          mediaUrl={imageUrl}
+          mediaUrl={productThumbUrl(imageUrl)}
           fitCover
           coverEstimate={
             isListVariant ? { width: 180, height: 140 } : { width: 320, height: 200 }

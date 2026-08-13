@@ -3,6 +3,7 @@ import { Phone } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
+import { productThumbUrl } from '@/lib/image-url';
 import type { Agent } from '@/types';
 
 interface AgentCardProps {
@@ -18,7 +19,7 @@ export function AgentCard({ agent, className }: AgentCardProps) {
     <article className={cn('group relative', className)}>
       <div className="relative aspect-[16/10] overflow-hidden rounded-hz border-hz-border">
         <MediaImage
-          mediaUrl={avatarUrl}
+          mediaUrl={productThumbUrl(avatarUrl)}
           fitCover
           coverEstimate={{ width: 340, height: 212 }}
           coverMaxWidth={680}

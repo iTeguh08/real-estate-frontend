@@ -6,6 +6,7 @@ import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
 import { formatPerSqftPrice, formatPropertyLocation, statusLabel } from '@/lib/format-property';
+import { productThumbUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { PropertyWithAgent } from '@/types';
@@ -94,7 +95,7 @@ export function BestValuePropertyCard({
     >
       <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <MediaImage
-          mediaUrl={imageUrl}
+          mediaUrl={productThumbUrl(imageUrl)}
           fitCover
           coverEstimate={{ width: 200, height: 200 }}
           coverMaxWidth={400}
@@ -207,7 +208,7 @@ export function BestValuePropertyCard({
           <div className="flex min-w-0 items-center gap-2">
           <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-hz-border">
             <MediaImage
-              mediaUrl={agent.avatarUrl}
+              mediaUrl={productThumbUrl(agent.avatarUrl)}
               fitCover
               coverEstimate={{ width: 32, height: 32 }}
               coverMaxWidth={96}

@@ -6,6 +6,7 @@ import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
+import { productMediumUrl, productThumbUrl } from '@/lib/image-url';
 import { useHomepageQuery } from '@/hooks/queries';
 import type { Location } from '@/types';
 
@@ -44,7 +45,11 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
         )}
       >
         <MediaImage
-          mediaUrl={location.imageUrl}
+          mediaUrl={
+            variant === 'wide'
+              ? productMediumUrl(location.imageUrl)
+              : productThumbUrl(location.imageUrl)
+          }
           fitCover
           coverEstimate={coverEstimate}
           coverMaxWidth={variant === 'wide' ? 1200 : 680}

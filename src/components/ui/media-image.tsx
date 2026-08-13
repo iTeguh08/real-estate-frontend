@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { quantizeBoxEdge, withCoverBox } from '@/lib/image-url';
 import { cn } from '@/lib/utils';
 
-/** Minimum shimmer for lazy / below-fold images. */
+/**
+ * Content image with neutral shimmer until the `<img>` finishes loading.
+ * Product images use static backend variants (thumb/medium/large) — no on-the-fly resize.
+ * `fitCover` only means CSS object-cover fill; it does not call /api/images.
+ */
 const MIN_SKELETON_MS = 450;
 
 /** Priority images reveal as soon as decoded — no artificial delay. */
@@ -19,18 +22,17 @@ export interface MediaImageProps extends React.ImgHTMLAttributes<HTMLImageElemen
   /** Skip shimmer for decorative / tiny assets. */
   noSkeleton?: boolean;
   /**
-   * Raw/preview media URL. With `fitCover`, request w×h matches the measured
-   * wrapper (+ buffer) and crops to that aspect (portrait-safe).
+   * Preferred product media URL (already sized by backend).
+   * When set, used instead of `src`.
    */
   mediaUrl?: string;
   /**
-   * Measure the wrapper and size for `object-cover` via w×h crop/cover.
-   * Prefer over a hard-coded `src` width when the box aspect differs from the photo.
+   * Fill the wrapper with object-cover CSS. Does not resize via /api/images.
    */
   fitCover?: boolean;
-  /** SSR / first-paint box estimate before ResizeObserver fires. */
+  /** @deprecated Unused — variants come from the backend. Kept for call-site compatibility. */
   coverEstimate?: { width: number; height: number };
-  /** Cap for each cover edge request. */
+  /** @deprecated Unused — variants come from the backend. Kept for call-site compatibility. */
   coverMaxWidth?: number;
 }
 
@@ -45,13 +47,6 @@ function resolveMinSkeletonMs(
   return MIN_SKELETON_MS;
 }
 
-/**
- * Content image with neutral shimmer until the `<img>` finishes loading.
- * Respects `loading="lazy"` — no eager probe that bypasses lazy or cache.
- *
- * With `fitCover` + `mediaUrl`, request w×h follows the real wrapper box so
- * landscape sources still fill portrait frames without undersized height.
- */
 export function MediaImage({
   className,
   wrapperClassName,
@@ -61,8 +56,8 @@ export function MediaImage({
   src,
   mediaUrl,
   fitCover = false,
-  coverEstimate,
-  coverMaxWidth,
+  coverEstimate: _coverEstimate,
+  coverMaxWidth: _coverMaxWidth,
   alt = '',
   loading,
   fetchPriority,
@@ -70,46 +65,10 @@ export function MediaImage({
   onError,
   ...props
 }: MediaImageProps) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [box, setBox] = useState<{ width: number; height: number } | null>(
-    coverEstimate ?? null
-  );
+  void _coverEstimate;
+  void _coverMaxWidth;
 
-  const useCover = Boolean(fitCover && mediaUrl);
-
-  useEffect(() => {
-    if (!useCover) return;
-    const el = wrapRef.current;
-    if (!el) return;
-
-    const apply = (width: number, height: number) => {
-      if (width < 8 || height < 8) return;
-      setBox({
-        width: quantizeBoxEdge(width),
-        height: quantizeBoxEdge(height),
-      });
-    };
-
-    apply(el.clientWidth, el.clientHeight);
-
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const { width, height } = entry.contentRect;
-      apply(width, height);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [useCover]);
-
-  const coverSrc = useMemo(() => {
-    if (!useCover || !mediaUrl || !box) return '';
-    return withCoverBox(mediaUrl, box.width, box.height, {
-      maxEdge: coverMaxWidth,
-    });
-  }, [useCover, mediaUrl, box, coverMaxWidth]);
-
-  const srcKey = useCover ? coverSrc : typeof src === 'string' ? src : '';
+  const srcKey = (mediaUrl && mediaUrl.length > 0 ? mediaUrl : typeof src === 'string' ? src : '') || '';
 
   const [imageReady, setImageReady] = useState(false);
   const [minElapsed, setMinElapsed] = useState(false);
@@ -159,16 +118,9 @@ export function MediaImage({
   );
 
   const revealed = imageReady && minElapsed;
-  // Show shimmer even while cover URL is still resolving (avoid flat soft-bg flash).
   const showSkeleton = !noSkeleton && !revealed;
-  /**
-   * Chromium skips lazy-loading images with computed opacity 0, so opacity-0
-   * until onLoad creates an endless skeleton. Keep lazy imgs opaque under the
-   * shimmer; only fade eager/priority imgs in after decode.
-   */
   const fadeInReveal = loading !== 'lazy';
 
-  // Failsafe: if decode never signals (broken lazy edge cases), drop shimmer.
   useEffect(() => {
     if (noSkeleton || imageReady || !srcKey) return;
     const timer = window.setTimeout(() => setImageReady(true), 8000);
@@ -176,10 +128,7 @@ export function MediaImage({
   }, [noSkeleton, imageReady, srcKey]);
 
   return (
-    <div
-      ref={wrapRef}
-      className={cn('relative h-full w-full overflow-hidden', wrapperClassName)}
-    >
+    <div className={cn('relative h-full w-full overflow-hidden', wrapperClassName)}>
       {showSkeleton ? (
         <Skeleton
           className={cn('absolute inset-0 z-0 h-full w-full rounded-none', skeletonClassName)}
@@ -199,6 +148,7 @@ export function MediaImage({
           onError={handleError}
           className={cn(
             'absolute inset-0 z-[1] block h-full w-full transition-opacity duration-500 ease-out',
+            fitCover && 'object-cover object-center',
             fadeInReveal ? (revealed ? 'opacity-100' : 'opacity-0') : 'opacity-100',
             className
           )}

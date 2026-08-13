@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/image-lightbox';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
+import { productMediumUrl } from '@/lib/image-url';
 import type { Property } from '@/types';
 import { routes } from '@/lib/routes';
 
@@ -136,7 +137,7 @@ function PropertyDetailBody({
           aria-label={`View enlarged image: ${imageAlt}`}
         >
           <MediaImage
-            mediaUrl={imageUrl}
+            mediaUrl={productMediumUrl(imageUrl)}
             fitCover
             coverEstimate={{ width: 512, height: 320 }}
             coverMaxWidth={800}
