@@ -222,8 +222,8 @@ export function PropertyTypeGrid() {
                 data-type-card
                 role="listitem"
                 className={cn(
-                  // Mobile: ~2 cards + clearer third-card spill so swipe is obvious
-                  'max-md:w-[calc((100%-0.75rem-5rem)/2)] max-md:min-w-[132px] max-md:shrink-0 max-md:snap-start',
+                  // Mobile: 2 cards + ~20% peek of the next (swipe affordance)
+                  'max-md:w-[calc((100%-0.75rem)/2.2)] max-md:min-w-[132px] max-md:shrink-0 max-md:snap-start',
                   needsDesktopScroll
                     ? 'md:w-[calc((100%-60px)/6)] md:min-w-[140px] md:shrink-0'
                     : 'md:flex-1'
