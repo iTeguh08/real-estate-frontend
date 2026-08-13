@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Award, Check, Target, Users, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import type { AtmosphereImage } from '@/components/decor/SectionAtmosphere';
 import { CmsPageSkeleton } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useAboutPageQuery } from '@/hooks/queries';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useTheme } from '@/hooks/useTheme';
 import { routes } from '@/lib/routes';
 import type { CmsService, CmsValue } from '@/data/cms-fallbacks';
 import {
@@ -37,9 +39,21 @@ function StatItem({ value, label }: { value: string; label: string }) {
   );
 }
 
+function useAboutDecorImages() {
+  const { theme } = useTheme();
+  const isNavy = theme === 'navy';
+
+  return {
+    isNavy,
+    contours: (isNavy ? 'about-contours-navy' : 'about-contours') as AtmosphereImage,
+    arches: (isNavy ? 'about-arches-navy' : 'about-arches') as AtmosphereImage,
+  };
+}
+
 export function AboutUsPage() {
   const { data: page, isLoading } = useAboutPageQuery();
   const { data: siteConfig } = useSiteConfig();
+  const { isNavy, contours, arches } = useAboutDecorImages();
   const brand = siteConfig?.brand ?? 'Homzen';
 
   if (isLoading || !page) {
@@ -51,7 +65,19 @@ export function AboutUsPage() {
   return (
     <main id="main-content">
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
+        <SectionAtmosphere
+          tone={isNavy ? 'dark' : 'soft'}
+          surface="elevated"
+          intensity="quiet"
+          variant="ambient"
+          side="left"
+          image={arches}
+          photoOpacity={isNavy ? 1 : 1}
+          photoScrimMix={52}
+          photoFade="exit-soft"
+          washStyle={isNavy ? 'pattern' : 'gradient'}
+          className="max-md:hidden"
+        />
         <div className="section-container relative z-10">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="max-w-xl">
@@ -115,7 +141,19 @@ export function AboutUsPage() {
       </section>
 
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20" aria-labelledby="mission-heading">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="dual" side="right" image="aerial" className="max-md:hidden" />
+        <SectionAtmosphere
+          tone={isNavy ? 'dark' : 'soft'}
+          surface="elevated"
+          intensity="quiet"
+          variant="dual"
+          side="right"
+          image={contours}
+          photoOpacity={isNavy ? 0.3 : 0.5}
+          photoScrimMix={50}
+          photoFade="exit-soft"
+          washStyle={isNavy ? 'pattern' : 'gradient'}
+          className="max-md:hidden"
+        />
         <div className="section-container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -150,8 +188,24 @@ export function AboutUsPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-hz-sunken py-16 md:py-20" aria-labelledby="services-heading">
-        <SectionAtmosphere tone="light" intensity="quiet" variant="dual" side="left" image="interior-light" className="max-md:hidden" />
+      <section
+        id="services"
+        className="relative scroll-mt-[var(--header-anchor-offset,5.5rem)] overflow-hidden bg-hz-sunken py-16 md:py-20"
+        aria-labelledby="services-heading"
+      >
+        <SectionAtmosphere
+          tone={isNavy ? 'dark' : 'light'}
+          surface="sunken"
+          intensity="quiet"
+          variant="dual"
+          side="left"
+          image={arches}
+          photoOpacity={isNavy ? 0.3 : 0.5}
+          photoScrimMix={48}
+          photoFade="exit-soft"
+          washStyle={isNavy ? 'pattern' : 'gradient'}
+          className="max-md:hidden"
+        />
         <div className="section-container relative z-10">
           <header className="mb-12 max-w-2xl">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -202,7 +256,19 @@ export function AboutUsPage() {
       </section>
 
       <section className="relative overflow-hidden bg-hz-elevated py-16 md:py-20" aria-labelledby="timeline-heading">
-        <SectionAtmosphere tone="soft" intensity="quiet" variant="ambient" side="left" image="interior-light" className="max-md:hidden" />
+        <SectionAtmosphere
+          tone={isNavy ? 'dark' : 'soft'}
+          surface="elevated"
+          intensity="quiet"
+          variant="ambient"
+          side="left"
+          image={contours}
+          photoOpacity={isNavy ? 0.5 : 0.5}
+          photoScrimMix={50}
+          photoFade="exit-soft"
+          washStyle={isNavy ? 'pattern' : 'gradient'}
+          className="max-md:hidden"
+        />
         <div className="section-container relative z-10">
           <header className="mb-12 text-center">
             <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
@@ -242,7 +308,19 @@ export function AboutUsPage() {
         className="relative overflow-hidden bg-hz-footer py-16 md:py-20"
         aria-labelledby="about-cta-heading"
       >
-        <SectionAtmosphere tone="dark" intensity="strong" variant="ambient" side="left" image="architecture" className="max-md:hidden" />
+        <SectionAtmosphere
+          tone="dark"
+          surface="footer"
+          intensity="quiet"
+          variant="ambient"
+          side="right"
+          image="about-contours-navy"
+          photoOpacity={0.2}
+          photoScrimMix={72}
+          photoFade="hold"
+          washStyle="pattern"
+          className="max-md:hidden"
+        />
         <div className="section-container relative z-10 text-center">
           <h2
             id="about-cta-heading"

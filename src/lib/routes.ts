@@ -22,6 +22,7 @@ export const routes = {
   /** @deprecated use myPropertyDetail */
   myListingEdit: (id: string | number) => `/dashboard/my-property/${id}`,
   about: '/about',
+  aboutServices: '/about#services',
   contact: '/contact',
   privacy: '/privacy',
 } as const;

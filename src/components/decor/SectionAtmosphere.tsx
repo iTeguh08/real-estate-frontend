@@ -32,6 +32,10 @@ export type AtmosphereImage =
   | 'contact-topo'
   | 'blog-arches'
   | 'news-contours'
+  | 'about-contours'
+  | 'about-arches'
+  | 'about-contours-navy'
+  | 'about-arches-navy'
   | 'auto'
   | 'none';
 
@@ -94,6 +98,10 @@ const IMAGE_FILES: Record<Exclude<AtmosphereImage, 'auto' | 'none'>, string> = {
   'contact-topo': 'bg/bg-light-contact-topo-v1.webp',
   'blog-arches': 'bg/bg-light-blog-arches-v1.webp',
   'news-contours': 'bg/bg-light-news-contours-v1.webp',
+  'about-contours': 'bg/bg-about-contours.svg',
+  'about-arches': 'bg/bg-about-arches.svg',
+  'about-contours-navy': 'bg/bg-about-contours-navy.svg',
+  'about-arches-navy': 'bg/bg-about-arches-navy.svg',
 };
 
 function resolveImage(tone: Tone, image: AtmosphereImage): Exclude<AtmosphereImage, 'auto'> {

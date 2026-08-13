@@ -43,7 +43,7 @@ function YoutubeIcon({ className }: SocialIconProps) {
 
 const CATEGORIES_LINKS = [
   { label: 'List Your Property', href: '/submit-property' },
-  { label: 'Our Services', href: '/about' },
+  { label: 'Our Services', href: routes.aboutServices },
   { label: 'About Us', href: '/about' },
   { label: 'Contact Us', href: '/contact' },
 ] as const;
@@ -89,8 +89,14 @@ function FooterNavLink({
   );
 
   if (href.startsWith('/')) {
+    const hashIndex = href.indexOf('#');
+    const to =
+      hashIndex === -1
+        ? href
+        : { pathname: href.slice(0, hashIndex), hash: href.slice(hashIndex) };
+
     return (
-      <Link to={href} className={className}>
+      <Link to={to} className={className}>
         {label}
       </Link>
     );
