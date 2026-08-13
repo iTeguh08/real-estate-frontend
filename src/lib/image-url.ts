@@ -79,6 +79,15 @@ function toStaticStorageUrl(url: string): string {
 
 type ProductVariant = 'thumb' | 'medium' | 'large';
 
+function isAbsoluteStorageUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return (u.protocol === 'http:' || u.protocol === 'https:') && u.pathname.includes('/storage/');
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Pick a static backend variant for /storage/ product URLs.
  * Card grids should use `thumb`; detail heroes use `medium` / `large`.
@@ -112,26 +121,35 @@ export function productVariantUrl(url: string, variant: ProductVariant): string 
   }
 }
 
-/** Listing / card cover — always thumb (~450px max edge). */
+/** Listing / card cover — thumb when rewriting mock paths; trust API absolute /storage/ URLs. */
 export function productThumbUrl(url: string | null | undefined): string {
   if (!url) return '';
+  if (isAbsoluteStorageUrl(url)) return toStaticStorageUrl(url);
   return productVariantUrl(url, 'thumb');
 }
 
 /** Mid-size section media (~800px max edge). */
 export function productMediumUrl(url: string | null | undefined): string {
   if (!url) return '';
+  if (isAbsoluteStorageUrl(url)) {
+    const staticUrl = toStaticStorageUrl(url);
+    // API fallback may already be large/medium — don't rewrite to missing sibling variants.
+    if (!/\.thumb\.webp/i.test(staticUrl)) return staticUrl;
+  }
   return productVariantUrl(url, 'medium');
 }
 
-/** Gallery bento tile — thumb for ~240px slots; wider/taller frames use medium (no upscale). */
+/** Gallery bento tile — thumb for ~240px slots; wider/taller frames use original/large. */
 export function galleryTileMediaUrl(
   url: string | null | undefined,
   coverEstimate: { width: number; height: number },
+  originalUrl?: string | null,
 ): string {
   if (!url) return '';
   const displayEdge = Math.max(coverEstimate.width, coverEstimate.height);
-  return displayEdge <= 260 ? productThumbUrl(url) : productMediumUrl(url);
+  if (displayEdge <= 260) return productThumbUrl(url);
+  if (originalUrl) return toStaticStorageUrl(originalUrl);
+  return productMediumUrl(url);
 }
 
 /**
@@ -352,14 +370,14 @@ export function propertyOriginalUrl(property: {
 
 /** Gallery tile preview — thumb for small slots, medium for bento hero/landscape. */
 export function galleryPreviewUrl(
-  image: { url: string },
+  image: { url: string; originalUrl?: string | null },
   displayWidth = GRID_CARD_PREVIEW_WIDTH,
   displayHeight?: number,
 ): string {
   return galleryTileMediaUrl(image.url, {
     width: displayWidth,
     height: displayHeight ?? displayWidth,
-  });
+  }, image.originalUrl);
 }
 
 /** Gallery lightbox — sized to lightbox frame (never original). */

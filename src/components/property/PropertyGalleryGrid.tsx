@@ -121,7 +121,7 @@ function GalleryTile({
       aria-label={`Open gallery image: ${image.alt}`}
     >
       <MediaImage
-        mediaUrl={galleryTileMediaUrl(image.url, coverEstimate)}
+        mediaUrl={galleryTileMediaUrl(image.url, coverEstimate, image.originalUrl)}
         fitCover
         coverEstimate={coverEstimate}
         coverMaxWidth={1100}
