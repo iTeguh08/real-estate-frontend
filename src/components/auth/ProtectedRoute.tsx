@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { PageLoader } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
+import { handoffBootstrapLoader } from '@/lib/bootstrap-loader';
 import { routes } from '@/lib/routes';
 
 /**
@@ -10,6 +12,12 @@ import { routes } from '@/lib/routes';
 export function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    if (isLoading) {
+      requestAnimationFrame(() => requestAnimationFrame(() => handoffBootstrapLoader()));
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return <PageLoader variant="route" />;
