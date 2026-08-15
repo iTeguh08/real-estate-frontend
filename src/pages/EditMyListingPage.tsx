@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Pencil, SendHorizontal, EyeOff } from 'lucide-react';
 import { FormField } from '@/components/auth/AuthFormShell';
+import { FormSelect } from '@/components/forms/FormSelect';
 import type { LocationValue } from '@/components/forms/location-value';
 import { PropertyMediaSlotField } from '@/components/property/PropertyMediaSlotField';
 import { PROPERTY_FORM } from '@/data/property-form-fields';
@@ -469,18 +470,19 @@ export function EditMyListingPage() {
               setFieldErrors((prev) => clearFieldError(prev, 'price'));
             }}
             disabled={readOnly}
+            inputMode="numeric"
             hint={PROPERTY_FORM.price.hint}
             error={fieldErrors.price?.[0]}
           />
-          <FormField
+          <FormSelect
             id={PROPERTY_FORM.currency.id}
             label={PROPERTY_FORM.currency.label}
-            type={PROPERTY_FORM.currency.type}
             value={currency}
             onChange={(value) => {
               setCurrency(value);
               setFieldErrors((prev) => clearFieldError(prev, 'currency'));
             }}
+            options={PROPERTY_FORM.currency.options}
             disabled={readOnly}
             hint={PROPERTY_FORM.currency.hint}
             error={fieldErrors.currency?.[0]}

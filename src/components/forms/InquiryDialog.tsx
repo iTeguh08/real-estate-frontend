@@ -1,5 +1,7 @@
-import { useCallback, useState, type FormEvent, type ComponentType } from 'react';
+import { useCallback, useEffect, useState, type ComponentType } from 'react';
 import { MapPin } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,9 +15,14 @@ import { FormField } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget, useSecurityConfig } from '@/components/forms/GuestSpamFields';
 import { useSubmitContactMutation } from '@/hooks/mutations';
 import { isMockDataEnabled } from '@/services/api-client';
-import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
+import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
+import { apiErrorMessage } from '@/lib/form-errors';
+import {
+  inquirySchema,
+  liveFormOptions,
+  type InquiryFormValues,
+} from '@/lib/form-schemas';
 import { cn } from '@/lib/utils';
-import type { FieldErrors } from '@/services/api-client';
 
 type ContextIcon = ComponentType<{
   size?: number;
@@ -74,15 +81,7 @@ export function InquiryDialog({
   ContextIcon = MapPin,
   contextBlocks,
 }: InquiryDialogProps) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
-  const [message, setMessage] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
-  const [error, setError] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
   const mutation = useSubmitContactMutation();
   const security = useSecurityConfig();
@@ -90,37 +89,57 @@ export function InquiryDialog({
   const turnstileRequired = !mock && Boolean(security?.turnstile.enabled && security.turnstile.siteKey);
   const fieldId = (field: string) => `${idPrefix}-${field}-${mode}`;
 
-  const reset = () => {
-    setName('');
-    setEmail('');
-    setPhone('');
-    setPreferredDate('');
-    setPreferredTime('');
-    setMessage('');
-    setTurnstileToken('');
-    setError('');
-    setFieldErrors({});
-  };
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm<InquiryFormValues>({
+    resolver: zodResolver(inquirySchema),
+    ...liveFormOptions,
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      preferredDate: '',
+      preferredTime: '',
+      message: '',
+    },
+  });
+
+  useEffect(() => {
+    if (!open) {
+      reset();
+      setTurnstileToken('');
+      clearErrors();
+    }
+  }, [open, reset, clearErrors]);
 
   const handleOpenChange = (next: boolean) => {
-    if (!next) reset();
+    if (!next) {
+      reset();
+      setTurnstileToken('');
+      clearErrors();
+    }
     onOpenChange(next);
   };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setFieldErrors({});
+  const onSubmit = handleSubmit((values) => {
+    clearErrors('root');
 
     if (turnstileRequired && !turnstileToken) {
-      setError('Please complete the security check before sending.');
+      setError('root', {
+        message: 'Please complete the security check before sending.',
+      });
       return;
     }
 
     const composedMessage = [
-      message.trim() || null,
-      mode === 'schedule' && (preferredDate || preferredTime)
-        ? `Preferred visit: ${[preferredDate, preferredTime].filter(Boolean).join(' · ')}`
+      values.message.trim() || null,
+      mode === 'schedule' && (values.preferredDate || values.preferredTime)
+        ? `Preferred visit: ${[values.preferredDate, values.preferredTime].filter(Boolean).join(' · ')}`
         : null,
       '',
       `---`,
@@ -129,11 +148,22 @@ export function InquiryDialog({
       .filter((line) => line !== null)
       .join('\n');
 
+    if (!composedMessage.replace(/[-=\s]/g, '').length) {
+      setError('message', {
+        type: 'manual',
+        message:
+          mode === 'schedule'
+            ? 'Add a preferred date/time or a short message.'
+            : 'Please write a short message.',
+      });
+      return;
+    }
+
     mutation.mutate(
       {
-        name,
-        email,
-        phone: phone || undefined,
+        name: values.name,
+        email: values.email,
+        phone: values.phone || undefined,
         inquiry_type: inquiryType,
         message: composedMessage,
         turnstileToken,
@@ -144,14 +174,19 @@ export function InquiryDialog({
           handleOpenChange(false);
         },
         onError: (err) => {
-          setFieldErrors(getApiFieldErrors(err));
-          setError(apiErrorMessage(err, 'Something went wrong. Please try again.'));
+          applyApiFieldErrors(err, setError);
+          setError('root', {
+            message: apiErrorMessage(err, 'Couldn’t send your message. Please try again.'),
+          });
         },
-      }
+      },
     );
-  };
+  });
 
-  const submitDisabled = mutation.isPending || (turnstileRequired && !turnstileToken);
+  const submitDisabled = mutation.isPending || isSubmitting || (turnstileRequired && !turnstileToken);
+  const hasFieldErrors = Boolean(
+    errors.name || errors.email || errors.phone || errors.message,
+  );
 
   const resolvedContextBlocks: InquiryContextBlock[] = contextBlocks?.length
     ? contextBlocks
@@ -199,100 +234,130 @@ export function InquiryDialog({
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="relative space-y-4 px-5 py-5" noValidate>
+        <form onSubmit={onSubmit} className="relative space-y-4 px-5 py-5" noValidate>
           <HoneypotInput />
-          <FormField
-            id={fieldId('name')}
-            label="Full name"
-            value={name}
-            onChange={(value) => {
-              setName(value);
-              setFieldErrors((prev) => clearFieldError(prev, 'name'));
-            }}
-            required
-            error={fieldErrors.name?.[0]}
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                id={fieldId('name')}
+                label="Full name"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                autoComplete="name"
+                error={errors.name?.message}
+              />
+            )}
           />
-          <FormField
-            id={fieldId('email')}
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(value) => {
-              setEmail(value);
-              setFieldErrors((prev) => clearFieldError(prev, 'email'));
-            }}
-            autoComplete="email"
-            required
-            error={fieldErrors.email?.[0]}
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                id={fieldId('email')}
+                label="Email"
+                type="email"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                autoComplete="email"
+                error={errors.email?.message}
+              />
+            )}
           />
-          <FormField
-            id={fieldId('phone')}
-            label="Phone (optional)"
-            type="tel"
-            value={phone}
-            onChange={(value) => {
-              setPhone(value);
-              setFieldErrors((prev) => clearFieldError(prev, 'phone'));
-            }}
-            autoComplete="tel"
-            error={fieldErrors.phone?.[0]}
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                id={fieldId('phone')}
+                label="Phone (optional)"
+                type="tel"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                autoComplete="tel"
+                inputMode="tel"
+                error={errors.phone?.message}
+              />
+            )}
           />
 
           {mode === 'schedule' ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <FormField
-                id={fieldId('date')}
-                label="Preferred date"
-                type="date"
-                value={preferredDate}
-                onChange={setPreferredDate}
+              <Controller
+                name="preferredDate"
+                control={control}
+                render={({ field }) => (
+                  <FormField
+                    id={fieldId('date')}
+                    label="Preferred date"
+                    type="date"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
-              <FormField
-                id={fieldId('time')}
-                label="Preferred time"
-                type="time"
-                value={preferredTime}
-                onChange={setPreferredTime}
+              <Controller
+                name="preferredTime"
+                control={control}
+                render={({ field }) => (
+                  <FormField
+                    id={fieldId('time')}
+                    label="Preferred time"
+                    type="time"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                  />
+                )}
               />
             </div>
           ) : null}
 
-          <div className="space-y-1.5">
-            <label
-              htmlFor={fieldId('message')}
-              className="font-poppins text-sm font-medium text-hz-dark"
-            >
-              Message{mode === 'schedule' ? ' (optional)' : ''}
-            </label>
-            <textarea
-              id={fieldId('message')}
-              value={message}
-              onChange={(e) => {
-                setMessage(e.target.value);
-                setFieldErrors((prev) => clearFieldError(prev, 'message'));
-              }}
-              rows={mode === 'schedule' ? 3 : 4}
-              placeholder={messagePlaceholder}
-              aria-invalid={fieldErrors.message ? true : undefined}
-              className={cn(
-                'w-full resize-y rounded-hz border bg-hz-elevated px-3 py-2.5',
-                'font-poppins text-sm text-hz-dark outline-none transition-colors',
-                'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
-                fieldErrors.message ? 'border-hz-primary/70' : 'border-hz-border'
-              )}
-            />
-            {fieldErrors.message?.[0] ? (
-              <p className="font-poppins text-xs text-hz-primary" role="alert">
-                {fieldErrors.message[0]}
-              </p>
-            ) : null}
-          </div>
+          <Controller
+            name="message"
+            control={control}
+            render={({ field }) => (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor={fieldId('message')}
+                  className="font-poppins text-sm font-medium text-hz-dark"
+                >
+                  Message{mode === 'schedule' ? ' (optional)' : ''}
+                </label>
+                <textarea
+                  id={fieldId('message')}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  rows={mode === 'schedule' ? 3 : 4}
+                  placeholder={messagePlaceholder}
+                  aria-invalid={errors.message ? true : undefined}
+                  className={cn(
+                    'w-full resize-y rounded-hz border bg-hz-elevated px-3 py-2.5',
+                    'font-poppins text-sm text-hz-dark outline-none transition-colors',
+                    'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
+                    errors.message ? 'border-hz-primary/70' : 'border-hz-border',
+                  )}
+                />
+                {errors.message?.message ? (
+                  <p className="font-poppins text-xs text-hz-primary" role="alert">
+                    {errors.message.message}
+                  </p>
+                ) : null}
+              </div>
+            )}
+          />
 
           <TurnstileWidget onTokenChange={onTurnstileToken} />
 
-          {error && Object.keys(fieldErrors).length === 0 ? (
+          {errors.root?.message && !hasFieldErrors ? (
             <p className="font-poppins text-sm text-hz-primary" role="alert">
-              {error}
+              {errors.root.message}
             </p>
           ) : null}
 
@@ -302,7 +367,7 @@ export function InquiryDialog({
               disabled={submitDisabled}
               className="h-auto w-full rounded-hz bg-hz-primary px-6 py-3 font-poppins text-sm font-semibold text-white hover:bg-hz-primary-hover disabled:opacity-60"
             >
-              {mutation.isPending ? 'Sending…' : submitLabel}
+              {mutation.isPending || isSubmitting ? 'Sending…' : submitLabel}
             </Button>
             <p className="mt-2.5 text-center font-poppins text-[11px] text-hz-muted">
               We typically respond within 24 hours.

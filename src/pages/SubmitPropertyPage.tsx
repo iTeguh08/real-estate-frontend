@@ -535,7 +535,12 @@ export function SubmitPropertyPage() {
     }
     if (target <= 1) return true;
     if (!location.street.trim() || !location.city.trim()) {
-      setStepHint('Street and city are required before review.');
+      setStepHint('Street and city are needed before you can review.');
+      setStep(1);
+      return false;
+    }
+    if (location.latitude == null || location.longitude == null) {
+      setStepHint('Drop a pin on the map so we know the exact spot.');
       setStep(1);
       return false;
     }

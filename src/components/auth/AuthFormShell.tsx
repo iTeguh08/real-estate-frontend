@@ -1,4 +1,4 @@
-import type { FormEvent, ReactNode } from 'react';
+import type { FormEvent, HTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { MediaImage } from '@/components/ui/media-image';
 import { publicAsset } from '@/lib/public-asset';
@@ -83,6 +83,7 @@ interface FormFieldProps {
   type?: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
   /** Visual / a11y hint only — prefer zod / API errors with `noValidate`. */
   required?: boolean;
   autoComplete?: string;
@@ -90,6 +91,8 @@ interface FormFieldProps {
   readOnly?: boolean;
   hint?: string;
   error?: string;
+  placeholder?: string;
+  inputMode?: HTMLAttributes<HTMLInputElement>['inputMode'];
 }
 
 export function FormField({
@@ -98,12 +101,15 @@ export function FormField({
   type = 'text',
   value,
   onChange,
+  onBlur,
   required,
   autoComplete,
   disabled,
   readOnly,
   hint,
   error,
+  placeholder,
+  inputMode,
 }: FormFieldProps) {
   const errorId = error ? `${id}-error` : undefined;
 
@@ -117,10 +123,13 @@ export function FormField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         required={required}
         autoComplete={autoComplete}
         disabled={disabled}
         readOnly={readOnly}
+        placeholder={placeholder}
+        inputMode={inputMode}
         aria-invalid={error ? true : undefined}
         aria-describedby={errorId}
         className={cn(

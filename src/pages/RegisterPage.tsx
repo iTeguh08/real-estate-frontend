@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import {
   AuthFooterLink,
   AuthFormShell,
@@ -10,9 +10,14 @@ import {
   MockSubmitNotice,
 } from '@/components/auth/AuthFormShell';
 import { useAuth } from '@/hooks/useAuth';
+import { useLiveEmailAvailability } from '@/hooks/useLiveEmailAvailability';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
 import { apiErrorMessage } from '@/lib/form-errors';
-import { registerSchema, type RegisterFormValues } from '@/lib/form-schemas';
+import {
+  liveFormOptions,
+  registerSchema,
+  type RegisterFormValues,
+} from '@/lib/form-schemas';
 import { routes } from '@/lib/routes';
 
 export function RegisterPage() {
@@ -25,15 +30,26 @@ export function RegisterPage() {
     control,
     handleSubmit,
     setError,
-    formState: { errors, isSubmitting },
+    clearErrors,
+    formState: { errors, isSubmitting, touchedFields },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    ...liveFormOptions,
     defaultValues: {
       name: '',
       email: '',
       password: '',
       password_confirmation: '',
     },
+  });
+
+  const emailValue = useWatch({ control, name: 'email' }) ?? '';
+
+  useLiveEmailAvailability({
+    email: emailValue,
+    enabled: Boolean(touchedFields.email),
+    setError,
+    clearErrors,
   });
 
   if (isAuthenticated) {
@@ -72,7 +88,7 @@ export function RegisterPage() {
       navigate(routes.dashboard);
     } catch (err) {
       applyApiFieldErrors(err, setError);
-      setFormError(apiErrorMessage(err, 'Registration failed. Please try again.'));
+      setFormError(apiErrorMessage(err, 'Couldn’t create your account. Please try again.'));
     }
   });
 
@@ -97,6 +113,7 @@ export function RegisterPage() {
               label="Full name"
               value={field.value}
               onChange={field.onChange}
+              onBlur={field.onBlur}
               autoComplete="name"
               error={errors.name?.message}
             />
@@ -111,7 +128,13 @@ export function RegisterPage() {
               label="Email"
               type="email"
               value={field.value}
-              onChange={field.onChange}
+              onChange={(value) => {
+                field.onChange(value);
+                if (errors.email?.type === 'server') {
+                  clearErrors('email');
+                }
+              }}
+              onBlur={field.onBlur}
               autoComplete="email"
               error={errors.email?.message}
             />
@@ -127,7 +150,9 @@ export function RegisterPage() {
               type="password"
               value={field.value}
               onChange={field.onChange}
+              onBlur={field.onBlur}
               autoComplete="new-password"
+              hint="At least 10 characters, mix upper & lower case, and a number."
               error={errors.password?.message}
             />
           )}
@@ -142,6 +167,7 @@ export function RegisterPage() {
               type="password"
               value={field.value}
               onChange={field.onChange}
+              onBlur={field.onBlur}
               autoComplete="new-password"
               error={errors.password_confirmation?.message}
             />

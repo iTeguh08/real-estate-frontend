@@ -1,4 +1,4 @@
-import { apiFetch, isMockDataEnabled } from '@/services/api-client';
+import { apiFetch, ApiError, isMockDataEnabled } from '@/services/api-client';
 import {
   clearAuth,
   getStoredToken,
@@ -11,6 +11,42 @@ import {
 interface UserResponse {
   success: boolean;
   user: AuthUser;
+}
+
+export async function checkEmailAvailable(
+  email: string,
+): Promise<{ available: boolean; message?: string }> {
+  if (isMockDataEnabled()) {
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    const taken = email.trim().toLowerCase() === 'taken@example.com';
+    return taken
+      ? {
+          available: false,
+          message: 'That email is already registered. Try signing in.',
+        }
+      : { available: true };
+  }
+
+  try {
+    const response = await apiFetch<{
+      success: boolean;
+      available: boolean;
+      message?: string;
+    }>('/api/auth/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim() }),
+    });
+    return { available: response.available, message: response.message };
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 422) {
+      return {
+        available: false,
+        message: err.fieldErrors.email?.[0] || err.message,
+      };
+    }
+    throw err;
+  }
 }
 
 export async function registerMember(input: {

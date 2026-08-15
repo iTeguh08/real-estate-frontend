@@ -6,12 +6,28 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { PROPERTY_FORM } from '@/data/property-form-fields';
+import { SearchableSelect } from '@/components/forms/SearchableSelect';
 import { cn } from '@/lib/utils';
 import { reverseGeocode, searchLocations, type GeoSuggestion } from '@/services/geo.service';
 import { useTheme } from '@/hooks/useTheme';
 import type { LocationValue } from '@/components/forms/location-value';
 
 export type { LocationValue } from '@/components/forms/location-value';
+
+type CountryOption = { value: string; label: string };
+
+const DEFAULT_COUNTRY_OPTIONS: readonly CountryOption[] = PROPERTY_FORM.country.options;
+
+function countryCodes(options: readonly CountryOption[]): string[] {
+  return options.map((o) => o.value);
+}
+
+function isAllowedCountry(
+  code: string | null | undefined,
+  options: readonly CountryOption[],
+): code is string {
+  return Boolean(code && countryCodes(options).includes(code));
+}
 
 // Default Leaflet marker assets break under Vite bundling without this remap.
 const DefaultIcon = L.icon({
@@ -30,12 +46,8 @@ interface LocationPickerProps {
   onChange: (next: LocationValue) => void;
   disabled?: boolean;
   required?: boolean;
-  countryOptions?: readonly string[];
+  countryOptions?: readonly CountryOption[];
   className?: string;
-}
-
-function isAllowedCountry(code: string | null | undefined, options: readonly string[]): code is string {
-  return Boolean(code && options.includes(code));
 }
 
 const DEFAULT_CENTER: [number, number] = [-6.1754, 106.8272]; // Jakarta
@@ -90,7 +102,7 @@ export function LocationPicker({
   onChange,
   disabled = false,
   required = false,
-  countryOptions = PROPERTY_FORM.country.options,
+  countryOptions = DEFAULT_COUNTRY_OPTIONS,
   className,
 }: LocationPickerProps) {
   const searchId = useId();
@@ -293,30 +305,17 @@ export function LocationPicker({
           <p className="font-poppins text-xs text-hz-muted">{PROPERTY_FORM.city.hint}</p>
         </div>
 
-        <div className="space-y-1.5">
-          <label
-            htmlFor={PROPERTY_FORM.country.id}
-            className="font-poppins text-sm font-medium text-hz-dark"
-          >
-            {PROPERTY_FORM.country.label}
-            {required ? <span className="text-hz-primary"> *</span> : null}
-          </label>
-          <select
-            id={PROPERTY_FORM.country.id}
-            value={value.countryCode}
-            onChange={(e) => onChange({ ...value, countryCode: e.target.value })}
-            required={required}
-            disabled={disabled}
-            className={fieldClass}
-          >
-            {countryOptions.map((code) => (
-              <option key={code} value={code}>
-                {code}
-              </option>
-            ))}
-          </select>
-          <p className="font-poppins text-xs text-hz-muted">{PROPERTY_FORM.country.hint}</p>
-        </div>
+        <SearchableSelect
+          id={PROPERTY_FORM.country.id}
+          label={PROPERTY_FORM.country.label}
+          value={value.countryCode}
+          onChange={(countryCode) => onChange({ ...value, countryCode })}
+          options={countryOptions}
+          required={required}
+          disabled={disabled}
+          hint={PROPERTY_FORM.country.hint}
+          placeholder="Type country…"
+        />
       </div>
 
       <div className="space-y-1.5">

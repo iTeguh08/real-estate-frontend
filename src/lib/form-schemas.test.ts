@@ -18,20 +18,28 @@ describe('form-schemas', () => {
     ).toBe(true);
   });
 
-  it('requires matching register passwords', () => {
+  it('requires matching register passwords and password strength', () => {
     const mismatch = registerSchema.safeParse({
       name: 'Ayu',
       email: 'ayu@test.com',
-      password: 'password1',
-      password_confirmation: 'password2',
+      password: 'Password1',
+      password_confirmation: 'Password2',
     });
     expect(mismatch.success).toBe(false);
 
-    const ok = registerSchema.safeParse({
+    const weak = registerSchema.safeParse({
       name: 'Ayu',
       email: 'ayu@test.com',
       password: 'password1',
       password_confirmation: 'password1',
+    });
+    expect(weak.success).toBe(false);
+
+    const ok = registerSchema.safeParse({
+      name: 'Ayu',
+      email: 'ayu@test.com',
+      password: 'Password12',
+      password_confirmation: 'Password12',
     });
     expect(ok.success).toBe(true);
   });

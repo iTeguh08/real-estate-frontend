@@ -7,7 +7,11 @@ import { HoneypotInput, TurnstileWidget, useSecurityConfig } from '@/components/
 import { useSubscribeNewsletterMutation } from '@/hooks/mutations';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
 import { apiErrorMessage } from '@/lib/form-errors';
-import { newsletterSchema, type NewsletterFormValues } from '@/lib/form-schemas';
+import {
+  liveFormOptions,
+  newsletterSchema,
+  type NewsletterFormValues,
+} from '@/lib/form-schemas';
 import { isMockDataEnabled } from '@/services/api-client';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +39,7 @@ export function NewsletterForm({ tone = 'dark' }: NewsletterFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<NewsletterFormValues>({
     resolver: zodResolver(newsletterSchema),
+    ...liveFormOptions,
     defaultValues: { email: '' },
   });
 
@@ -60,7 +65,7 @@ export function NewsletterForm({ tone = 'dark' }: NewsletterFormProps) {
         onError: (error) => {
           setNotice('');
           applyApiFieldErrors(error, setError);
-          setSubmitError(apiErrorMessage(error, 'Something went wrong. Please try again.'));
+          setSubmitError(apiErrorMessage(error, 'Couldn’t subscribe. Please try again.'));
         },
       },
     );
@@ -87,10 +92,18 @@ export function NewsletterForm({ tone = 'dark' }: NewsletterFormProps) {
                 placeholder="Your e-mail"
                 value={field.value}
                 onChange={field.onChange}
+                onBlur={field.onBlur}
                 disabled={pending}
                 autoComplete="email"
+                inputMode="email"
                 aria-invalid={errors.email ? true : undefined}
-                aria-describedby={notice || submitError ? 'newsletter-status' : undefined}
+                aria-describedby={
+                  errors.email
+                    ? 'newsletter-email-error'
+                    : notice || submitError
+                      ? 'newsletter-status'
+                      : undefined
+                }
                 className={cn(
                   'h-12 w-full rounded-hz border pr-14 pl-4 font-poppins text-[14px] font-medium outline-none transition-colors duration-200',
                   isLight
@@ -119,7 +132,7 @@ export function NewsletterForm({ tone = 'dark' }: NewsletterFormProps) {
         </div>
 
         {errors.email?.message ? (
-          <p className="font-poppins text-xs text-hz-primary" role="alert">
+          <p id="newsletter-email-error" className="font-poppins text-xs text-hz-primary" role="alert">
             {errors.email.message}
           </p>
         ) : null}

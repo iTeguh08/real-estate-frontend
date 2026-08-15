@@ -12,7 +12,11 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
 import { apiErrorMessage } from '@/lib/form-errors';
-import { loginSchema, type LoginFormValues } from '@/lib/form-schemas';
+import {
+  liveFormOptions,
+  loginSchema,
+  type LoginFormValues,
+} from '@/lib/form-schemas';
 import { routes } from '@/lib/routes';
 
 function postLoginPath(from: unknown): string {
@@ -39,6 +43,7 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    ...liveFormOptions,
     defaultValues: { email: '', password: '' },
   });
 
@@ -74,7 +79,7 @@ export function LoginPage() {
       navigate(redirectTo);
     } catch (err) {
       applyApiFieldErrors(err, setError);
-      setFormError(apiErrorMessage(err, 'Sign-in failed. Please try again.'));
+      setFormError(apiErrorMessage(err, 'Couldn’t sign in. Please try again.'));
     }
   });
 
@@ -101,6 +106,7 @@ export function LoginPage() {
               type="email"
               value={field.value}
               onChange={field.onChange}
+              onBlur={field.onBlur}
               autoComplete="email"
               error={errors.email?.message}
             />
@@ -116,6 +122,7 @@ export function LoginPage() {
               type="password"
               value={field.value}
               onChange={field.onChange}
+              onBlur={field.onBlur}
               autoComplete="current-password"
               error={errors.password?.message}
             />

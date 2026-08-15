@@ -15,8 +15,10 @@ import { apiErrorMessage } from '@/lib/form-errors';
 import {
   CONTACT_INQUIRY_TYPES,
   contactSchema,
+  liveFormOptions,
   type ContactFormValues,
 } from '@/lib/form-schemas';
+import { FormSelect } from '@/components/forms/FormSelect';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 
@@ -56,6 +58,7 @@ export function ContactUsPage() {
     formState: { errors, isSubmitting },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
+    ...liveFormOptions,
     defaultValues: {
       name: '',
       email: '',
@@ -95,7 +98,7 @@ export function ContactUsPage() {
         onError: (error) => {
           setNotice('');
           applyApiFieldErrors(error, setError);
-          setSubmitError(apiErrorMessage(error, 'Something went wrong. Please try again.'));
+          setSubmitError(apiErrorMessage(error, 'Couldn’t send your message. Please try again.'));
         },
       },
     );
@@ -200,6 +203,7 @@ export function ContactUsPage() {
                         label="Full name"
                         value={field.value}
                         onChange={field.onChange}
+                        onBlur={field.onBlur}
                         autoComplete="name"
                         error={errors.name?.message}
                       />
@@ -215,6 +219,7 @@ export function ContactUsPage() {
                         type="email"
                         value={field.value}
                         onChange={field.onChange}
+                        onBlur={field.onBlur}
                         autoComplete="email"
                         error={errors.email?.message}
                       />
@@ -233,7 +238,9 @@ export function ContactUsPage() {
                         type="tel"
                         value={field.value}
                         onChange={field.onChange}
+                        onBlur={field.onBlur}
                         autoComplete="tel"
+                        inputMode="tel"
                         error={errors.phone?.message}
                       />
                     )}
@@ -243,36 +250,15 @@ export function ContactUsPage() {
                     name="inquiry_type"
                     control={control}
                     render={({ field }) => (
-                      <div className="space-y-1.5">
-                        <label
-                          htmlFor="contact-inquiry"
-                          className="font-poppins text-sm font-medium text-hz-dark"
-                        >
-                          Inquiry type
-                        </label>
-                        <select
-                          id="contact-inquiry"
-                          value={field.value}
-                          onChange={field.onChange}
-                          aria-invalid={errors.inquiry_type ? true : undefined}
-                          className={cn(
-                            'h-11 w-full rounded-hz border bg-hz-elevated px-3',
-                            'font-poppins text-sm text-hz-dark outline-none focus:border-hz-primary/60',
-                            errors.inquiry_type ? 'border-hz-primary/70' : 'border-hz-border',
-                          )}
-                        >
-                          {CONTACT_INQUIRY_TYPES.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.inquiry_type?.message ? (
-                          <p className="font-poppins text-xs text-hz-primary" role="alert">
-                            {errors.inquiry_type.message}
-                          </p>
-                        ) : null}
-                      </div>
+                      <FormSelect
+                        id="contact-inquiry"
+                        label="Inquiry type"
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        options={CONTACT_INQUIRY_TYPES}
+                        error={errors.inquiry_type?.message}
+                      />
                     )}
                   />
                 </div>
@@ -292,6 +278,7 @@ export function ContactUsPage() {
                         id="contact-message"
                         value={field.value}
                         onChange={field.onChange}
+                        onBlur={field.onBlur}
                         rows={5}
                         placeholder="Tell us how we can help you..."
                         aria-invalid={errors.message ? true : undefined}
