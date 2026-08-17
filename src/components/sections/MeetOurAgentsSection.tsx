@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowRight } from 'lucide-react';
 import { AgentCard } from '@/components/cards/AgentCard';
 import { CarouselControls } from '@/components/ui/CarouselControls';
@@ -115,13 +115,13 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           >
             Meet Our Agents
           </h2>
-          <Link
+          <AppLink
             to={routes.agents}
             className="mt-4 inline-flex items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4"
           >
             View all agents
             <ArrowRight size={14} strokeWidth={1.6} />
-          </Link>
+          </AppLink>
         </header>
 
         {isLoading && !agentsProp ? (

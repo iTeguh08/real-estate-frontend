@@ -1,6 +1,8 @@
-/** Public-folder asset URL that respects Vite `base` (e.g. GitHub Pages subpaths). */
+import { getPublicBasePath } from '@/lib/runtime-env';
+
+/** Public-folder asset URL that respects Vite `base` / Next `basePath`. */
 export function publicAsset(filename: string): string {
-  const base = import.meta.env.BASE_URL;
+  const base = getPublicBasePath();
   const normalized = filename.replace(/^\//, '');
   return `${base}${normalized}`;
 }

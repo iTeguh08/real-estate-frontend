@@ -70,17 +70,25 @@ export function MediaImage({
 
   const srcKey = (mediaUrl && mediaUrl.length > 0 ? mediaUrl : typeof src === 'string' ? src : '') || '';
 
-  const [imageReady, setImageReady] = useState(false);
-  const [minElapsed, setMinElapsed] = useState(false);
-  const mountRef = useRef(0);
   const minSkeletonMs = resolveMinSkeletonMs(noSkeleton, loading, fetchPriority);
 
-  useEffect(() => {
+  const [imageReady, setImageReady] = useState(false);
+  const [minElapsed, setMinElapsed] = useState(minSkeletonMs === 0);
+  const mountRef = useRef(0);
+
+  // A new source means a new reveal cycle. Adjusting the state during render keeps
+  // the shimmer from flashing the previous image's "ready" frame first.
+  const revealKey = `${srcKey}|${minSkeletonMs}`;
+  const [renderedRevealKey, setRenderedRevealKey] = useState(revealKey);
+  if (renderedRevealKey !== revealKey) {
+    setRenderedRevealKey(revealKey);
     setImageReady(false);
     setMinElapsed(minSkeletonMs === 0);
-    const token = ++mountRef.current;
+  }
 
+  useEffect(() => {
     if (minSkeletonMs === 0) return;
+    const token = ++mountRef.current;
 
     const timer = window.setTimeout(() => {
       if (mountRef.current === token) setMinElapsed(true);

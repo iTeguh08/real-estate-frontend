@@ -7,7 +7,7 @@ import { CompareTableSkeleton } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { queryKeys } from '@/lib/query-keys';
-import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
+import { formatCount, formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import { productThumbUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { clearCompare, getCompareProperties, MAX_COMPARE_ITEMS } from '@/services/compare.service';
@@ -213,7 +213,7 @@ export function ComparePage() {
                         {row.key === 'sqft' && (
                           <span className="inline-flex items-center gap-1.5">
                             <ArrowsOut size={16} weight="fill" className="text-hz-muted" />
-                            {property.specs.sqft.toLocaleString()}
+                            {formatCount(property.specs.sqft)}
                           </span>
                         )}
                       </td>

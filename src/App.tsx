@@ -1,9 +1,9 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageLoader } from '@/components/skeletons';
-import { ListingFiltersProvider } from '@/hooks/useListingFilters';
+import { ListingFiltersProvider } from '@/components/providers/ListingFiltersProvider';
 import { completeBootstrapLoader, handoffBootstrapLoader } from '@/lib/bootstrap-loader';
 import { HomePage } from '@/pages/HomePage';
 
@@ -85,7 +85,13 @@ export default function App() {
         <Suspense fallback={<RouteFallback />}>
           <BootstrapLoaderComplete />
           <Routes>
-            <Route element={<AppShell />}>
+            <Route
+              element={
+                <AppShell>
+                  <Outlet />
+                </AppShell>
+              }
+            >
               <Route index element={<HomePage />} />
               <Route path="listings" element={<PropertyListingsPage />} />
               <Route path="properties/:slug" element={<PropertyDetailPage />} />

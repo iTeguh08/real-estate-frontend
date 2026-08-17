@@ -1,26 +1,18 @@
-import { Link, useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { ArrowLeft } from 'lucide-react';
-import {
-  getArticleCategoryLabel,
-  getArticlesListPath,
-  getArticleTagPath,
-} from '@/lib/articles';
-import { sanitizeHtml } from '@/lib/sanitize-html';
 import { CmsPageSkeleton } from '@/components/skeletons';
-import { MediaImage } from '@/components/ui/media-image';
 import { useArticleQuery } from '@/hooks/queries';
+import { AppLink } from '@/lib/app-link';
 import { routes } from '@/lib/routes';
-import { cn } from '@/lib/utils';
+import { ArticleDetailView } from '@/modules/blog/views/ArticleDetailView';
 
-function looksLikeHtml(value: string): boolean {
-  return /<\/?[a-z][\s\S]*>/i.test(value);
-}
-
+/** Shared client entry for Vite/news routes — Next blog uses `src/pages/blog/[slug].tsx`. */
 export function ArticleDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
+  const slug = typeof router.query.slug === 'string' ? router.query.slug : undefined;
   const { data: article, isLoading, isError } = useArticleQuery(slug);
 
-  if (isLoading) {
+  if (isLoading || !router.isReady) {
     return <CmsPageSkeleton variant="article" />;
   }
 
@@ -28,82 +20,16 @@ export function ArticleDetailPage() {
     return (
       <main id="main-content" className="section-container py-20 text-center">
         <h1 className="font-poppins text-2xl font-semibold text-hz-dark">Article not found</h1>
-        <Link
-          to={routes.home}
+        <AppLink
+          href={routes.home}
           className="mt-6 inline-flex items-center gap-2 font-poppins text-sm font-semibold text-hz-primary no-underline"
         >
           <ArrowLeft size={16} />
           Back to home
-        </Link>
+        </AppLink>
       </main>
     );
   }
 
-  const categoryLabel = getArticleCategoryLabel(article.category);
-  const listPath = getArticlesListPath(article.category);
-  const body = article.body ?? article.excerpt ?? '';
-  const isHtml = looksLikeHtml(body);
-
-  return (
-    <main id="main-content" className="bg-hz-elevated py-12 md:py-16">
-      <article className="section-container max-w-3xl">
-        <Link
-          to={listPath}
-          className="mb-6 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors hover:text-hz-primary"
-        >
-          <ArrowLeft size={16} />
-          All {categoryLabel.toLowerCase()} articles
-        </Link>
-
-        <p className="font-poppins text-xs text-hz-muted">
-          {categoryLabel} <span aria-hidden="true">•</span> {article.publishedAt}
-        </p>
-        <h1 className="mt-3 font-poppins text-[28px] font-semibold leading-[1.2] tracking-[-0.3px] text-hz-dark md:text-[34px]">
-          {article.title}
-        </h1>
-
-        {article.tags.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {article.tags.map((tag) => (
-              <Link
-                key={tag}
-                to={getArticleTagPath(article.category, tag)}
-                className="rounded-hz bg-hz-bg-soft px-3 py-1 font-poppins text-xs font-medium text-hz-body no-underline transition-colors hover:bg-hz-primary hover:text-white"
-              >
-                {tag}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-hz bg-hz-bg-soft">
-          <MediaImage
-            mediaUrl={article.imageUrl}
-            fitCover
-            coverEstimate={{ width: 900, height: 562 }}
-            coverMaxWidth={1400}
-            alt={article.title}
-            decoding="async"
-            className="object-cover"
-          />
-        </div>
-
-        {isHtml ? (
-          <div
-            className={cn(
-              'prose prose-neutral mt-8 max-w-none font-poppins',
-              'prose-headings:font-poppins prose-headings:text-hz-dark',
-              'prose-p:text-hz-body prose-p:leading-[1.75]',
-              'prose-a:text-hz-primary prose-a:no-underline hover:prose-a:underline'
-            )}
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(body) }}
-          />
-        ) : (
-          <p className="mt-8 font-poppins text-base leading-[1.75] text-hz-body whitespace-pre-wrap">
-            {body}
-          </p>
-        )}
-      </article>
-    </main>
-  );
+  return <ArticleDetailView article={article} />;
 }

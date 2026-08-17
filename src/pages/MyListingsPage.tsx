@@ -8,6 +8,7 @@ import {
 } from '@/hooks/mutations';
 import { useMyListingsQuery, useMyPropertySubmissionsQuery } from '@/hooks/queries';
 import { isAgentUser } from '@/lib/auth-roles';
+import { formatCount } from '@/lib/format-property';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import {
@@ -45,7 +46,7 @@ function submissionBadgeClass(status: SubmissionReviewStatus): string {
 
 function formatPrice(amount: number, currency?: string | null): string {
   const symbol = currency?.trim() || '$';
-  return `${symbol}${Number(amount || 0).toLocaleString()}`;
+  return `${symbol}${formatCount(Number(amount || 0))}`;
 }
 
 function formatListingPrice(listing: AgentListing): string {

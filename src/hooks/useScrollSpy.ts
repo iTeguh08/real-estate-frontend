@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useAppLocation } from '@/lib/app-router';
 import {
   HOME_SCROLL_SECTIONS,
   type HomeScrollSection,
@@ -12,7 +12,7 @@ function isHomePath(pathname: string): boolean {
 }
 
 export function useScrollSpy() {
-  const { pathname } = useLocation();
+  const { pathname } = useAppLocation();
   const { scrollOffset } = useSiteHeader();
   const onHome = isHomePath(pathname);
   const [activeSection, setActiveSection] = useState<HomeScrollSection>('home');

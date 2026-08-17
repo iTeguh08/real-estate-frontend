@@ -1,5 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Blueprint,
   Briefcase,
@@ -21,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { FormField } from '@/components/auth/AuthFormShell';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
+import { LocationPickerDynamic as LocationPicker } from '@/components/forms/LocationPickerDynamic';
 import type { LocationValue } from '@/components/forms/location-value';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,15 +28,13 @@ import {
   useCancelPropertySubmissionMutation,
   useSubmitPropertyMutation,
 } from '@/hooks/mutations';
+import { AppLink } from '@/lib/app-link';
+import { useAppSearchParams } from '@/lib/app-router';
 import { isAgentUser } from '@/lib/auth-roles';
 import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
 import { routes } from '@/lib/routes';
 import type { FieldErrors } from '@/services/api-client';
 import type { PropertyStatus, PropertyType } from '@/types';
-
-const LocationPicker = lazy(() =>
-  import('@/components/forms/LocationPicker').then((m) => ({ default: m.LocationPicker }))
-);
 
 type PageMode = 'compose' | 'view';
 type WizardStep = 0 | 1 | 2;
@@ -356,7 +354,7 @@ function FileDropzone({
 }
 
 export function SubmitPropertyPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useAppSearchParams();
   const linkedSlug = (searchParams.get('property') || searchParams.get('property_slug') || '').trim();
   const { user } = useAuth();
   const isAgent = isAgentUser(user);
@@ -377,7 +375,9 @@ export function SubmitPropertyPage() {
   const [submissionId, setSubmissionId] = useState<number | null>(null);
   const [mapOpen, setMapOpen] = useState(true);
   const [stepHint, setStepHint] = useState('');
-  const snapshotRef = useRef<Snapshot | null>(null);
+  // Values as submitted, kept in state so the success view can render them while
+  // the form fields themselves are being cleared.
+  const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
 
   const submitMutation = useSubmitPropertyMutation();
@@ -414,14 +414,14 @@ export function SubmitPropertyPage() {
   };
 
   const persistSnapshot = () => {
-    snapshotRef.current = {
+    setSnapshot({
       title,
       type,
       status,
       location,
       price,
       attachmentName: attachment?.name ?? attachmentName,
-    };
+    });
   };
 
   const resetToCompose = () => {
@@ -439,7 +439,7 @@ export function SubmitPropertyPage() {
     setTurnstileToken('');
     setStep(0);
     setStepHint('');
-    snapshotRef.current = null;
+    setSnapshot(null);
     const fileInput = document.getElementById(PROPERTY_FORM.attachment.id) as HTMLInputElement | null;
     if (fileInput) fileInput.value = '';
     setMode('compose');
@@ -566,7 +566,7 @@ export function SubmitPropertyPage() {
     sendSubmission();
   };
 
-  const snap = snapshotRef.current;
+  const snap = snapshot;
   const previewTitle = mode === 'view' && snap ? snap.title : title;
   const previewType = mode === 'view' && snap ? snap.type : type;
   const previewStatus = mode === 'view' && snap ? snap.status : status;
@@ -617,9 +617,9 @@ export function SubmitPropertyPage() {
             {isAgent && submissionId ? (
               <p className="mt-4 font-poppins text-sm text-hz-body">
                 Status: waiting for approval. Track it in{' '}
-                <Link to={routes.myProperty} className="font-medium text-hz-primary underline">
+                <AppLink href={routes.myProperty} className="font-medium text-hz-primary underline">
                   My Property
-                </Link>
+                </AppLink>
                 .
               </p>
             ) : null}
@@ -646,12 +646,12 @@ export function SubmitPropertyPage() {
                 </button>
               ) : null}
               {isAgent ? (
-                <Link
-                  to={routes.myProperty}
+                <AppLink
+                  href={routes.myProperty}
                   className="inline-flex w-full items-center justify-center rounded-lg border border-hz-border px-6 py-3 font-poppins text-sm font-medium text-hz-ink no-underline hover:border-hz-primary hover:text-hz-primary sm:flex-1"
                 >
                   View My Property
-                </Link>
+                </AppLink>
               ) : (
                 <button
                   type="button"

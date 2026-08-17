@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { PropertyCard } from '@/components/cards/PropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { ListingSortSelect } from '@/components/search/ListingSortSelect';
@@ -185,7 +185,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
         />
 
         <div className="mt-12 flex justify-center">
-          <Link
+          <AppLink
             to={routes.listings}
             className={cn(
               'inline-flex items-center justify-center gap-2',
@@ -196,7 +196,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
             aria-label="Browse all listings"
           >
             Browse All Listings
-          </Link>
+          </AppLink>
         </div>
       </div>
     </section>

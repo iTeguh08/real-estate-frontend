@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import {
@@ -11,6 +10,8 @@ import {
 } from '@/components/auth/AuthFormShell';
 import { useAuth } from '@/hooks/useAuth';
 import { useLiveEmailAvailability } from '@/hooks/useLiveEmailAvailability';
+import { AppLink } from '@/lib/app-link';
+import { useAppNavigate } from '@/lib/app-router';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
 import { apiErrorMessage } from '@/lib/form-errors';
 import {
@@ -21,7 +22,7 @@ import {
 import { routes } from '@/lib/routes';
 
 export function RegisterPage() {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { register: registerMember, isAuthenticated } = useAuth();
   const [notice, setNotice] = useState('');
   const [formError, setFormError] = useState('');
@@ -64,12 +65,12 @@ export function RegisterPage() {
           </>
         }
       >
-        <Link
-          to={routes.dashboard}
+        <AppLink
+          href={routes.dashboard}
           className="inline-flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3 font-poppins text-sm font-semibold text-white no-underline hover:bg-hz-primary-hover"
         >
           Go to dashboard
-        </Link>
+        </AppLink>
       </AuthFormShell>
     );
   }

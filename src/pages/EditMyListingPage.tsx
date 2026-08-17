@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Pencil, SendHorizontal, EyeOff } from 'lucide-react';
 import { FormField } from '@/components/auth/AuthFormShell';
 import { FormSelect } from '@/components/forms/FormSelect';
+import { LocationPickerDynamic as LocationPicker } from '@/components/forms/LocationPickerDynamic';
 import type { LocationValue } from '@/components/forms/location-value';
 import { PropertyMediaSlotField } from '@/components/property/PropertyMediaSlotField';
 import { PROPERTY_FORM } from '@/data/property-form-fields';
@@ -42,10 +43,6 @@ import {
 } from '@/services/agent-listings.service';
 import type { FieldErrors } from '@/services/api-client';
 import type { PropertyStatus, PropertyType } from '@/types';
-
-const LocationPicker = lazy(() =>
-  import('@/components/forms/LocationPicker').then((m) => ({ default: m.LocationPicker }))
-);
 
 type PageMode = 'view' | 'edit';
 
@@ -97,8 +94,11 @@ export function EditMyListingPage() {
   /** Ignore Save for a beat after Edit — Edit and Save share the same button slot. */
   const editArmedAtRef = useRef(0);
 
-  useEffect(() => {
-    if (!listing) return;
+  // Seed the editable draft from the fetched listing during render, so the fields are
+  // already populated on the commit that first shows them.
+  const [seededListing, setSeededListing] = useState<typeof listing>(undefined);
+  if (listing && seededListing !== listing) {
+    setSeededListing(listing);
     setTitle(listing.title ?? '');
     setLocation({
       street: listing.street ?? '',
@@ -118,7 +118,7 @@ export function EditMyListingPage() {
     setGarage(listing.garage == null ? '' : String(listing.garage));
     setTagline(listing.tagline ?? '');
     setDescription(listing.description ?? '');
-  }, [listing]);
+  }
 
   function enterEdit() {
     setError('');

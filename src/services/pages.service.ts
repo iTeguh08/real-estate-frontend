@@ -4,6 +4,7 @@ import {
   HOMEPAGE_FALLBACK,
   PRIVACY_PAGE_FALLBACK,
   type AboutPageContent,
+  type CmsSeoMeta,
   type ContactPageContent,
   type HomepageContent,
   type HomepageExpertiseItem,
@@ -12,6 +13,16 @@ import {
 import { graphqlFetch, isMockDataEnabled } from '@/services/graphql-client';
 
 type FlexibleItem = Record<string, unknown> | { attributes?: Record<string, unknown> };
+
+const PAGE_SEO_SELECTION = `
+  content
+  seo {
+    metaTitle
+    metaDescription
+    canonicalUrl
+    ogImage
+  }
+`;
 
 function normalizeItems(items: unknown): Record<string, string>[] {
   if (!Array.isArray(items)) {
@@ -48,6 +59,40 @@ function nestedItems(parent: unknown, key: string): Record<string, string>[] {
 function toPhoneHref(phone: string): string {
   const digits = phone.replace(/\D/g, '');
   return digits ? `tel:+${digits}` : '';
+}
+
+function parsePageContent(raw: unknown): Record<string, unknown> | null {
+  if (raw == null) return null;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }
+  if (typeof raw === 'object') {
+    return raw as Record<string, unknown>;
+  }
+  return null;
+}
+
+function parseSeo(raw: Partial<CmsSeoMeta> | null | undefined, fallback: CmsSeoMeta): CmsSeoMeta {
+  return {
+    metaTitle: raw?.metaTitle?.trim() || fallback.metaTitle,
+    metaDescription: raw?.metaDescription?.trim() || fallback.metaDescription,
+    canonicalUrl: raw?.canonicalUrl?.trim() || fallback.canonicalUrl,
+    ogImage: raw?.ogImage?.trim() || fallback.ogImage,
+  };
+}
+
+function homepageSeoFallback(content: HomepageContent): CmsSeoMeta {
+  return {
+    metaTitle: `Homzen — ${content.hero.headline.replace(/\n/g, ' ')}`,
+    metaDescription: content.hero.subheadline,
+    canonicalUrl: '',
+    ogImage: content.hero.backgroundImage,
+  };
 }
 
 function parseAboutPage(raw: Record<string, unknown> | null): AboutPageContent {
@@ -199,18 +244,25 @@ function parseHomepage(raw: Record<string, unknown> | null): HomepageContent {
   };
 }
 
+type PagePayload = {
+  content: unknown;
+  seo?: Partial<CmsSeoMeta> | null;
+};
+
 export async function getAboutPage(): Promise<AboutPageContent> {
   if (isMockDataEnabled()) {
     return ABOUT_PAGE_FALLBACK;
   }
 
-  const data = await graphqlFetch<{ page: Record<string, unknown> | null }>(`
+  const data = await graphqlFetch<{ page: PagePayload | null }>(`
     query {
-      page(slug: "ABOUT")
+      page(slug: "ABOUT") {
+        ${PAGE_SEO_SELECTION}
+      }
     }
   `);
 
-  return parseAboutPage(data.page);
+  return parseAboutPage(parsePageContent(data.page?.content ?? null));
 }
 
 export async function getContactPage(): Promise<ContactPageContent> {
@@ -265,13 +317,19 @@ export async function getHomepage(): Promise<HomepageContent> {
     return HOMEPAGE_FALLBACK;
   }
 
-  const data = await graphqlFetch<{ page: Record<string, unknown> | null }>(`
+  const data = await graphqlFetch<{ page: PagePayload | null }>(`
     query {
-      page(slug: "HOMEPAGE")
+      page(slug: "HOMEPAGE") {
+        ${PAGE_SEO_SELECTION}
+      }
     }
   `);
 
-  return parseHomepage(data.page);
+  const parsed = parseHomepage(parsePageContent(data.page?.content ?? null));
+  return {
+    ...parsed,
+    seo: parseSeo(data.page?.seo, homepageSeoFallback(parsed)),
+  };
 }
 
 export async function getPrivacyPage(): Promise<PrivacyPageContent> {

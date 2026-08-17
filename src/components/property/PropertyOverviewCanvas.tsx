@@ -1,9 +1,7 @@
 import { PropertyIntroduction } from '@/components/property/PropertyIntroduction';
-import {
-  getPropertyOverviewBackgroundImage,
-  PropertyOverviewBackground,
-} from '@/components/property/PropertyOverviewBackground';
+import { PropertyOverviewBackground } from '@/components/property/PropertyOverviewBackground';
 import { PropertyShowcaseSection } from '@/components/property/PropertyShowcaseSection';
+import { getPropertyOverviewBackgroundImage } from '@/lib/property-overview';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyOverviewCanvasProps {

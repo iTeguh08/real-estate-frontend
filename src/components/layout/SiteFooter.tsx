@@ -5,7 +5,7 @@ import {
   MapPin,
   Phone,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { NewsletterForm } from '@/components/layout/NewsletterForm';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { SITE_CONFIG } from '@/data/site-config';
@@ -100,9 +100,9 @@ function FooterNavLink({
 
     if (requiresAuth && !isAuthenticated) {
       return (
-        <Link to={routes.login} state={{ from: href }} className={className}>
+        <AppLink to={routes.login} state={{ from: href }} className={className}>
           {label}
-        </Link>
+        </AppLink>
       );
     }
 
@@ -112,17 +112,17 @@ function FooterNavLink({
         : { pathname: href.slice(0, hashIndex), hash: href.slice(hashIndex) };
 
     return (
-      <Link to={to} className={className}>
+      <AppLink to={to} className={className}>
         {label}
-      </Link>
+      </AppLink>
     );
   }
 
   if (href.startsWith('#')) {
     return (
-      <Link to={{ pathname: routes.home, hash: href.slice(1) }} className={className}>
+      <AppLink to={{ pathname: routes.home, hash: href.slice(1) }} className={className}>
         {label}
-      </Link>
+      </AppLink>
     );
   }
 
@@ -219,7 +219,7 @@ export function SiteFooter() {
       <div className="relative z-10 section-container">
         {/* Tier 1 — brand bar */}
         <div className="flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
-          <Link to={routes.home} className="inline-flex items-center gap-3 no-underline">
+          <AppLink to={routes.home} className="inline-flex items-center gap-3 no-underline">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-hz bg-hz-primary shadow-hz-sm">
               <Building2 size={18} strokeWidth={2} className="text-white" aria-hidden="true" />
             </div>
@@ -241,7 +241,7 @@ export function SiteFooter() {
                 Luxury real estate
               </span>
             </div>
-          </Link>
+          </AppLink>
 
           <div className="flex flex-col gap-3 sm:items-end">
             <p
@@ -383,13 +383,13 @@ export function SiteFooter() {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {LEGAL_LINKS.map((link) =>
                 link.href.startsWith('/') ? (
-                  <Link
+                  <AppLink
                     key={link.label}
                     to={link.href}
                     className={cn('font-poppins text-[13px] font-medium', legalClass)}
                   >
                     {link.label}
-                  </Link>
+                  </AppLink>
                 ) : (
                   <a
                     key={link.label}

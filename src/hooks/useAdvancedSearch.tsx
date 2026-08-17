@@ -1,35 +1,12 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext } from 'react';
 
-interface AdvancedSearchContextValue {
+export interface AdvancedSearchContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-const AdvancedSearchContext = createContext<AdvancedSearchContextValue | null>(null);
-
-/**
- * Isolated from ListingFilters so opening/closing the sheet does not
- * re-render hero, listings grid, or other filter consumers mid-animation.
- */
-export function AdvancedSearchProvider({ children }: { children: ReactNode }) {
-  const [open, setOpenState] = useState(false);
-  const setOpen = useCallback((next: boolean) => {
-    setOpenState(next);
-  }, []);
-
-  const value = useMemo(() => ({ open, setOpen }), [open, setOpen]);
-
-  return (
-    <AdvancedSearchContext.Provider value={value}>{children}</AdvancedSearchContext.Provider>
-  );
-}
+/** Provided by `@/components/providers/AdvancedSearchProvider`. */
+export const AdvancedSearchContext = createContext<AdvancedSearchContextValue | null>(null);
 
 export function useAdvancedSearch(): AdvancedSearchContextValue {
   const ctx = useContext(AdvancedSearchContext);

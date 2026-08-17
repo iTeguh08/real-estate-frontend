@@ -1,6 +1,6 @@
 import { Bed, Bathtub, ArrowsOut, CalendarBlank, MapPin } from '@phosphor-icons/react';
 import { MediaImage } from '@/components/ui/media-image';
-import { formatPropertyLocation } from '@/lib/format-property';
+import { formatCount, formatPropertyLocation } from '@/lib/format-property';
 import type { PropertyDetail } from '@/types';
 import type { PropertyVillaUtilityAction } from '@/components/property/PropertyVillaHighlights';
 
@@ -103,7 +103,7 @@ function OverviewCopy({
         <div className="flex flex-col items-center gap-1 bg-hz-elevated px-3 py-4 text-center">
           <ArrowsOut size={20} weight="fill" className="text-hz-dark" aria-hidden="true" />
           <span className="font-poppins text-base font-semibold text-hz-dark">
-            {specs.sqft.toLocaleString()}
+            {formatCount(specs.sqft)}
           </span>
           <span className="font-poppins text-[10px] uppercase tracking-wider text-hz-muted">Sq Ft</span>
         </div>

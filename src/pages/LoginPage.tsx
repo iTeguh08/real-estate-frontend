@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -10,6 +9,8 @@ import {
   MockSubmitNotice,
 } from '@/components/auth/AuthFormShell';
 import { useAuth } from '@/hooks/useAuth';
+import { AppLink } from '@/lib/app-link';
+import { useAppNavigate, useAppSearchParams } from '@/lib/app-router';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
 import { apiErrorMessage } from '@/lib/form-errors';
 import {
@@ -27,14 +28,12 @@ function postLoginPath(from: unknown): string {
 }
 
 export function LoginPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useAppNavigate();
+  const [searchParams] = useAppSearchParams();
   const { login, isAuthenticated } = useAuth();
   const [notice, setNotice] = useState('');
   const [formError, setFormError] = useState('');
-  const redirectTo = postLoginPath(
-    (location.state as { from?: unknown } | null)?.from,
-  );
+  const redirectTo = postLoginPath(searchParams.get('from'));
 
   const {
     control,
@@ -60,12 +59,12 @@ export function LoginPage() {
           </>
         }
       >
-        <Link
-          to={routes.dashboard}
+        <AppLink
+          href={routes.dashboard}
           className="inline-flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3 font-poppins text-sm font-semibold text-white no-underline hover:bg-hz-primary-hover"
         >
           Go to dashboard
-        </Link>
+        </AppLink>
       </AuthFormShell>
     );
   }

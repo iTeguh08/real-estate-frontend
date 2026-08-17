@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowLeft } from 'lucide-react';
 import { PropertyContactStrip } from '@/components/property/PropertyContactStrip';
 import { PropertyCtaSection } from '@/components/property/PropertyCtaSection';
@@ -104,13 +104,13 @@ export function PropertyShowcaseNotFound() {
       <p className="mt-2 font-poppins text-sm text-hz-muted">
         This listing may have been removed or the link is incorrect.
       </p>
-      <Link
+      <AppLink
         to={routes.home}
         className="mt-6 inline-flex items-center gap-2 font-poppins text-sm font-semibold text-hz-primary no-underline hover:underline"
       >
         <ArrowLeft size={16} aria-hidden="true" />
         Back to home
-      </Link>
+      </AppLink>
     </main>
   );
 }

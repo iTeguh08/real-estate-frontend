@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowRight } from 'lucide-react';
 import { ArticleCard } from '@/components/cards/ArticleCard';
 import { ArticleCardSkeleton } from '@/components/skeletons';
@@ -37,14 +37,14 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
             </h2>
           </header>
 
-          <Link
+          <AppLink
             to={routes.news}
             className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
             aria-label="See all news articles"
           >
             See All News
             <ArrowRight size={14} strokeWidth={1.6} aria-hidden="true" />
-          </Link>
+          </AppLink>
         </div>
 
         {isLoading && !articlesProp ? (

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CalendarBlank } from '@phosphor-icons/react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowLeft, ArrowLeftRight, Heart, Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
@@ -40,13 +40,13 @@ function HeroContentPanel({
 
   return (
     <div className={cn('flex w-full flex-col items-center text-center', className)}>
-      <Link
+      <AppLink
         to={{ pathname: routes.home, hash: 'listings' }}
         className="mb-4 inline-flex items-center justify-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors duration-200 hover:text-hz-primary md:mb-6"
       >
         <ArrowLeft size={16} aria-hidden="true" />
         Back to listings
-      </Link>
+      </AppLink>
 
       <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-primary">
         {type} · {statusLabel(status)}

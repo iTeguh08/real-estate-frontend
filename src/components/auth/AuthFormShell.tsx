@@ -1,5 +1,5 @@
-import type { FormEvent, HTMLAttributes, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { AppLink } from '@/lib/app-link';
 import { MediaImage } from '@/components/ui/media-image';
 import { publicAsset } from '@/lib/public-asset';
 import { cn } from '@/lib/utils';
@@ -190,16 +190,8 @@ export function AuthSubmitButton({
 
 export function AuthFooterLink({ to, children }: { to: string; children: ReactNode }) {
   return (
-    <Link to={to} className="font-medium text-hz-primary no-underline hover:underline">
+    <AppLink href={to} className="font-medium text-hz-primary no-underline hover:underline">
       {children}
-    </Link>
+    </AppLink>
   );
-}
-
-export function handleMockFormSubmit(
-  e: FormEvent<HTMLFormElement>,
-  onSuccess: (message: string) => void
-) {
-  e.preventDefault();
-  onSuccess('Account features will be available once the backend is connected.');
 }

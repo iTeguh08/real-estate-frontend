@@ -16,6 +16,10 @@ export type { LocationValue } from '@/components/forms/location-value';
 
 type CountryOption = { value: string; label: string };
 
+function assetSrc(asset: string | { src: string }): string {
+  return typeof asset === 'string' ? asset : asset.src;
+}
+
 const DEFAULT_COUNTRY_OPTIONS: readonly CountryOption[] = PROPERTY_FORM.country.options;
 
 function countryCodes(options: readonly CountryOption[]): string[] {
@@ -31,9 +35,9 @@ function isAllowedCountry(
 
 // Default Leaflet marker assets break under Vite bundling without this remap.
 const DefaultIcon = L.icon({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
+  iconUrl: assetSrc(markerIcon),
+  iconRetinaUrl: assetSrc(markerIcon2x),
+  shadowUrl: assetSrc(markerShadow),
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],

@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source not "../graphify-out";
+@source not "../.next";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 /* Latin-only — skip Devanagari/latin-ext subsets Homzen UI does not need. */

@@ -1,3 +1,4 @@
+import { formatCount } from '@/lib/format-property';
 import { sortLabel } from '@/lib/sort-options';
 import type { ListingFilters, PropertySearchVariables } from '@/types';
 import { DEFAULT_LISTINGS_PER_PAGE } from '@/types';
@@ -26,8 +27,8 @@ export function describeSearchIntent(filters: ListingFilters): string {
   if (filters.status) parts.push(filters.status);
   if (filters.beds) parts.push(`${filters.beds === '5+' ? '5+' : filters.beds}+ beds`);
   if (filters.minPrice || filters.maxPrice) {
-    const min = filters.minPrice ? `$${Number(filters.minPrice).toLocaleString()}` : 'any';
-    const max = filters.maxPrice ? `$${Number(filters.maxPrice).toLocaleString()}` : 'any';
+    const min = filters.minPrice ? `$${formatCount(filters.minPrice)}` : 'any';
+    const max = filters.maxPrice ? `$${formatCount(filters.maxPrice)}` : 'any';
     parts.push(`${min} – ${max}`);
   }
   if (filters.sort) parts.push(`sorted by ${sortLabel(filters.sort).toLowerCase()}`);

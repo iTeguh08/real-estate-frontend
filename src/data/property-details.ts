@@ -1,3 +1,4 @@
+import { formatCount } from '@/lib/format-property';
 import { resolveListingAgent } from '@/lib/listing-agent';
 import type { Property, PropertyDetail, PropertyGalleryImage } from '@/types';
 import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
@@ -197,7 +198,7 @@ export function enrichPropertyDetail(property: Property): PropertyDetail {
     tagline: copy?.tagline ?? `Discover ${property.title}`,
     description:
       copy?.description ??
-      `Explore ${property.title} in ${property.location}. A ${property.type.toLowerCase()} offering ${property.specs.beds} bedrooms and ${property.specs.sqft.toLocaleString()} sq ft of living space.`,
+      `Explore ${property.title} in ${property.location}. A ${property.type.toLowerCase()} offering ${property.specs.beds} bedrooms and ${formatCount(property.specs.sqft)} sq ft of living space.`,
     gallery,
     layout1Media: {
       showcaseOneUrl: g1.url,

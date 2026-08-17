@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import { getSecurityConfig, type SecurityConfig } from '@/services/security.service';
+import { useEffect, useId, useRef } from 'react';
 import { isMockDataEnabled } from '@/services/api-client';
+import { useSecurityConfig } from '@/hooks/useSecurityConfig';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -84,22 +84,6 @@ function loadTurnstileScript(): Promise<void> {
   }
 
   return turnstileScriptPromise;
-}
-
-export function useSecurityConfig() {
-  const [config, setConfig] = useState<SecurityConfig | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    void getSecurityConfig().then((next) => {
-      if (!cancelled) setConfig(next);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return config;
 }
 
 interface TurnstileWidgetProps {

@@ -1,21 +1,24 @@
 import * as Sentry from '@sentry/react';
+import {
+  getRuntimeMode,
+  getSentryDsn,
+  getSentryEnvironment,
+  getSentryTracesSampleRate,
+} from '@/lib/runtime-env';
 
 /**
  * Init Sentry only when a DSN is configured.
- * Local/dev without VITE_SENTRY_DSN stays a no-op.
+ * Local/dev without VITE_SENTRY_DSN / NEXT_PUBLIC_SENTRY_DSN stays a no-op.
  */
 export function initSentry(): void {
-  const dsn = import.meta.env.VITE_SENTRY_DSN?.trim();
+  const dsn = getSentryDsn();
   if (!dsn) return;
 
   Sentry.init({
     dsn,
-    environment:
-      import.meta.env.VITE_SENTRY_ENVIRONMENT?.trim() ||
-      import.meta.env.MODE ||
-      'development',
+    environment: getSentryEnvironment() || getRuntimeMode() || 'development',
     integrations: [Sentry.browserTracingIntegration()],
-    tracesSampleRate: Number(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
+    tracesSampleRate: getSentryTracesSampleRate(),
     sendDefaultPii: false,
   });
 }

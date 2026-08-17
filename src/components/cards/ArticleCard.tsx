@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { getArticleCategoryLabel, getArticlePath, getArticleTagPath } from '@/lib/articles';
 import { productThumbUrl } from '@/lib/image-url';
 import { MediaImage } from '@/components/ui/media-image';
@@ -51,10 +51,10 @@ export function ArticleCard({ article, className, tone = 'default' }: ArticleCar
             isDark ? 'text-hz-deep-fg' : 'text-hz-dark'
           )}
         >
-          <Link to={articlePath} className="no-underline text-inherit">
+          <AppLink to={articlePath} className="no-underline text-inherit">
             {title}
             <span className="absolute inset-0" aria-hidden="true" />
-          </Link>
+          </AppLink>
         </h3>
         <p
           className={cn(
@@ -67,7 +67,7 @@ export function ArticleCard({ article, className, tone = 'default' }: ArticleCar
         {article.tags.length > 0 && (
           <div className="relative z-10 flex flex-wrap gap-1.5 pt-1">
             {article.tags.slice(0, 3).map((tag) => (
-              <Link
+              <AppLink
                 key={tag}
                 to={getArticleTagPath(category, tag)}
                 className={cn(
@@ -78,7 +78,7 @@ export function ArticleCard({ article, className, tone = 'default' }: ArticleCar
                 )}
               >
                 {tag}
-              </Link>
+              </AppLink>
             ))}
           </div>
         )}

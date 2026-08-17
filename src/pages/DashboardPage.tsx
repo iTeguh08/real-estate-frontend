@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
 import { DashboardSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
+import { AppLink } from '@/lib/app-link';
 import { isAgentUser } from '@/lib/auth-roles';
 import { routes } from '@/lib/routes';
 
@@ -31,45 +31,45 @@ export function DashboardPage() {
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {isAgent && (
-          <Link
-            to={routes.myProperty}
+          <AppLink
+            href={routes.myProperty}
             className="rounded-hz border border-hz-primary/40 bg-hz-elevated p-5 no-underline shadow-sm transition-colors hover:border-hz-primary sm:col-span-2 lg:col-span-1"
           >
             <p className="font-poppins text-sm font-semibold text-hz-dark">My Property</p>
             <p className="mt-1 font-poppins text-xs text-hz-muted">
               Complete drafts and publish to the public site
             </p>
-          </Link>
+          </AppLink>
         )}
-        <Link
-          to={routes.wishlist}
+        <AppLink
+          href={routes.wishlist}
           className="rounded-hz border border-hz-border bg-hz-elevated p-5 no-underline shadow-sm transition-colors hover:border-hz-primary"
         >
           <p className="font-poppins text-sm font-semibold text-hz-dark">Wishlist</p>
           <p className="mt-1 font-poppins text-xs text-hz-muted">Saved listings on this device</p>
-        </Link>
-        <Link
-          to={routes.compare}
+        </AppLink>
+        <AppLink
+          href={routes.compare}
           className="rounded-hz border border-hz-border bg-hz-elevated p-5 no-underline shadow-sm transition-colors hover:border-hz-primary"
         >
           <p className="font-poppins text-sm font-semibold text-hz-dark">Compare</p>
           <p className="mt-1 font-poppins text-xs text-hz-muted">Up to 3 properties side by side</p>
-        </Link>
-        <Link
-          to={routes.listings}
+        </AppLink>
+        <AppLink
+          href={routes.listings}
           className="rounded-hz border border-hz-border bg-hz-elevated p-5 no-underline shadow-sm transition-colors hover:border-hz-primary"
         >
           <p className="font-poppins text-sm font-semibold text-hz-dark">Browse listings</p>
           <p className="mt-1 font-poppins text-xs text-hz-muted">Find your next home</p>
-        </Link>
+        </AppLink>
         {isAgent && (
-          <Link
-            to={routes.submitProperty}
+          <AppLink
+            href={routes.submitProperty}
             className="rounded-hz border border-hz-border bg-hz-elevated p-5 no-underline shadow-sm transition-colors hover:border-hz-primary"
           >
             <p className="font-poppins text-sm font-semibold text-hz-dark">Submit property</p>
             <p className="mt-1 font-poppins text-xs text-hz-muted">Send a new lead for CMS review</p>
-          </Link>
+          </AppLink>
         )}
       </div>
 

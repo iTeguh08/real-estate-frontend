@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { AppLink } from '@/lib/app-link';
 import { Bed, Bathtub, ArrowsOut, Car } from '@phosphor-icons/react';
 import { MapPin, Maximize2 } from 'lucide-react';
 import {
@@ -17,7 +17,7 @@ import {
   preloadLightboxCover,
 } from '@/components/ui/image-lightbox';
 import { MediaImage } from '@/components/ui/media-image';
-import { formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
+import { formatCount, formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import { productMediumUrl } from '@/lib/image-url';
 import type { Property } from '@/types';
 import { routes } from '@/lib/routes';
@@ -57,9 +57,9 @@ export function PropertyDetailDialog({
 }: PropertyDetailDialogProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  useEffect(() => {
-    if (!open) setLightboxOpen(false);
-  }, [open]);
+  // The parent can close the dialog while the lightbox is stacked on top of it.
+  // Collapsing during render avoids an extra commit that briefly keeps it mounted.
+  if (!open && lightboxOpen) setLightboxOpen(false);
 
   const locationLabel = property ? formatPropertyLocation(property) : '';
   const imageAlt = property ? `${property.title} — ${locationLabel}` : '';
@@ -184,7 +184,7 @@ function PropertyDetailBody({
           <DetailSpec icon={<Bathtub size={18} weight="fill" />} value={specs.baths} label=" Baths" />
           <DetailSpec
             icon={<ArrowsOut size={18} weight="fill" />}
-            value={specs.sqft.toLocaleString()}
+            value={formatCount(specs.sqft)}
             label=" sqft"
           />
           {specs.garage !== undefined && (
@@ -192,7 +192,7 @@ function PropertyDetailBody({
           )}
         </div>
 
-        <Link
+        <AppLink
           to={routes.propertyById(property.id)}
           className={cn(
             'flex w-full items-center justify-center rounded-hz bg-hz-primary px-6 py-3',
@@ -201,7 +201,7 @@ function PropertyDetailBody({
           )}
         >
           View Full Listing
-        </Link>
+        </AppLink>
       </div>
     </>
   );

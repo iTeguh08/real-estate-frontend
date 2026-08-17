@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppLocation, useAppNavigate } from '@/lib/app-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useToggleWishlistMutation } from '@/hooks/mutations';
 import { queryKeys } from '@/lib/query-keys';
@@ -9,8 +9,8 @@ import { getWishlistIds } from '@/services/wishlist.service';
 
 export function useWishlist() {
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useAppNavigate();
+  const location = useAppLocation();
 
   const { data: wishlistIds = [] } = useQuery({
     queryKey: queryKeys.wishlist.all(),

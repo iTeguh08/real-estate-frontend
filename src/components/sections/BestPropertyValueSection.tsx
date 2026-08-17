@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard';
 import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { cn } from '@/lib/utils';
@@ -39,7 +39,7 @@ export function BestPropertyValueSection({
             </h2>
           </div>
 
-          <Link
+          <AppLink
             to={routes.listings}
             className={cn(
               'inline-flex shrink-0 items-center justify-center self-start sm:self-auto',
@@ -50,7 +50,7 @@ export function BestPropertyValueSection({
             aria-label="View all best value properties"
           >
             View All
-          </Link>
+          </AppLink>
         </div>
 
         {error && (

@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react';
+import { useCallback, useMemo, useRef, useState, type TouchEvent } from 'react';
 
 const SWIPE_THRESHOLD_PX = 48;
 
 export function useDotCarousel(slideCount: number) {
-  const [activeIndex, setActiveIndexState] = useState(0);
+  const [storedIndex, setActiveIndexState] = useState(0);
   const touchStartX = useRef<number | null>(null);
+
+  // A shrinking slide set (filtered data, responsive grouping) can leave the stored
+  // index out of range; fall back to the first slide instead of syncing via effect.
+  const activeIndex = slideCount > 0 && storedIndex >= slideCount ? 0 : storedIndex;
 
   const setActiveIndex = useCallback(
     (index: number) => {
@@ -21,12 +25,6 @@ export function useDotCarousel(slideCount: number) {
   const goNext = useCallback(() => {
     setActiveIndex(activeIndex + 1);
   }, [activeIndex, setActiveIndex]);
-
-  useEffect(() => {
-    if (slideCount > 0 && activeIndex >= slideCount) {
-      setActiveIndexState(0);
-    }
-  }, [activeIndex, slideCount]);
 
   const swipeHandlers = useMemo(() => {
     const onTouchStart = (event: TouchEvent) => {

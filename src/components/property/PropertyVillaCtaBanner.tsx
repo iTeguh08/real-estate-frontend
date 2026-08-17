@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { Button } from '@/components/ui/button';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { MediaImage } from '@/components/ui/media-image';
@@ -86,13 +86,13 @@ export function PropertyVillaCtaBanner({
             </div>
             <p className="mt-5 font-poppins text-xs text-hz-footer-fg/55">
               Selling something similar?{' '}
-              <Link
+              <AppLink
                 to={isAuthenticated ? submitHref : routes.login}
                 state={isAuthenticated ? undefined : { from: submitHref }}
                 className="font-medium text-hz-footer-fg no-underline hover:underline"
               >
                 List your property
-              </Link>
+              </AppLink>
             </p>
             </div>
           </div>

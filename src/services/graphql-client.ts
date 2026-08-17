@@ -1,10 +1,6 @@
-export function getGraphqlUrl(): string {
-  return import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:8080/graphql';
-}
+import { getGraphqlUrl, isMockDataEnabled } from '@/lib/runtime-env';
 
-export function isMockDataEnabled(): boolean {
-  return import.meta.env.VITE_USE_MOCK !== 'false';
-}
+export { getGraphqlUrl, isMockDataEnabled };
 
 export class GraphqlError extends Error {
   constructor(message: string) {

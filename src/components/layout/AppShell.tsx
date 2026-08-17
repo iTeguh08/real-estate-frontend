@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteBrandingEffect } from '@/components/layout/SiteBrandingEffect';
 import { SiteFooter } from '@/components/layout/SiteFooter';
@@ -6,11 +6,14 @@ import { ScrollToHash } from '@/components/layout/ScrollToHash';
 import { AdvancedSearchSheet } from '@/components/search/AdvancedSearchSheet';
 import { CompareBar } from '@/components/compare/CompareBar';
 import { useCompareBarVisible } from '@/hooks/useCompareBarVisible';
-import { AdvancedSearchProvider } from '@/hooks/useAdvancedSearch';
-import { SiteHeaderProvider, SiteHeaderSpacer } from '@/hooks/useSiteHeader';
+import { AdvancedSearchProvider } from '@/components/providers/AdvancedSearchProvider';
+import {
+  SiteHeaderProvider,
+  SiteHeaderSpacer,
+} from '@/components/providers/SiteHeaderProvider';
 import { cn } from '@/lib/utils';
 
-export function AppShell() {
+export function AppShell({ children }: { children: ReactNode }) {
   const showCompareBar = useCompareBarVisible();
 
   return (
@@ -30,7 +33,7 @@ export function AppShell() {
       <SiteHeaderSpacer />
       {/* Spacer below footer so the fixed Compare bar doesn't cover footer chrome */}
       <div className={cn(showCompareBar && 'pb-[72px]')}>
-        <Outlet />
+        {children}
         <SiteFooter />
       </div>
       <CompareBar />

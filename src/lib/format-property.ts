@@ -20,6 +20,15 @@ export function formatPropertyLocation({
   return location;
 }
 
+/**
+ * Digit grouping pinned to `en-US`. Node's default locale on the server and the
+ * browser's locale can disagree, which breaks hydration on SSR/SSG pages.
+ */
+export function formatCount(value: number | string): string {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric.toLocaleString('en-US') : String(value);
+}
+
 export function formatPropertyPrice({ price, currency, status }: PriceFields): string {
   const amount = `${currency}${price.toLocaleString('en-US')}`;
   return status === 'For Rent' ? `${amount} /month` : amount;

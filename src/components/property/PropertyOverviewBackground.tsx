@@ -1,4 +1,3 @@
-import type { PropertyDetail } from '@/types';
 import { MediaImage } from '@/components/ui/media-image';
 
 export interface PropertyOverviewBackgroundProps {
@@ -22,15 +21,4 @@ export function PropertyOverviewBackground({ imageUrl }: PropertyOverviewBackgro
       <div className="absolute inset-0 bg-gradient-to-b from-hz-elevated from-0% via-hz-elevated/90 via-[16%] via-hz-elevated/45 via-[32%] to-transparent to-[52%]" />
     </div>
   );
-}
-
-/**
- * Soft wash only when a distinct lifestyle vertical exists — never re-decode the cover.
- */
-export function getPropertyOverviewBackgroundImage(
-  property: Pick<PropertyDetail, 'imageUrl' | 'layout1Media'>
-): string | null {
-  const vertical = property.layout1Media.featureVerticalUrl;
-  if (!vertical || vertical === property.imageUrl) return null;
-  return vertical;
 }

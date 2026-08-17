@@ -72,6 +72,13 @@ export interface HomepageExpertiseItem {
   description: string;
 }
 
+export interface CmsSeoMeta {
+  metaTitle: string;
+  metaDescription: string;
+  canonicalUrl: string;
+  ogImage: string;
+}
+
 export interface HomepageContent {
   hero: {
     eyebrow: string;
@@ -115,6 +122,7 @@ export interface HomepageContent {
       imageUrl: string;
     }[];
   };
+  seo?: CmsSeoMeta;
 }
 
 export interface PrivacyPageContent {
@@ -373,6 +381,14 @@ export const HOMEPAGE_FALLBACK: HomepageContent = {
           'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&auto=format&fit=crop&q=80',
       },
     ],
+  },
+  seo: {
+    metaTitle: 'Homzen — Find A Home That Fits Your Dream',
+    metaDescription:
+      'We are a real estate agency that will help you find the best residence for you at an affordable price.',
+    canonicalUrl: '',
+    ogImage:
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1100&auto=format&fit=crop&q=70',
   },
 };
 

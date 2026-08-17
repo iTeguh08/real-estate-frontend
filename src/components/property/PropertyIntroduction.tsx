@@ -1,5 +1,6 @@
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
+import { formatCount } from '@/lib/format-property';
 import type { PropertyDetail } from '@/types';
 
 export interface PropertyIntroductionProps {
@@ -39,7 +40,7 @@ export function PropertyIntroduction({ property, embedded = false }: PropertyInt
         <div className="flex flex-col items-center gap-1 bg-hz-elevated px-3 py-3.5 text-center">
           <ArrowsOut size={20} weight="fill" className="text-hz-dark" aria-hidden="true" />
           <span className="font-poppins text-base font-semibold text-hz-dark">
-            {specs.sqft.toLocaleString()}
+            {formatCount(specs.sqft)}
           </span>
           <span className="font-poppins text-[10px] uppercase tracking-wider text-hz-muted">Sq Ft</span>
         </div>

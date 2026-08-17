@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useAppLocation } from '@/lib/app-router';
 import { useSiteHeader } from '@/hooks/useSiteHeader';
 
 const HASH_SCROLL_RETRY_MS = 50;
@@ -15,7 +15,7 @@ function scrollToElement(id: string, anchorOffset: number) {
 
 /** Scroll to top on route change, or smoothly to a hash target once it exists in the DOM. */
 export function ScrollToHash() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash } = useAppLocation();
   const { anchorOffset, showHeader } = useSiteHeader();
 
   useEffect(() => {

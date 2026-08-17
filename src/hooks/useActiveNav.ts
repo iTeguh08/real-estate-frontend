@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useAppLocation } from '@/lib/app-router';
 import {
   isNavItemActive,
   resolveActiveNav,
@@ -10,7 +10,7 @@ import { useListingFilters } from '@/hooks/useListingFilters';
 import { useScrollSpy } from '@/hooks/useScrollSpy';
 
 export function useActiveNav() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash } = useAppLocation();
   const { filters } = useListingFilters();
   const { onHome, activeSection } = useScrollSpy();
 

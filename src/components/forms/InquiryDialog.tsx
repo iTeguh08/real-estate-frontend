@@ -12,7 +12,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { FormField } from '@/components/auth/AuthFormShell';
-import { HoneypotInput, TurnstileWidget, useSecurityConfig } from '@/components/forms/GuestSpamFields';
+import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
+import { useSecurityConfig } from '@/hooks/useSecurityConfig';
 import { useSubmitContactMutation } from '@/hooks/mutations';
 import { isMockDataEnabled } from '@/services/api-client';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
@@ -109,10 +110,17 @@ export function InquiryDialog({
     },
   });
 
+  // Every open/close transition invalidates the challenge: a Turnstile token is
+  // single-use, so it must never survive into the next dialog session.
+  const [tokenEpochOpen, setTokenEpochOpen] = useState(open);
+  if (tokenEpochOpen !== open) {
+    setTokenEpochOpen(open);
+    setTurnstileToken('');
+  }
+
   useEffect(() => {
     if (!open) {
       reset();
-      setTurnstileToken('');
       clearErrors();
     }
   }, [open, reset, clearErrors]);

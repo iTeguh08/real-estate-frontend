@@ -13,7 +13,12 @@ import { useTheme } from '@/hooks/useTheme';
 import type { PropertyStatus, PropertyType } from '@/types';
 import heroImage from '@/assets/hero.webp';
 
+function assetSrc(asset: string | { src: string }): string {
+  return typeof asset === 'string' ? asset : asset.src;
+}
+
 const LIGHT_HERO_LEFT_BG = publicAsset('bg/bg-hero-left-property-v1.webp');
+const FALLBACK_HERO_IMAGE = assetSrc(heroImage);
 
 const TABS = ['For Rent', 'For Sale'] as const satisfies readonly PropertyStatus[];
 type HeroTab = (typeof TABS)[number];
@@ -26,7 +31,7 @@ export function HeroSection() {
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
-  const heroMediaUrl = hero?.backgroundImage ?? heroImage;
+  const heroMediaUrl = hero?.backgroundImage ?? FALLBACK_HERO_IMAGE;
   const heroPreloadSrc = withCoverBox(heroMediaUrl, 640, 551, { maxEdge: 1440 });
   const { filters, applySearch } = useListingFilters();
   const { setOpen: setAdvancedSearchOpen } = useAdvancedSearch();
@@ -35,19 +40,26 @@ export function HeroSection() {
     return preloadImage(heroPreloadSrc);
   }, [heroPreloadSrc]);
 
-  const [activeTab, setActiveTab] = useState<HeroTab>('For Rent');
-  const [keyword, setKeywordLocal] = useState('');
-  const [location, setLocationLocal] = useState('');
-  const [propertyType, setPropertyTypeLocal] = useState<string>('All');
+  // A cleared status keeps whichever tab the visitor picked, matching the old sync.
+  const tabFromFilters: HeroTab | null =
+    filters.status === 'For Sale' || filters.status === 'For Rent' ? filters.status : null;
 
-  useEffect(() => {
+  const [activeTab, setActiveTab] = useState<HeroTab>(tabFromFilters ?? 'For Rent');
+  const [keyword, setKeywordLocal] = useState(filters.keyword);
+  const [location, setLocationLocal] = useState(filters.location);
+  const [propertyType, setPropertyTypeLocal] = useState<string>(filters.propertyType || 'All');
+
+  // The form is a draft of the shared filters: seeded above on mount, then re-seeded
+  // during render whenever the filters change elsewhere (URL, listings sidebar).
+  const filtersKey = `${filters.keyword}|${filters.location}|${filters.propertyType}|${filters.status}`;
+  const [seededFiltersKey, setSeededFiltersKey] = useState(filtersKey);
+  if (seededFiltersKey !== filtersKey) {
+    setSeededFiltersKey(filtersKey);
     setKeywordLocal(filters.keyword);
     setLocationLocal(filters.location);
     setPropertyTypeLocal(filters.propertyType || 'All');
-    if (filters.status === 'For Sale' || filters.status === 'For Rent') {
-      setActiveTab(filters.status);
-    }
-  }, [filters.keyword, filters.location, filters.propertyType, filters.status]);
+    if (tabFromFilters) setActiveTab(tabFromFilters);
+  }
 
   const handleTabChange = (tab: HeroTab) => {
     setActiveTab(tab);

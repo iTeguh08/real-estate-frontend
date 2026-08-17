@@ -30,8 +30,11 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Typecheck + production build
+      - name: Next.js production build
         run: npm run build
         env:
+          NEXT_PUBLIC_USE_MOCK: 'false'
           VITE_USE_MOCK: 'false'
-          GITHUB_ACTIONS: 'true'
+
+      - name: Vite SPA typecheck
+        run: npx tsc -p tsconfig.app.json

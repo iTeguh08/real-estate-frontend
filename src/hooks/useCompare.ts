@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useAppLocation, useAppNavigate } from '@/lib/app-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useToggleCompareMutation } from '@/hooks/mutations';
 import { queryKeys } from '@/lib/query-keys';
@@ -12,8 +12,8 @@ const LIMIT_NOTICE_MS = 5000;
 export function useCompare() {
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useAppNavigate();
+  const location = useAppLocation();
 
   const { data: compareIds = [] } = useQuery({
     queryKey: queryKeys.compare.all(),

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type AnimationEvent, type MouseEvent, type TransitionEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
+import { useAppNavigate } from '@/lib/app-router';
 import { Menu, Building2, ChevronDown, Heart, ArrowLeftRight, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { useSiteHeader } from '@/hooks/useSiteHeader';
@@ -74,7 +75,7 @@ function mobileNavLinkClasses(isActive: boolean) {
 }
 
 function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { applyNavFilter } = useListingFilters();
   const { checkNavItem } = useActiveNav();
 
@@ -170,7 +171,7 @@ function MobileNavGroup({
   onNavigate: (action: () => void) => void;
   isSectionActive?: boolean;
 }) {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { applyNavFilter } = useListingFilters();
   const { checkNavItem } = useActiveNav();
 
@@ -287,7 +288,7 @@ export function SiteHeader() {
   const { compareCount } = useCompare();
   const { isActive } = useActiveNav();
   const { isAuthenticated, user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const pendingMobileNavRef = useRef<(() => void) | null>(null);
   const accountLabel = isAuthenticated
     ? user?.name?.split(' ')[0] || 'Account'
@@ -353,7 +354,7 @@ export function SiteHeader() {
       )}
     >
       <div className="section-container flex h-[76px] items-center justify-between">
-        <Link to={routes.home} className="flex shrink-0 items-center gap-1.5 no-underline">
+        <AppLink to={routes.home} className="flex shrink-0 items-center gap-1.5 no-underline">
           <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-hz bg-hz-primary">
             <Building2 size={15} strokeWidth={2} className="text-white" aria-hidden="true" />
           </div>
@@ -367,7 +368,7 @@ export function SiteHeader() {
               </span>
             ) : null}
           </div>
-        </Link>
+        </AppLink>
 
         <NavigationMenu
           viewport={false}
@@ -376,9 +377,9 @@ export function SiteHeader() {
           <NavigationMenuList className="gap-8">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to={routes.home} className={navLinkClasses(isActive('home'))}>
+                <AppLink to={routes.home} className={navLinkClasses(isActive('home'))}>
                   Home
-                </Link>
+                </AppLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
@@ -393,12 +394,12 @@ export function SiteHeader() {
 
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link
+                <AppLink
                   to={routes.listings}
                   className={navLinkClasses(isActive('listings'))}
                 >
                   Listings
-                </Link>
+                </AppLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
 
@@ -414,9 +415,9 @@ export function SiteHeader() {
             {SIMPLE_NAV_LINKS.slice(2).map((link) => (
               <NavigationMenuItem key={link.label}>
                 <NavigationMenuLink asChild>
-                  <Link to={link.href} className={navLinkClasses(isActive('blog'))}>
+                  <AppLink to={link.href} className={navLinkClasses(isActive('blog'))}>
                     {link.label}
-                  </Link>
+                  </AppLink>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
@@ -427,7 +428,7 @@ export function SiteHeader() {
           <ThemeToggleButton />
           {isAuthenticated ? (
             <>
-              <Link
+              <AppLink
                 to={routes.compare}
                 className={cn(
                   'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
@@ -441,8 +442,8 @@ export function SiteHeader() {
                     {compareCount}
                   </span>
                 )}
-              </Link>
-              <Link
+              </AppLink>
+              <AppLink
                 to={routes.wishlist}
                 className={cn(
                   'relative flex h-10 w-10 items-center justify-center rounded-hz border border-hz-border',
@@ -456,10 +457,10 @@ export function SiteHeader() {
                     {wishlistIds.length}
                   </span>
                 )}
-              </Link>
+              </AppLink>
             </>
           ) : null}
-          <Link
+          <AppLink
             to={isAuthenticated ? routes.dashboard : routes.login}
             className={cn(
               'no-underline rounded-hz border border-hz-border bg-transparent px-5 py-[9px]',
@@ -468,8 +469,8 @@ export function SiteHeader() {
             )}
           >
             {accountLabel}
-          </Link>
-          <Link
+          </AppLink>
+          <AppLink
             to={isAuthenticated ? routes.submitProperty : routes.login}
             state={isAuthenticated ? undefined : { from: routes.submitProperty }}
             className={cn(
@@ -479,7 +480,7 @@ export function SiteHeader() {
             )}
           >
             Submit Property
-          </Link>
+          </AppLink>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -523,13 +524,13 @@ export function SiteHeader() {
             aria-label="Mobile navigation"
             className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4"
           >
-            <Link
+            <AppLink
               to={routes.home}
               onClick={deferMobileNav(routes.home)}
               className={mobileNavLinkClasses(isActive('home'))}
             >
               Home
-            </Link>
+            </AppLink>
 
             <MobileNavGroup
               title="Properties"
@@ -542,13 +543,13 @@ export function SiteHeader() {
               onNavigate={closeMobileThen}
             />
 
-            <Link
+            <AppLink
               to={routes.listings}
               onClick={deferMobileNav(routes.listings)}
               className={mobileNavLinkClasses(isActive('listings'))}
             >
               Listings
-            </Link>
+            </AppLink>
 
             <MobileNavGroup
               title="Pages"
@@ -560,21 +561,21 @@ export function SiteHeader() {
             />
 
             {SIMPLE_NAV_LINKS.slice(2).map((link) => (
-              <Link
+              <AppLink
                 key={link.label}
                 to={link.href}
                 onClick={deferMobileNav(link.href)}
                 className={mobileNavLinkClasses(isActive('blog'))}
               >
                 {link.label}
-              </Link>
+              </AppLink>
             ))}
           </nav>
 
           <div className="flex shrink-0 flex-col gap-3 border-t border-hz-border px-4 pt-4 pb-4">
             {isAuthenticated ? (
               <div className="flex gap-2">
-                <Link
+                <AppLink
                   to={routes.wishlist}
                   onClick={deferMobileNav(routes.wishlist)}
                   className={cn(
@@ -588,8 +589,8 @@ export function SiteHeader() {
                   {wishlistIds.length > 0 && (
                     <span className="font-semibold text-hz-primary">({wishlistIds.length})</span>
                   )}
-                </Link>
-                <Link
+                </AppLink>
+                <AppLink
                   to={routes.compare}
                   onClick={deferMobileNav(routes.compare)}
                   className={cn(
@@ -603,10 +604,10 @@ export function SiteHeader() {
                   {compareCount > 0 && (
                     <span className="font-semibold text-hz-primary">({compareCount})</span>
                   )}
-                </Link>
+                </AppLink>
               </div>
             ) : null}
-            <Link
+            <AppLink
               to={isAuthenticated ? routes.dashboard : routes.login}
               onClick={deferMobileNav(isAuthenticated ? routes.dashboard : routes.login)}
               className={cn(
@@ -616,8 +617,8 @@ export function SiteHeader() {
               )}
             >
               {accountLabel}
-            </Link>
-            <Link
+            </AppLink>
+            <AppLink
               to={isAuthenticated ? routes.submitProperty : routes.login}
               state={isAuthenticated ? undefined : { from: routes.submitProperty }}
               onClick={deferMobileNav(isAuthenticated ? routes.submitProperty : routes.login)}
@@ -628,7 +629,7 @@ export function SiteHeader() {
               )}
             >
               Submit Property
-            </Link>
+            </AppLink>
           </div>
         </SheetContent>
       </Sheet>

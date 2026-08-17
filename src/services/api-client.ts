@@ -1,13 +1,10 @@
 import { getStoredToken } from '@/services/auth-storage';
+import { getApiBaseUrl as readApiBaseUrl, isMockDataEnabled } from '@/lib/runtime-env';
 
-const DEFAULT_API_URL = '';
+export { isMockDataEnabled };
 
 export function getApiBaseUrl(): string {
-  return import.meta.env.VITE_API_URL ?? DEFAULT_API_URL;
-}
-
-export function isMockDataEnabled(): boolean {
-  return import.meta.env.VITE_USE_MOCK !== 'false';
+  return readApiBaseUrl();
 }
 
 export type FieldErrors = Record<string, string[]>;

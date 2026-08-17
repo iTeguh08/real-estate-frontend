@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { cn } from '@/lib/utils';
 import { CarouselControls } from '@/components/ui/CarouselControls';
 import { MediaImage } from '@/components/ui/media-image';
@@ -6,6 +6,7 @@ import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useTheme } from '@/hooks/useTheme';
 import { SQUARE_LOCATIONS, WIDE_LOCATIONS } from '@/data/locations';
+import { formatCount } from '@/lib/format-property';
 import { productMediumUrl, productThumbUrl } from '@/lib/image-url';
 import { useHomepageQuery } from '@/hooks/queries';
 import type { Location } from '@/types';
@@ -30,7 +31,7 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
       : { width: 340, height: 340 };
 
   return (
-    <Link
+    <AppLink
       to={`/listings?location=${encodeURIComponent(locationQuery)}`}
       className="group block cursor-pointer no-underline"
       aria-label={`${label} — explore listings`}
@@ -82,10 +83,10 @@ function LocationCard({ location, variant, lightSurface = false }: LocationCardP
             lightSurface ? 'text-hz-muted' : 'text-hz-footer-fg/55'
           )}
         >
-          {location.propertiesCount.toLocaleString()} listings
+          {formatCount(location.propertiesCount)} listings
         </p>
       </div>
-    </Link>
+    </AppLink>
   );
 }
 

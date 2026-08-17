@@ -6,8 +6,8 @@ import { initSentry, Sentry } from '@/lib/sentry';
 import './index.css';
 import App from './App.tsx';
 import { queryClient } from '@/lib/query-client';
-import { AuthProvider } from '@/hooks/useAuth';
-import { ThemeProvider } from '@/hooks/useTheme';
+import { AuthProvider } from '@/components/providers/AuthProvider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ThemedToaster } from '@/components/layout/ThemedToaster';
 
 preloadCriticalFonts();

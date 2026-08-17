@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useAppLocation } from '@/lib/app-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompare } from '@/hooks/useCompare';
 import { routes } from '@/lib/routes';
@@ -37,7 +37,7 @@ function hasBlockingOverlay(): boolean {
  * Hides on auth/dashboard/etc. and whenever a modal/sheet is open.
  */
 export function useCompareBarVisible(): boolean {
-  const { pathname } = useLocation();
+  const { pathname } = useAppLocation();
   const { isAuthenticated } = useAuth();
   const { compareCount, limitNotice } = useCompare();
   const [overlayOpen, setOverlayOpen] = useState(false);

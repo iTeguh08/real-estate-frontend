@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { Phone } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
 import { cn } from '@/lib/utils';
@@ -34,10 +34,10 @@ export function AgentCard({ agent, className }: AgentCardProps) {
       <div className="flex items-end justify-between gap-4 pt-4">
         <div className="min-w-0">
           <h3 className="truncate font-poppins text-lg font-semibold text-hz-dark transition-colors duration-200 group-hover:text-hz-primary md:text-xl">
-            <Link to={profilePath} className="no-underline text-inherit" aria-label={`View profile for ${name}`}>
+            <AppLink to={profilePath} className="no-underline text-inherit" aria-label={`View profile for ${name}`}>
               {name}
               <span className="absolute inset-0" aria-hidden="true" />
-            </Link>
+            </AppLink>
           </h3>
           <p className="mt-0.5 font-poppins text-sm text-hz-muted">{role}</p>
         </div>

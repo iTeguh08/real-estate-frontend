@@ -87,9 +87,16 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
   const [minElapsed, setMinElapsed] = useState(false);
   const tokenRef = useRef(0);
 
-  useEffect(() => {
+  // Restart the reveal cycle for a new source during render, so a stale "ready"
+  // frame of the previous image never shows.
+  const [renderedSrc, setRenderedSrc] = useState(src);
+  if (renderedSrc !== src) {
+    setRenderedSrc(src);
     setImageReady(false);
     setMinElapsed(false);
+  }
+
+  useEffect(() => {
     const token = ++tokenRef.current;
 
     const timer = window.setTimeout(() => {
@@ -110,10 +117,6 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
     };
     probe.src = src;
 
-    if (probe.complete && probe.naturalWidth > 0) {
-      setImageReady(true);
-    }
-
     return () => {
       window.clearTimeout(timer);
       probe.onload = null;
@@ -124,6 +127,11 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
   const handleLoad = useCallback(() => setImageReady(true), []);
   const handleError = useCallback(() => setImageReady(true), []);
 
+  /** Cache hits can be decoded before React attaches the load handler. */
+  const bindImgRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete && node.naturalWidth > 0) setImageReady(true);
+  }, []);
+
   const revealed = imageReady && minElapsed;
 
   return (
@@ -133,6 +141,7 @@ function LightboxImage({ src, alt }: LightboxImageProps) {
       ) : null}
       {src ? (
         <img
+          ref={bindImgRef}
           src={src}
           alt={alt}
           decoding="async"

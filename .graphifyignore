@@ -1,0 +1,21 @@
+# Dependencies & build
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.turbo/
+.vite/
+.serverless/
+
+# Agent skill corpora (not product code)
+.agents/
+.cursor/skills/
+.cursor/rules/
+
+# Env / secrets (also auto-skipped)
+.env
+.env.*
+
+# Graphify outputs
+graphify-out/

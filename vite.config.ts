@@ -22,6 +22,13 @@ export default defineConfig({
   // GitHub Pages project sites live at /repo-name/; local dev stays at /
   base: process.env.GITHUB_ACTIONS === 'true' ? '/real-estate-frontend/' : '/',
   plugins: [react(), tailwindcss(), excludeBgOriginals()],
+  // Next.js owns `postcss.config.mjs` (@tailwindcss/postcss). Keep Vite on the
+  // existing `@tailwindcss/vite` pipeline so the SPA is not double-processed.
+  css: {
+    postcss: {
+      plugins: [],
+    },
+  },
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },

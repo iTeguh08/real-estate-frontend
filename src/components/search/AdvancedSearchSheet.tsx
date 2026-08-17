@@ -21,6 +21,7 @@ import { Slider } from '@/components/ui/slider';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { formatCount } from '@/lib/format-property';
 import { cn } from '@/lib/utils';
 import type { PropertyStatus, PropertyType } from '@/types';
 
@@ -45,7 +46,7 @@ function clampPrice(value: number) {
 }
 
 function formatPrice(value: number) {
-  return `$${value.toLocaleString()}`;
+  return `$${formatCount(value)}`;
 }
 
 function SelectField({
@@ -193,7 +194,13 @@ export function AdvancedSearchSheet() {
   const [status, setStatus] = useState(filters.status);
   const [beds, setBeds] = useState(filters.beds);
   const [propertyType, setPropertyType] = useState(filters.propertyType);
-  const [formEpoch, setFormEpoch] = useState(0);
+  // `epoch` remounts the price section; `min`/`max` seed its local draft. Both live
+  // in state so render never reads the mutable priceRef the child writes into.
+  const [priceSeed, setPriceSeed] = useState({
+    epoch: 0,
+    min: filters.minPrice,
+    max: filters.maxPrice,
+  });
 
   const priceRef = useRef({ min: filters.minPrice, max: filters.maxPrice });
   const pendingActionRef = useRef<(() => void) | null>(null);
@@ -205,7 +212,11 @@ export function AdvancedSearchSheet() {
     setBeds(filters.beds);
     setPropertyType(filters.propertyType);
     priceRef.current = { min: filters.minPrice, max: filters.maxPrice };
-    setFormEpoch((n) => n + 1);
+    setPriceSeed((prev) => ({
+      epoch: prev.epoch + 1,
+      min: filters.minPrice,
+      max: filters.maxPrice,
+    }));
   }, [filters]);
 
   const flushPending = useCallback(() => {
@@ -256,7 +267,7 @@ export function AdvancedSearchSheet() {
     setBeds('');
     setPropertyType('');
     priceRef.current = { min: '', max: '' };
-    setFormEpoch((n) => n + 1);
+    setPriceSeed((prev) => ({ epoch: prev.epoch + 1, min: '', max: '' }));
     setOpen(false);
   };
 
@@ -411,9 +422,9 @@ export function AdvancedSearchSheet() {
           </div>
 
           <PriceRangeSection
-            key={formEpoch}
-            initialMin={priceRef.current.min}
-            initialMax={priceRef.current.max}
+            key={priceSeed.epoch}
+            initialMin={priceSeed.min}
+            initialMax={priceSeed.max}
             priceRef={priceRef}
           />
         </div>

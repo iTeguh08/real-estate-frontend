@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { useAppNavigate } from '@/lib/app-router';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, Eye, Heart, MapPin } from 'lucide-react';
 import { ImageActionButton } from '@/components/ui/image-action-button';
 import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
-import { formatPerSqftPrice, formatPropertyLocation, statusLabel } from '@/lib/format-property';
+import { formatCount, formatPerSqftPrice, formatPropertyLocation, statusLabel } from '@/lib/format-property';
 import { productThumbUrl } from '@/lib/image-url';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
@@ -45,7 +45,7 @@ export function BestValuePropertyCard({
   outerBorderClassName = 'border-hz-border',
   onSelect,
 }: BestValuePropertyCardProps) {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const {
     id,
     slug,
@@ -197,7 +197,7 @@ export function BestValuePropertyCard({
           <SpecItem icon={<Bathtub size={16} weight="regular" />} value={specs.baths} />
           <SpecItem
             icon={<ArrowsOut size={16} weight="regular" />}
-            value={specs.sqft.toLocaleString()}
+            value={formatCount(specs.sqft)}
             suffix=" SqFt"
           />
         </div>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
@@ -67,7 +67,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
   const state = requiresAuth && !isAuthenticated ? { from: href } : undefined;
 
   return (
-    <Link
+    <AppLink
       to={to}
       state={state}
       className={cn(
@@ -103,7 +103,7 @@ function ExpertiseServiceCard({ item }: { item: ExpertiseItem }) {
           />
         </span>
       </div>
-    </Link>
+    </AppLink>
   );
 }
 
@@ -179,7 +179,7 @@ export function ExpertiseSection() {
               ))}
             </ul>
 
-            <Link
+            <AppLink
               to={routes.contact}
               className={cn(
                 'inline-flex w-fit items-center gap-2 self-start rounded-hz',
@@ -189,7 +189,7 @@ export function ExpertiseSection() {
             >
               Talk to an advisor
               <ArrowRight size={15} strokeWidth={1.75} />
-            </Link>
+            </AppLink>
           </div>
 
           <div

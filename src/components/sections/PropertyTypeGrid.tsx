@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { PROPERTY_TYPE_ITEMS } from '@/data/property-types';
 import { usePropertyTypeCountsQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { formatCount } from '@/lib/format-property';
 import { routes } from '@/lib/routes';
 import {
   ApartmentIllustration,
@@ -91,7 +92,7 @@ function PropertyTypeCard({
             isActive ? 'text-white/80' : 'text-hz-body'
           )}
         >
-          {count > 0 ? `${count.toLocaleString()} ${countLabel}` : 'Explore'}
+          {count > 0 ? `${formatCount(count)} ${countLabel}` : 'Explore'}
         </span>
       </div>
     </button>
@@ -177,13 +178,13 @@ export function PropertyTypeGrid() {
             </h2>
           </div>
 
-          <Link
+          <AppLink
             to={routes.listings}
             className="hidden shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1 md:inline-flex"
           >
             See All Types
             <ArrowRight size={14} strokeWidth={1.6} />
-          </Link>
+          </AppLink>
         </div>
 
         <div className="relative mt-7">

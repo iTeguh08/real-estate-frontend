@@ -43,6 +43,17 @@ export function filtersToSearchParams(filters: ListingFilters): URLSearchParams 
   return params;
 }
 
+/** Listings page defaults: plain `/listings` → For Rent; location browse keeps all statuses. */
+export function normalizeListingsFilters(params: URLSearchParams): ListingFilters {
+  const parsed = searchParamsToFilters(params);
+  const status = parsed.status || (parsed.location ? '' : 'For Rent');
+  return {
+    ...parsed,
+    status,
+    perPage: params.get('perPage') ? parsed.perPage : 10,
+  };
+}
+
 export function searchParamsToFilters(params: URLSearchParams): ListingFilters {
   const keyword = params.get('q') ?? '';
   const location = params.get('location') ?? '';
@@ -87,4 +98,21 @@ export function filtersEqual(a: ListingFilters, b: ListingFilters): boolean {
 
 export function hasFilterParams(params: URLSearchParams): boolean {
   return !filtersEqual(searchParamsToFilters(params), DEFAULT_LISTING_FILTERS);
+}
+
+/** Stable React Query key fragment for listing search (must match `hooks/queries`). */
+export function listingFiltersQueryVars(intent: ListingFilters): Record<string, string> {
+  return {
+    keyword: intent.keyword,
+    location: intent.location,
+    propertyType: intent.propertyType,
+    status: intent.status,
+    beds: intent.beds,
+    minPrice: intent.minPrice,
+    maxPrice: intent.maxPrice,
+    agentSlug: intent.agentSlug,
+    sort: intent.sort,
+    page: String(intent.page),
+    perPage: String(intent.perPage),
+  };
 }

@@ -18,23 +18,8 @@ import {
   fetchMyListings,
 } from '@/services/agent-listings.service';
 import { fetchMyPropertySubmissions } from '@/services/property-submissions.service';
+import { listingFiltersQueryVars } from '@/lib/listing-filter-params';
 import type { ArticleCategory, ListingFilters, PropertyDetail } from '@/types';
-
-function intentQueryKey(intent: ListingFilters): Record<string, string> {
-  return {
-    keyword: intent.keyword,
-    location: intent.location,
-    propertyType: intent.propertyType,
-    status: intent.status,
-    beds: intent.beds,
-    minPrice: intent.minPrice,
-    maxPrice: intent.maxPrice,
-    agentSlug: intent.agentSlug,
-    sort: intent.sort,
-    page: String(intent.page),
-    perPage: String(intent.perPage),
-  };
-}
 
 export function useFeaturedPropertiesQuery() {
   return useQuery({
@@ -45,7 +30,7 @@ export function useFeaturedPropertiesQuery() {
 
 export function usePropertySearchQuery(intent: ListingFilters) {
   return useQuery({
-    queryKey: queryKeys.properties.search(intentQueryKey(intent)),
+    queryKey: queryKeys.properties.search(listingFiltersQueryVars(intent)),
     queryFn: () => searchProperties(intent),
     placeholderData: keepPreviousData,
   });

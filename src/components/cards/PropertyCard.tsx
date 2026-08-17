@@ -1,12 +1,12 @@
 import type { VariantProps } from 'class-variance-authority';
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, ArrowRight, Eye, Heart, MapPin } from 'lucide-react';
 import { ImageActionButton } from '@/components/ui/image-action-button';
 import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { useWishlist } from '@/hooks/useWishlist';
-import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
+import { formatCount, formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/format-property';
 import { productThumbUrl } from '@/lib/image-url';
 import { propertyCard } from '@/lib/cva';
 import { routes } from '@/lib/routes';
@@ -229,7 +229,7 @@ export function PropertyCard({
           />
           <SpecPill
             icon={<ArrowsOut size={18} weight="fill" />}
-            value={specs.sqft.toLocaleString()}
+            value={formatCount(specs.sqft)}
             suffix=" SqFt"
           />
         </div>
@@ -240,14 +240,14 @@ export function PropertyCard({
             uniformHeight && 'mt-auto'
           )}
         >
-          <Link
+          <AppLink
             to={routes.property(property.slug)}
             onClick={stopPropagation}
             className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
           >
             Learn More
             <ArrowRight size={14} strokeWidth={1.6} />
-          </Link>
+          </AppLink>
           <p
             className="shrink-0 text-right font-poppins text-sm font-semibold text-hz-dark"
             aria-label={`Price: ${formatPropertyPrice(property)}`}

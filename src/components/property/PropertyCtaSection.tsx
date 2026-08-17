@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { Button } from '@/components/ui/button';
 import { MediaImage } from '@/components/ui/media-image';
 import { useAuth } from '@/hooks/useAuth';
@@ -75,13 +75,13 @@ export function PropertyCtaSection({
             </div>
             <p className="mt-5 font-poppins text-xs text-hz-muted">
               Selling something similar?{' '}
-              <Link
+              <AppLink
                 to={isAuthenticated ? submitHref : routes.login}
                 state={isAuthenticated ? undefined : { from: submitHref }}
                 className="font-medium text-hz-primary no-underline hover:underline"
               >
                 List your property
-              </Link>
+              </AppLink>
             </p>
           </div>
         </div>

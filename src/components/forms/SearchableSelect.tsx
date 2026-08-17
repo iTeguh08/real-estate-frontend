@@ -46,16 +46,15 @@ export function SearchableSelect({
   const errorId = error ? `${id}-error` : undefined;
 
   const selected = options.find((o) => o.value === value);
+  const selectedLabel = selected?.label ?? '';
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState(selected?.label ?? '');
+  const [query, setQuery] = useState(selectedLabel);
   const [highlight, setHighlight] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!open) {
-      setQuery(selected?.label ?? '');
-    }
-  }, [selected?.label, open]);
+  // While closed the field always mirrors the committed selection, so an external
+  // `value` change needs no state sync — the draft query only matters when open.
+  const displayValue = open ? query : selectedLabel;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -67,19 +66,16 @@ export function SearchableSelect({
   }, [options, query]);
 
   useEffect(() => {
-    setHighlight(0);
-  }, [query]);
-
-  useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) {
         setOpen(false);
+        setQuery(selectedLabel);
         onBlur?.();
       }
     };
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
-  }, [onBlur]);
+  }, [onBlur, selectedLabel]);
 
   const pick = (opt: SearchableSelectOption) => {
     onChange(opt.value);
@@ -103,7 +99,7 @@ export function SearchableSelect({
       }
     } else if (e.key === 'Escape') {
       setOpen(false);
-      setQuery(selected?.label ?? '');
+      setQuery(selectedLabel);
     }
   };
 
@@ -125,10 +121,11 @@ export function SearchableSelect({
           aria-describedby={errorId}
           autoComplete="off"
           disabled={disabled}
-          value={query}
+          value={displayValue}
           placeholder={placeholder}
           onChange={(e) => {
             setQuery(e.target.value);
+            setHighlight(0);
             setOpen(true);
           }}
           onFocus={() => {
@@ -139,7 +136,7 @@ export function SearchableSelect({
             window.setTimeout(() => {
               if (!rootRef.current?.contains(document.activeElement)) {
                 setOpen(false);
-                setQuery(selected?.label ?? '');
+                setQuery(selectedLabel);
                 onBlur?.();
               }
             }, 120);
