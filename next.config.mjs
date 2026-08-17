@@ -7,6 +7,8 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: projectRoot,
+  // Do not set `basePath` or a relative `assetPrefix` ('.' / './'): nested routes
+  // would request `/properties/_next/static/css` instead of `/_next/static/css`.
   // A parallel dev server must not write into the same build dir as the primary
   // one, otherwise both corrupt each other's manifests. See scripts/dev-guard.mjs.
   ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
@@ -14,6 +16,10 @@ const nextConfig = {
     dirs: ['pages'],
   },
   webpack: (config, { dev }) => {
+    const publicPath = config.output?.publicPath;
+    if (publicPath === 'auto' || publicPath === '' || publicPath === '.' || publicPath === './') {
+      config.output.publicPath = '/_next/';
+    }
     if (dev) {
       config.watchOptions = {
         ...config.watchOptions,

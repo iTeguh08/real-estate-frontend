@@ -1,8 +1,15 @@
-import '@/index.css';
-import App from '../src/pages/_app';
+import '../src/index.css';
+import type { AppProps } from 'next/app';
+import AppProviders from '../src/pages/_app';
 
 /**
- * Next.js Custom App (must live in root `pages/` so global CSS is legal).
- * Providers + page shell: `src/pages/_app.tsx`.
+ * Custom App must live in root `pages/` so Next.js treats the Tailwind import as
+ * global CSS and injects it into the SSR `<head>`.
+ *
+ * Do not `export default` a re-export of another module: webpack/Turbopack then
+ * drop this file's CSS side-effect from the `_app` entry, so a hard reload
+ * ships HTML without styles (nested routes also 404 `/properties/_next/...`).
  */
-export default App;
+export default function App(props: AppProps) {
+  return <AppProviders {...props} />;
+}

@@ -12,6 +12,7 @@ node_modules
 dist-ssr
 .next
 .next-alt
+.next-css-fix
 *.local
 
 # BG optimize backups — local only, never ship
