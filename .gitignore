@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 # dist
 dist-ssr
+
+# Graphify rebuilds locally — do not ship the graph
+graphify-out/
 .next
 .next-alt
 .next-css-fix
