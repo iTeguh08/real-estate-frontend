@@ -48,6 +48,11 @@ function normalizePath(pathname: string): string {
   return pathname.replace(/\/$/, '') || '/';
 }
 
+/** Hash items live on home. Next `Link` needs `/#section`, not a bare `#`. */
+export function navItemHref(href: string): string {
+  return href.startsWith('#') ? `/${href}` : href;
+}
+
 /** Build a listings URL from a filter partial (type and/or status). */
 export function listingsHref(partial: {
   propertyType?: PropertyType | '';

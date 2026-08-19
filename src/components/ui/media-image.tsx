@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
  * Product images use static backend variants (thumb/medium/large) — no on-the-fly resize.
  * `fitCover` only means CSS object-cover fill; it does not call /api/images.
  */
-const MIN_SKELETON_MS = 450;
+const MIN_SKELETON_MS = 0;
 
 /** Priority images reveal as soon as decoded — no artificial delay. */
 const MIN_SKELETON_PRIORITY_MS = 0;

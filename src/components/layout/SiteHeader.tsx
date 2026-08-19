@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type AnimationEvent, type MouseEvent, type TransitionEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { AppLink } from '@/lib/app-link';
-import { useAppNavigate } from '@/lib/app-router';
 import { Menu, Building2, ChevronDown, Heart, ArrowLeftRight, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { useSiteHeader } from '@/hooks/useSiteHeader';
@@ -24,12 +23,11 @@ import { useSiteConfig } from '@/hooks/useSiteConfig';
 import {
   PAGES_NAV_GROUPS,
   PROPERTIES_NAV_GROUPS,
-  PROPERTY_NAV_FILTER_MAP,
   SIMPLE_NAV_LINKS,
+  navItemHref,
   type NavLinkGroup,
 } from '@/data/navigation';
 import { useActiveNav } from '@/hooks/useActiveNav';
-import { useListingFilters } from '@/hooks/useListingFilters';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCompare } from '@/hooks/useCompare';
 import { useAuth } from '@/hooks/useAuth';
@@ -75,29 +73,7 @@ function mobileNavLinkClasses(isActive: boolean) {
 }
 
 function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
-  const navigate = useAppNavigate();
-  const { applyNavFilter } = useListingFilters();
   const { checkNavItem } = useActiveNav();
-
-  const handleNavClick = (label: string, href: string) => {
-    const mapping = PROPERTY_NAV_FILTER_MAP[label];
-    if (mapping) {
-      applyNavFilter({
-        propertyType: mapping.propertyType ?? '',
-        status: mapping.status ?? '',
-      });
-      return;
-    }
-    if (label === 'Browse All Types') {
-      applyNavFilter({});
-      return;
-    }
-    if (href.startsWith('#')) {
-      navigate({ pathname: routes.home, hash: href });
-      return;
-    }
-    navigate(href);
-  };
 
   return (
     <div className="grid gap-6 px-5 py-4 md:min-w-[640px] md:grid-cols-3">
@@ -120,12 +96,8 @@ function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
                     'focus-visible:ring-0 focus-visible:outline-none'
                   )}
                 >
-                  <a
-                    href={item.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(item.label, item.href);
-                    }}
+                  <AppLink
+                    href={navItemHref(item.href)}
                     className={cn(
                       'block w-full rounded-hz px-2.5 py-2.5 no-underline transition-colors duration-200',
                       'hover:bg-hz-bg-soft hover:text-hz-primary'
@@ -144,7 +116,7 @@ function NavDropdownPanel({ groups }: { groups: NavLinkGroup[] }) {
                         {item.description}
                       </span>
                     )}
-                  </a>
+                  </AppLink>
                 </NavigationMenuLink>
               </li>
             );
@@ -168,11 +140,9 @@ function MobileNavGroup({
   groups: NavLinkGroup[];
   isOpen: boolean;
   onToggle: () => void;
-  onNavigate: (action: () => void) => void;
+  onNavigate: () => void;
   isSectionActive?: boolean;
 }) {
-  const navigate = useAppNavigate();
-  const { applyNavFilter } = useListingFilters();
   const { checkNavItem } = useActiveNav();
 
   return (
@@ -206,39 +176,16 @@ function MobileNavGroup({
                   const itemActive = checkNavItem(item.href, item.label);
                   return (
                   <li key={item.label}>
-                    <a
-                      href={item.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const mapping = PROPERTY_NAV_FILTER_MAP[item.label];
-                        if (mapping) {
-                          onNavigate(() =>
-                            applyNavFilter({
-                              propertyType: mapping.propertyType ?? '',
-                              status: mapping.status ?? '',
-                            })
-                          );
-                          return;
-                        }
-                        if (item.label === 'Browse All Types') {
-                          onNavigate(() => applyNavFilter({}));
-                          return;
-                        }
-                        onNavigate(() => {
-                          if (item.href.startsWith('#')) {
-                            navigate({ pathname: routes.home, hash: item.href });
-                          } else {
-                            navigate(item.href);
-                          }
-                        });
-                      }}
+                    <AppLink
+                      href={navItemHref(item.href)}
+                      onClick={onNavigate}
                       className={cn(
                         'block py-1.5 font-poppins text-sm no-underline',
                         itemActive ? 'font-medium text-hz-primary' : 'text-hz-body hover:text-hz-primary'
                       )}
                     >
                       {item.label}
-                    </a>
+                    </AppLink>
                   </li>
                 );
                 })}
@@ -288,34 +235,13 @@ export function SiteHeader() {
   const { compareCount } = useCompare();
   const { isActive } = useActiveNav();
   const { isAuthenticated, user } = useAuth();
-  const navigate = useAppNavigate();
-  const pendingMobileNavRef = useRef<(() => void) | null>(null);
   const accountLabel = isAuthenticated
     ? user?.name?.split(' ')[0] || 'Account'
     : 'Login / Register';
 
-  const flushPendingMobileNav = useCallback(() => {
-    const action = pendingMobileNavRef.current;
-    if (!action) return;
-    pendingMobileNavRef.current = null;
-    action();
-  }, []);
-
-  const closeMobileThen = useCallback((action?: () => void) => {
-    pendingMobileNavRef.current = action ?? null;
+  const closeMobile = () => {
     setMobileOpen(false);
     setMobileExpanded(null);
-  }, []);
-
-  const onMobileSheetExit = (event: AnimationEvent | TransitionEvent) => {
-    if (event.target !== event.currentTarget) return;
-    if (mobileOpen) return;
-    flushPendingMobileNav();
-  };
-
-  const deferMobileNav = (to: string) => (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    closeMobileThen(() => navigate(to));
   };
 
   useEffect(() => {
@@ -500,10 +426,7 @@ export function SiteHeader() {
         open={mobileOpen}
         onOpenChange={(open) => {
           setMobileOpen(open);
-          if (!open) {
-            setMobileExpanded(null);
-            if (reducedMotion) flushPendingMobileNav();
-          }
+          if (!open) setMobileExpanded(null);
         }}
       >
         <SheetContent
@@ -511,8 +434,6 @@ export function SiteHeader() {
           className="flex h-full max-h-dvh w-full min-h-0 flex-col overflow-hidden font-poppins sm:max-w-sm"
           showCloseButton
           onCloseAutoFocus={(event) => event.preventDefault()}
-          onAnimationEnd={onMobileSheetExit}
-          onTransitionEnd={onMobileSheetExit}
         >
           <SheetHeader className="shrink-0">
             <SheetTitle className="font-poppins text-lg font-semibold text-hz-dark">
@@ -526,7 +447,7 @@ export function SiteHeader() {
           >
             <AppLink
               to={routes.home}
-              onClick={deferMobileNav(routes.home)}
+              onClick={closeMobile}
               className={mobileNavLinkClasses(isActive('home'))}
             >
               Home
@@ -540,12 +461,12 @@ export function SiteHeader() {
               onToggle={() =>
                 setMobileExpanded((prev) => (prev === 'properties' ? null : 'properties'))
               }
-              onNavigate={closeMobileThen}
+              onNavigate={closeMobile}
             />
 
             <AppLink
               to={routes.listings}
-              onClick={deferMobileNav(routes.listings)}
+              onClick={closeMobile}
               className={mobileNavLinkClasses(isActive('listings'))}
             >
               Listings
@@ -557,14 +478,14 @@ export function SiteHeader() {
               isOpen={mobileExpanded === 'pages'}
               isSectionActive={isActive('pages')}
               onToggle={() => setMobileExpanded((prev) => (prev === 'pages' ? null : 'pages'))}
-              onNavigate={closeMobileThen}
+              onNavigate={closeMobile}
             />
 
             {SIMPLE_NAV_LINKS.slice(2).map((link) => (
               <AppLink
                 key={link.label}
                 to={link.href}
-                onClick={deferMobileNav(link.href)}
+                onClick={closeMobile}
                 className={mobileNavLinkClasses(isActive('blog'))}
               >
                 {link.label}
@@ -577,7 +498,7 @@ export function SiteHeader() {
               <div className="flex gap-2">
                 <AppLink
                   to={routes.wishlist}
-                  onClick={deferMobileNav(routes.wishlist)}
+                  onClick={closeMobile}
                   className={cn(
                     'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
                     'font-poppins text-[13px] font-medium text-hz-body no-underline',
@@ -592,7 +513,7 @@ export function SiteHeader() {
                 </AppLink>
                 <AppLink
                   to={routes.compare}
-                  onClick={deferMobileNav(routes.compare)}
+                  onClick={closeMobile}
                   className={cn(
                     'flex flex-1 items-center justify-center gap-2 rounded-hz border border-hz-border py-[10px]',
                     'font-poppins text-[13px] font-medium text-hz-body no-underline',
@@ -609,7 +530,7 @@ export function SiteHeader() {
             ) : null}
             <AppLink
               to={isAuthenticated ? routes.dashboard : routes.login}
-              onClick={deferMobileNav(isAuthenticated ? routes.dashboard : routes.login)}
+              onClick={closeMobile}
               className={cn(
                 'w-full text-center no-underline rounded-hz border border-hz-border bg-transparent py-[10px]',
                 'font-poppins text-[13px] font-medium text-hz-dark',
@@ -621,7 +542,7 @@ export function SiteHeader() {
             <AppLink
               to={isAuthenticated ? routes.submitProperty : routes.login}
               state={isAuthenticated ? undefined : { from: routes.submitProperty }}
-              onClick={deferMobileNav(isAuthenticated ? routes.submitProperty : routes.login)}
+              onClick={closeMobile}
               className={cn(
                 'w-full text-center no-underline rounded-hz border-none bg-hz-primary py-[10px]',
                 'font-poppins text-[13px] font-semibold text-white',

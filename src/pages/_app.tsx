@@ -7,7 +7,6 @@ import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ListingFiltersProvider } from '@/components/providers/ListingFiltersProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ThemedToaster } from '@/components/layout/ThemedToaster';
-import { RouteTransitionOverlay } from '@/components/layout/RouteTransitionOverlay';
 import { queryClientOptions } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 
@@ -73,7 +72,6 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <RouteProgressBar />
-      <RouteTransitionOverlay />
       <ThemeProvider>
         <AuthProvider>
           <ListingFiltersProvider>

@@ -1,4 +1,4 @@
-import { useAppNavigate } from '@/lib/app-router';
+import { AppLink } from '@/lib/app-link';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeftRight, Eye, Heart, MapPin } from 'lucide-react';
 import { ImageActionButton } from '@/components/ui/image-action-button';
@@ -45,7 +45,6 @@ export function BestValuePropertyCard({
   outerBorderClassName = 'border-hz-border',
   onSelect,
 }: BestValuePropertyCardProps) {
-  const navigate = useAppNavigate();
   const {
     id,
     slug,
@@ -64,10 +63,6 @@ export function BestValuePropertyCard({
   const compared = isCompared(id);
   const detailPath = routes.property(slug);
 
-  const goToDetail = () => {
-    navigate(detailPath);
-  };
-
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -75,25 +70,19 @@ export function BestValuePropertyCard({
   return (
     <article
       className={cn(
-        'group flex h-full cursor-pointer overflow-hidden rounded-hz bg-hz-elevated shadow-hz-sm',
+        'group relative flex h-full overflow-hidden rounded-hz bg-hz-elevated shadow-hz-sm',
         outerBorderClassName,
         'transition-[box-shadow,transform] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]',
         'hover:-translate-y-0.5 hover:shadow-hz-elevated',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary/30 focus-visible:ring-offset-2',
         className
       )}
-      aria-label={`${title}, ${locationLabel}, ${formatPerSqftPrice(property)}`}
-      onClick={goToDetail}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          goToDetail();
-        }
-      }}
-      role="link"
-      tabIndex={0}
     >
-      <div className="relative aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
+      <AppLink
+        href={detailPath}
+        className="absolute inset-0 z-[1] no-underline"
+        aria-label={`${title}, ${locationLabel}, ${formatPerSqftPrice(property)}`}
+      />
+      <div className="pointer-events-none relative z-20 aspect-square w-[168px] shrink-0 overflow-hidden bg-hz-bg-soft sm:w-[200px]">
         <MediaImage
           mediaUrl={productThumbUrl(imageUrl)}
           fitCover
@@ -117,7 +106,7 @@ export function BestValuePropertyCard({
         </div>
 
         {/* Narrow thumbnail — stack actions below badges to avoid overlap */}
-        <div className="absolute top-14 right-2.5 z-10 flex flex-col items-center gap-1">
+        <div className="pointer-events-auto absolute top-14 right-2.5 z-10 flex flex-col items-center gap-1">
           <ImageActionButton
             size="sm"
             label={saved ? `Remove ${title} from wishlist` : `Save ${title} to wishlist`}
