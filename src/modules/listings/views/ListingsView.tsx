@@ -1,15 +1,17 @@
+import dynamic from 'next/dynamic';
 import { useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronLeft, ChevronRight, Grid2X2, List, MapPin, SlidersHorizontal } from 'lucide-react';
 import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard';
 import { PropertyCard } from '@/components/cards/PropertyCard';
-import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
-import { BestValueCardSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
+import { ListingsGridSkeleton } from '@/components/skeletons/ListingsPageSkeleton';
+import { LoadingOverlay } from '@/components/skeletons/LoadingOverlay';
 import { MediaImage } from '@/components/ui/media-image';
 import { Slider } from '@/components/ui/slider';
 import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
+import { useQuerySkeletonState } from '@/hooks/useQuerySkeletonState';
 import { useListingsAsideStickyTop } from '@/hooks/useListingsAsideStickyTop';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -38,6 +40,11 @@ import type {
   PropertyType,
   PropertyWithAgent,
 } from '@/types';
+
+const PropertyDetailDialog = dynamic(
+  () => import('@/components/cards/PropertyDetailDialog').then((m) => m.PropertyDetailDialog),
+  { ssr: false },
+);
 
 const PER_PAGE_OPTIONS = [10, 12, 16] as const;
 const SORT_OPTIONS: Array<{ value: PropertySort | ''; label: string }> = [
@@ -215,7 +222,9 @@ export function ListingsView({
     }
   });
 
-  const { data: searchResult, isLoading, isFetching, error } = usePropertySearchQuery(filters);
+  const { data: searchResult, isPending, isFetching, isPlaceholderData, error } =
+    usePropertySearchQuery(filters);
+  const showSkeletonGrid = useQuerySkeletonState({ isPending, isFetching, isPlaceholderData });
   const { data: featuredSidebar = [] } = useFeaturedPropertiesQuery();
   const { data: bestValue = [] } = useBestValuePropertiesQuery();
   const properties = useMemo(() => searchResult?.items ?? [], [searchResult]);
@@ -224,7 +233,7 @@ export function ListingsView({
   const total = searchResult?.total ?? 0;
   const asideStickyTop = useListingsAsideStickyTop(
     asideRef,
-    `${properties.length}-${featuredSidebar.length}-${isLoading}`,
+    `${properties.length}-${featuredSidebar.length}-${showSkeletonGrid}`,
   );
   const activeStatus = filters.status;
   const minPriceValue = parseListingPrice(filters.minPrice, LISTINGS_PRICE_MIN);
@@ -528,7 +537,7 @@ export function ListingsView({
                 <h1 className="font-poppins text-[26px] font-semibold leading-[1.15] tracking-[-0.3px] text-hz-ink">
                   Property listing
                 </h1>
-                {!isLoading && total > 0 ? (
+                {!showSkeletonGrid && total > 0 ? (
                   <p className="mt-1.5 font-poppins text-sm text-hz-muted">
                     {formatCount(total)} {total === 1 ? 'listing' : 'listings'}
                   </p>
@@ -672,16 +681,14 @@ export function ListingsView({
               <p className="mb-4 font-poppins text-sm text-hz-primary">{error.message}</p>
             )}
 
-            {isLoading ? (
-              <div className={listingGridClass}>
-                {Array.from({ length: filters.perPage }).map((_, index) =>
-                  gridColumns === 1 ? (
-                    <BestValueCardSkeleton key={index} />
-                  ) : (
-                    <PropertyCardSkeleton key={index} />
-                  )
-                )}
-              </div>
+            {showSkeletonGrid ? (
+              <LoadingOverlay active minHeight="min-h-[480px]">
+                <ListingsGridSkeleton
+                  gridColumns={gridColumns}
+                  count={filters.perPage}
+                  className="animate-in fade-in duration-300"
+                />
+              </LoadingOverlay>
             ) : properties.length === 0 ? (
               <div className="rounded-hz border border-hz-border bg-hz-sunken px-6 py-20 text-center">
                 <p className="font-poppins text-[22px] font-semibold text-hz-ink">No listings available right now</p>
@@ -690,7 +697,7 @@ export function ListingsView({
                 </p>
               </div>
             ) : (
-              <>
+              <div className="animate-in fade-in duration-300">
                 <div className={listingGridClass}>
                   {gridColumns === 1
                     ? oneColumnProperties.map((property) => (
@@ -757,7 +764,7 @@ export function ListingsView({
                     </button>
                   </nav>
                 </div>
-              </>
+              </div>
             )}
           </section>
         </div>

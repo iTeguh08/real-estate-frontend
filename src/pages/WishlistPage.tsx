@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PropertyCardSkeleton } from '@/components/skeletons';
+import { LoadingOverlay, PropertyCardSkeleton } from '@/components/skeletons';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { PropertyCard } from '@/components/cards/PropertyCard';
@@ -57,11 +57,13 @@ export function WishlistPage() {
         </p>
 
         {isLoading ? (
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: wishlistIds.length || 4 }).map((_, i) => (
-              <PropertyCardSkeleton key={i} />
-            ))}
-          </div>
+          <LoadingOverlay active minHeight="min-h-[320px]" className="mt-8">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: wishlistIds.length || 4 }).map((_, i) => (
+                <PropertyCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : (
           <div className="mt-8 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {properties.map((property) => (

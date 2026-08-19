@@ -7,12 +7,12 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { SiteHeaderContext } from '@/context/site-header-context';
+import { useSiteHeader } from '@/hooks/useSiteHeader';
 import {
   DEFAULT_HEADER_HEIGHT,
   HEADER_SCROLL_BUFFER,
-  SiteHeaderContext,
-  useSiteHeader,
-} from '@/hooks/useSiteHeader';
+} from '@/lib/site-header-constants';
 import { useAppLocation } from '@/lib/app-router';
 
 const SCROLL_DELTA_PX = 12;

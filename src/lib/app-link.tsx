@@ -12,13 +12,14 @@ type AppLinkProps = Omit<ComponentProps<typeof NextLink>, 'href'> & {
 /** Shared link for Next Pages Router. Accepts react-router-style `to` during migration. */
 export function AppLink({ href, to, state, children, ...rest }: AppLinkProps) {
   let dest = resolveAppHref(href ?? to ?? '/');
+  const prefetch = rest.prefetch ?? true;
   if (state?.from) {
     const joiner = dest.includes('?') ? '&' : '?';
     dest = `${dest}${joiner}from=${encodeURIComponent(state.from)}`;
   }
 
   return (
-    <NextLink href={dest} {...rest}>
+    <NextLink href={dest} prefetch={prefetch} {...rest}>
       {children}
     </NextLink>
   );

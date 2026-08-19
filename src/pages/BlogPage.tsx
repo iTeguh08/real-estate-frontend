@@ -7,13 +7,13 @@ import { BlogView } from '@/modules/blog/views/BlogView';
 export function BlogPage() {
   const [searchParams] = useAppSearchParams();
   const activeTag = searchParams.get('tag')?.trim() || undefined;
-  const { data: articles = [], isLoading, isError } = useArticlesQuery('blog', activeTag);
+  const { data: articles = [], isPending, isError } = useArticlesQuery('blog', activeTag);
   const { data: siteConfig } = useSiteConfig();
   return (
     <BlogView
       articles={articles}
       brand={siteConfig?.brand ?? 'Homzen'}
-      isLoading={isLoading}
+      isLoading={isPending}
       isError={isError}
     />
   );

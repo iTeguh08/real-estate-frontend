@@ -55,6 +55,15 @@ export async function getSiteConfig(): Promise<SiteConfig> {
     }
   `);
 
+  if (!data) {
+    return {
+      brand: SITE_CONFIG.brand,
+      tagline: SITE_CONFIG.tagline,
+      contact: { ...SITE_CONFIG.contact },
+      footer: SITE_FOOTER_FALLBACK,
+    };
+  }
+
   const header = data.global?.header ?? {};
   const footer = data.global?.footer ?? {};
   const phone = header.phone ?? footer.phone ?? SITE_CONFIG.contact.phone;

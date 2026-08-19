@@ -1,5 +1,4 @@
 import { Suspense, useRef, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Pencil, SendHorizontal, EyeOff } from 'lucide-react';
 import { FormField } from '@/components/auth/AuthFormShell';
 import { FormSelect } from '@/components/forms/FormSelect';
@@ -15,7 +14,7 @@ import {
   type CustomLayout,
   type MediaSlotField,
 } from '@/data/property-media-slots';
-import { EditListingSkeleton } from '@/components/skeletons';
+import { EditListingSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import { useSiteHeader } from '@/hooks/useSiteHeader';
@@ -29,6 +28,8 @@ import {
   useUploadMyListingMediaMutation,
 } from '@/hooks/mutations';
 import { useMyListingQuery } from '@/hooks/queries';
+import { AppLink } from '@/lib/app-link';
+import { useAppNavigate, useAppParams, useAppSearchParams } from '@/lib/app-router';
 import { isAgentUser } from '@/lib/auth-roles';
 import { apiErrorMessage, clearFieldError, getApiFieldErrors } from '@/lib/form-errors';
 import { PROPERTY_GALLERY_COUNT } from '@/lib/property-gallery';
@@ -55,9 +56,9 @@ const EMPTY_LOCATION: LocationValue = {
 };
 
 export function EditMyListingPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { id } = useAppParams();
+  const navigate = useAppNavigate();
+  const [searchParams, setSearchParams] = useAppSearchParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { scrollOffset } = useSiteHeader();
   const isAgent = isAgentUser(user);
@@ -126,12 +127,12 @@ export function EditMyListingPage() {
     setNotice('');
     setMode('edit');
     editArmedAtRef.current = Date.now();
-    setSearchParams({ edit: '1' }, { replace: true });
+    setSearchParams(new URLSearchParams({ edit: '1' }), { replace: true });
   }
 
   function enterView() {
     setMode('view');
-    setSearchParams({}, { replace: true });
+    setSearchParams(new URLSearchParams(), { replace: true });
   }
 
   function cancelEdit() {
@@ -162,16 +163,37 @@ export function EditMyListingPage() {
   }
 
   if (authLoading || (isAuthenticated && isAgent && isLoading)) {
-    return <EditListingSkeleton />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <EditListingSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   if (!isAuthenticated || !user || !isAgent) {
     return (
       <main id="main-content" className="section-container py-20 text-center">
         <h1 className="font-poppins text-2xl font-semibold text-hz-dark">Agents only</h1>
-        <Link to={routes.dashboard} className="mt-6 inline-block text-hz-primary">
+        <AppLink to={routes.dashboard} className="mt-6 inline-block text-hz-primary">
           Back to dashboard
-        </Link>
+        </AppLink>
+      </main>
+    );
+  }
+
+  if (!id?.trim()) {
+    return (
+      <main id="main-content" className="section-container py-20 text-center">
+        <h1 className="font-poppins text-2xl font-semibold text-hz-dark">Invalid listing URL</h1>
+        <p className="mt-2 font-poppins text-sm text-hz-muted">
+          This edit link is missing a listing id. Open the property from My Property and try again.
+        </p>
+        <AppLink
+          to={routes.myProperty}
+          className="mt-6 inline-block rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white no-underline"
+        >
+          My Property
+        </AppLink>
       </main>
     );
   }
@@ -180,12 +202,12 @@ export function EditMyListingPage() {
     return (
       <main id="main-content" className="section-container py-20 text-center">
         <h1 className="font-poppins text-2xl font-semibold text-hz-dark">Property not found</h1>
-        <Link
+        <AppLink
           to={routes.myProperty}
           className="mt-6 inline-block rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white no-underline"
         >
           My Property
-        </Link>
+        </AppLink>
       </main>
     );
   }
@@ -327,13 +349,13 @@ export function EditMyListingPage() {
   return (
     <main id="main-content" className="bg-hz-sunken py-10 md:py-16">
       <div className="section-container max-w-3xl">
-        <Link
+        <AppLink
           to={routes.myProperty}
           className="mb-6 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline hover:text-hz-primary"
         >
           <ArrowLeft size={16} />
           Back to My Property
-        </Link>
+        </AppLink>
 
         <p className="mb-2 font-poppins text-[11px] font-semibold uppercase tracking-[2px] text-hz-primary">
           {mode === 'edit' ? 'Edit property' : 'Property detail'}
@@ -748,7 +770,7 @@ export function EditMyListingPage() {
                   Cancel
                 </button>
                 {isPublished ? (
-                  <Link
+                  <AppLink
                     to={routes.property(listing.slug)}
                     target="_blank"
                     rel="noreferrer"
@@ -756,7 +778,7 @@ export function EditMyListingPage() {
                   >
                     <ExternalLink size={14} />
                     See in public
-                  </Link>
+                  </AppLink>
                 ) : null}
                 <button
                   type="submit"
@@ -768,7 +790,7 @@ export function EditMyListingPage() {
               </>
             ) : isPublished ? (
               <>
-                <Link
+                <AppLink
                   to={routes.property(listing.slug)}
                   target="_blank"
                   rel="noreferrer"
@@ -776,7 +798,7 @@ export function EditMyListingPage() {
                 >
                   <ExternalLink size={14} />
                   See in public
-                </Link>
+                </AppLink>
                 <button
                   type="button"
                   disabled={busy}

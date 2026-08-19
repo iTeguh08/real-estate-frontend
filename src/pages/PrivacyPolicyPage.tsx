@@ -1,4 +1,4 @@
-import { CmsPageSkeleton } from '@/components/skeletons';
+import { CmsPageSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { usePrivacyPageQuery } from '@/hooks/queries';
 import { sanitizeHtml } from '@/lib/sanitize-html';
 import { cn } from '@/lib/utils';
@@ -7,7 +7,11 @@ export function PrivacyPolicyPage() {
   const { data: page, isLoading } = usePrivacyPageQuery();
 
   if (isLoading || !page) {
-    return <CmsPageSkeleton />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <CmsPageSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   return (

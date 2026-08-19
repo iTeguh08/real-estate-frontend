@@ -1,3 +1,5 @@
-import RegisterRoute from '../src/pages/register';
+import RegisterRouteImpl from '../src/pages/register';
 
-export default RegisterRoute;
+export default function RegisterRoute() {
+  return <RegisterRouteImpl />;
+}

@@ -8,6 +8,7 @@ import { usePropertyTypeCountsQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { formatCount } from '@/lib/format-property';
 import { routes } from '@/lib/routes';
+import { PropertyTypeGridSkeleton, LoadingOverlay } from '@/components/skeletons';
 import {
   ApartmentIllustration,
   CommercialIllustration,
@@ -103,12 +104,13 @@ export function PropertyTypeGrid() {
   const { theme } = useTheme();
   const isLight = theme === 'light';
   const { filters, setPropertyType } = useListingFilters();
-  const { data: typeItems = PROPERTY_TYPE_ITEMS } = usePropertyTypeCountsQuery();
+  const { data: typeItems, isPending } = usePropertyTypeCountsQuery();
+  const items = typeItems ?? PROPERTY_TYPE_ITEMS;
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const needsDesktopScroll = typeItems.length > VISIBLE_DESKTOP_COUNT;
+  const needsDesktopScroll = items.length > VISIBLE_DESKTOP_COUNT;
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
@@ -138,7 +140,7 @@ export function PropertyTypeGrid() {
       el.removeEventListener('scroll', updateScrollState);
       window.removeEventListener('resize', updateScrollState);
     };
-  }, [needsDesktopScroll, typeItems.length, updateScrollState]);
+  }, [needsDesktopScroll, items.length, updateScrollState]);
 
   const isCardActive = (type: PropertyType) =>
     filters.propertyType ? filters.propertyType === type : type === DEFAULT_HIGHLIGHT_TYPE;
@@ -188,6 +190,12 @@ export function PropertyTypeGrid() {
         </div>
 
         <div className="relative mt-7">
+          {isPending ? (
+            <LoadingOverlay active minHeight="min-h-[220px]">
+              <PropertyTypeGridSkeleton />
+            </LoadingOverlay>
+          ) : (
+          <>
           {needsDesktopScroll && (
             <button
               type="button"
@@ -217,7 +225,7 @@ export function PropertyTypeGrid() {
             role="list"
             aria-label="Property types to explore"
           >
-            {typeItems.map((item) => (
+            {items.map((item) => (
               <div
                 key={item.type}
                 data-type-card
@@ -258,6 +266,8 @@ export function PropertyTypeGrid() {
             >
               <ChevronRight size={14} strokeWidth={2} />
             </button>
+          )}
+          </>
           )}
         </div>
       </div>

@@ -2,16 +2,10 @@ import Head from 'next/head';
 import { useQueryClient } from '@tanstack/react-query';
 import { AgentsView } from '@/modules/agents/views/AgentsView';
 import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
-import { AGENTS } from '@/data/agents';
-import { SITE_CONFIG } from '@/data/site-config';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { queryKeys } from '@/lib/query-keys';
 import { routes } from '@/lib/routes';
-import { jsonSafe, withSsgFallback } from '@/lib/ssg';
-import { getAgents } from '@/services/agents.service';
 import type { Agent } from '@/types';
-
-const REVALIDATE_SECONDS = 60;
 
 interface AgentsPageProps {
   agents: Agent[];
@@ -46,16 +40,4 @@ export default function AgentsPage({ agents, brand }: AgentsPageProps) {
       <AgentsView agents={agents} brand={brand} />
     </>
   );
-}
-
-export async function getStaticProps() {
-  const agents = await withSsgFallback('agentsList', getAgents, AGENTS);
-
-  return {
-    props: jsonSafe({
-      agents,
-      brand: SITE_CONFIG.brand,
-    } satisfies AgentsPageProps),
-    revalidate: REVALIDATE_SECONDS,
-  };
 }

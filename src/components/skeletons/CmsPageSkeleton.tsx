@@ -1,3 +1,4 @@
+import { AboutPageSkeleton } from '@/components/skeletons/AboutPageSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -25,19 +26,7 @@ export function CmsPageSkeleton({ variant = 'default', className }: CmsPageSkele
   }
 
   if (variant === 'about') {
-    return (
-      <main id="main-content" className={cn('section-container py-20', className)}>
-        <div className="space-y-6">
-          <Skeleton className="h-8 w-64 rounded-hz" delayMs={0} />
-          <Skeleton className="h-64 rounded-hz" delayMs={80} />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 rounded-hz" delayMs={140 + i * 60} />
-            ))}
-          </div>
-        </div>
-      </main>
-    );
+    return <AboutPageSkeleton className={className} />;
   }
 
   return (

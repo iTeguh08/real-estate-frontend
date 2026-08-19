@@ -1,14 +1,7 @@
-import { createContext, useContext } from 'react';
-import type { Theme } from '@/lib/theme-store';
+import { useContext } from 'react';
+import { ThemeContext, type ThemeContextValue } from '@/context/theme-context';
 
-export interface ThemeContextValue {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
-}
-
-/** Provided by `@/components/providers/ThemeProvider`. */
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
+export type { ThemeContextValue };
 
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);

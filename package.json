@@ -6,6 +6,7 @@
   "scripts": {
     "predev": "node scripts/dev-guard.mjs",
     "dev": "next dev",
+    "dev:fresh": "node scripts/kill-dev.mjs && rm -rf .next && next dev",
     "build": "next build",
     "start": "next start",
     "dev:vite": "vite",

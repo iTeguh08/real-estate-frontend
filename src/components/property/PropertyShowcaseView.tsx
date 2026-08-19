@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import { lazy, Suspense, useCallback, useState } from 'react';
 import { AppLink } from '@/lib/app-link';
 import { ArrowLeft } from 'lucide-react';
@@ -6,7 +7,6 @@ import { PropertyCtaSection } from '@/components/property/PropertyCtaSection';
 import { PropertyDetailHero } from '@/components/property/PropertyDetailHero';
 import { PropertyFeaturesBlock } from '@/components/property/PropertyFeaturesBlock';
 import { PropertyGalleryGrid } from '@/components/property/PropertyGalleryGrid';
-import { PropertyInquiryDialogs } from '@/components/property/PropertyInquiryDialogs';
 import { PropertyOverviewCanvas } from '@/components/property/PropertyOverviewCanvas';
 import { PropertyRelatedSection } from '@/components/property/PropertyRelatedSection';
 import { PropertySpecsSection } from '@/components/property/PropertySpecsSection';
@@ -20,6 +20,11 @@ const PropertyShowcaseVillaView = lazy(() =>
   import('@/components/property/PropertyShowcaseVillaView').then((m) => ({
     default: m.PropertyShowcaseVillaView,
   }))
+);
+
+const PropertyInquiryDialogs = dynamic(
+  () => import('@/components/property/PropertyInquiryDialogs').then((m) => m.PropertyInquiryDialogs),
+  { ssr: false },
 );
 
 export interface PropertyShowcaseViewProps {

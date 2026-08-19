@@ -1,12 +1,17 @@
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { AppLink } from '@/lib/app-link';
 import { PropertyCard } from '@/components/cards/PropertyCard';
-import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import type { Property } from '@/types';
+
+const PropertyDetailDialog = dynamic(
+  () => import('@/components/cards/PropertyDetailDialog').then((m) => m.PropertyDetailDialog),
+  { ssr: false },
+);
 
 export interface PropertyRelatedSectionProps {
   properties: Property[];

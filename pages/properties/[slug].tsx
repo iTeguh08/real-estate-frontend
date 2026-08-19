@@ -1,4 +1,8 @@
-import PropertyDetailPage from '../../src/pages/properties/[slug]';
+import type { ComponentProps } from 'react';
+import PropertyDetailPageImpl from '../../src/pages/properties/[slug]';
 
-export { getStaticPaths, getStaticProps } from '../../src/pages/properties/[slug]';
-export default PropertyDetailPage;
+export { getStaticPaths, getStaticProps } from '@/lib/route-data/properties-slug';
+
+export default function PropertyDetailPage(props: ComponentProps<typeof PropertyDetailPageImpl>) {
+  return <PropertyDetailPageImpl {...props} />;
+}

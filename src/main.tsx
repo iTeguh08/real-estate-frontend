@@ -1,14 +1,16 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { preloadCriticalFonts } from '@/lib/preload-fonts';
 import { initSentry, Sentry } from '@/lib/sentry';
 import './index.css';
 import App from './App.tsx';
-import { queryClient } from '@/lib/query-client';
+import { queryClientOptions } from '@/lib/query-client';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { ThemedToaster } from '@/components/layout/ThemedToaster';
+
+const queryClient = new QueryClient(queryClientOptions);
 
 preloadCriticalFonts();
 initSentry();

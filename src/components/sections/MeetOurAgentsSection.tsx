@@ -8,7 +8,7 @@ import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useAgentsQuery } from '@/hooks/queries';
 import { useTheme } from '@/hooks/useTheme';
 import { routes } from '@/lib/routes';
-import { AgentCardSkeleton } from '@/components/skeletons';
+import { AgentCardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import type { Agent } from '@/types';
 
 interface MeetOurAgentsSectionProps {
@@ -54,8 +54,9 @@ function useAgentsPerSlide() {
 export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectionProps) {
   const { theme } = useTheme();
   const isNavy = theme === 'navy';
-  const { data: fetchedAgents = [], isLoading } = useAgentsQuery();
+  const { data: fetchedAgents = [], isPending } = useAgentsQuery();
   const agents = agentsProp ?? fetchedAgents;
+  const showSkeleton = isPending && !agentsProp;
   const agentsPerSlide = useAgentsPerSlide();
   const agentSlides = useMemo(
     () => buildAgentSlides(agents, agentsPerSlide),
@@ -124,16 +125,18 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           </AppLink>
         </header>
 
-        {isLoading && !agentsProp ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <AgentCardSkeleton key={i} />
-            ))}
-          </div>
+        {showSkeleton ? (
+          <LoadingOverlay active minHeight="min-h-[360px]">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <AgentCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : (
           <>
             <div
-              className="touch-pan-y"
+              className="touch-pan-y animate-in fade-in duration-300"
               role="list"
               aria-label="Real estate agents"
               {...swipeHandlers}

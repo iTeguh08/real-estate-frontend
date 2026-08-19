@@ -1,3 +1,5 @@
-import LoginRoute from '../src/pages/login';
+import LoginRouteImpl from '../src/pages/login';
 
-export default LoginRoute;
+export default function LoginRoute() {
+  return <LoginRouteImpl />;
+}

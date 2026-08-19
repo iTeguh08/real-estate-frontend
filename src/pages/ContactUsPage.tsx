@@ -1,14 +1,15 @@
-import { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { AppLink } from '@/lib/app-link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { Clock, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { FormField, MockSubmitNotice } from '@/components/auth/AuthFormShell';
 import { HoneypotInput, TurnstileWidget } from '@/components/forms/GuestSpamFields';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
-import { CmsPageSkeleton } from '@/components/skeletons';
+import { ContactPageSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { useContactPageQuery } from '@/hooks/queries';
 import { useSubmitContactMutation } from '@/hooks/mutations';
+import { TURNSTILE_MISSING_MESSAGE, useTurnstileGate } from '@/hooks/useTurnstileGate';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { applyApiFieldErrors } from '@/lib/apply-api-field-errors';
 import { apiErrorMessage } from '@/lib/form-errors';
@@ -47,8 +48,13 @@ export function ContactUsPage() {
 
   const [notice, setNotice] = useState('');
   const [submitError, setSubmitError] = useState('');
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
+  const {
+    turnstileToken,
+    onTurnstileToken,
+    resetTurnstileToken,
+    turnstileRequired,
+    assertTurnstileReady,
+  } = useTurnstileGate();
 
   const {
     control,
@@ -74,6 +80,11 @@ export function ContactUsPage() {
     setSubmitError('');
     setNotice('');
 
+    if (!assertTurnstileReady()) {
+      setSubmitError(TURNSTILE_MISSING_MESSAGE);
+      return;
+    }
+
     contactMutation.mutate(
       {
         name: values.name,
@@ -93,7 +104,7 @@ export function ContactUsPage() {
             inquiry_type: CONTACT_INQUIRY_TYPES[0],
             message: '',
           });
-          setTurnstileToken('');
+          resetTurnstileToken();
         },
         onError: (error) => {
           setNotice('');
@@ -105,10 +116,15 @@ export function ContactUsPage() {
   });
 
   if (isLoading || !page) {
-    return <CmsPageSkeleton />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <ContactPageSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   const pending = contactMutation.isPending || isSubmitting;
+  const submitDisabled = pending || (turnstileRequired && !turnstileToken);
   const hasFieldErrors = Object.keys(errors).length > 0;
 
   return (
@@ -302,7 +318,7 @@ export function ContactUsPage() {
 
                 <button
                   type="submit"
-                  disabled={pending}
+                  disabled={submitDisabled}
                   className={cn(
                     'flex w-full items-center justify-center gap-2 rounded-hz bg-hz-primary px-6 py-3',
                     'font-poppins text-sm font-semibold text-white',
@@ -338,24 +354,24 @@ export function ContactUsPage() {
                 <div className="border-t border-hz-border p-5">
                   <p className="font-poppins text-sm font-semibold text-hz-dark">{brand} Headquarters</p>
                   <p className="mt-1 font-poppins text-sm text-hz-muted">{page.address}</p>
-                  <Link
-                    to={routes.about}
+                  <AppLink
+                    href={routes.about}
                     className="mt-4 inline-flex font-poppins text-sm font-medium text-hz-primary no-underline transition-colors hover:underline"
                   >
                     Learn more about us →
-                  </Link>
+                  </AppLink>
                 </div>
               </div>
             </div>
           </div>
 
           <p className="mt-12 text-center">
-            <Link
-              to={routes.home}
+            <AppLink
+              href={routes.home}
               className="font-poppins text-sm font-medium text-hz-body no-underline transition-colors hover:text-hz-primary"
             >
               ← Back to home
-            </Link>
+            </AppLink>
           </p>
         </div>
       </section>

@@ -1,5 +1,3 @@
-import { QueryClient } from '@tanstack/react-query';
-
 export const queryClientOptions = {
   defaultOptions: {
     queries: {
@@ -9,5 +7,3 @@ export const queryClientOptions = {
     },
   },
 };
-
-export const queryClient = new QueryClient(queryClientOptions);

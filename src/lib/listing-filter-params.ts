@@ -23,6 +23,9 @@ function isPropertySort(value: string): value is PropertySort {
   return PROPERTY_SORTS.includes(value as PropertySort);
 }
 
+/** Plain `/listings` page size when `perPage` is omitted from the URL. */
+export const LISTINGS_PAGE_DEFAULT_PER_PAGE = 10;
+
 export function filtersToSearchParams(filters: ListingFilters): URLSearchParams {
   const params = new URLSearchParams();
 
@@ -36,7 +39,7 @@ export function filtersToSearchParams(filters: ListingFilters): URLSearchParams 
   if (filters.agentSlug) params.set('agent', filters.agentSlug);
   if (filters.sort) params.set('sort', filters.sort);
   if (filters.page > 1) params.set('page', String(filters.page));
-  if (filters.perPage !== DEFAULT_LISTING_FILTERS.perPage) {
+  if (filters.perPage !== LISTINGS_PAGE_DEFAULT_PER_PAGE) {
     params.set('perPage', String(filters.perPage));
   }
 
@@ -50,7 +53,7 @@ export function normalizeListingsFilters(params: URLSearchParams): ListingFilter
   return {
     ...parsed,
     status,
-    perPage: params.get('perPage') ? parsed.perPage : 10,
+    perPage: params.get('perPage') ? parsed.perPage : LISTINGS_PAGE_DEFAULT_PER_PAGE,
   };
 }
 

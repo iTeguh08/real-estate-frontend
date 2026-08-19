@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useSyncExternalStore, type ReactNode } from 'react';
-import { ThemeContext } from '@/hooks/useTheme';
+import { ThemeContext } from '@/context/theme-context';
 import {
   applyTheme,
   getServerTheme,

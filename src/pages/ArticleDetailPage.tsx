@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { ArrowLeft } from 'lucide-react';
-import { CmsPageSkeleton } from '@/components/skeletons';
+import { CmsPageSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { useArticleQuery } from '@/hooks/queries';
 import { AppLink } from '@/lib/app-link';
 import { routes } from '@/lib/routes';
@@ -13,7 +13,11 @@ export function ArticleDetailPage() {
   const { data: article, isLoading, isError } = useArticleQuery(slug);
 
   if (isLoading || !router.isReady) {
-    return <CmsPageSkeleton variant="article" />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <CmsPageSkeleton variant="article" />
+      </LoadingOverlay>
+    );
   }
 
   if (isError || !article) {

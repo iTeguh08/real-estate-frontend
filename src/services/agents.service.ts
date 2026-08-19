@@ -17,6 +17,10 @@ export async function getFeaturedAgents(): Promise<Agent[]> {
     query { agents(featured: true) { ${AGENT_FIELDS} } }
   `);
 
+  if (!data) {
+    return AGENTS;
+  }
+
   return mergeAgentsWithFallback(data.agents);
 }
 
@@ -28,6 +32,10 @@ export async function getAgents(): Promise<Agent[]> {
   const data = await graphqlFetch<{ agents: Agent[] }>(`
     query { agents { ${AGENT_FIELDS} } }
   `);
+
+  if (!data) {
+    return AGENTS;
+  }
 
   return mergeAgentsWithFallback(data.agents);
 }
@@ -42,6 +50,10 @@ export async function getAgentBySlug(slug: string): Promise<Agent | null> {
       agent(slug: $slug) { ${AGENT_FIELDS} }
     }
   `, { slug });
+
+  if (!data) {
+    return AGENTS.find((agent) => agent.slug === slug) ?? null;
+  }
 
   return data.agent ? mergeAgentWithFallback(data.agent) : null;
 }

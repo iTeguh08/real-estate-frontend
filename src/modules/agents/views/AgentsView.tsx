@@ -1,6 +1,6 @@
 import { AgentCard } from '@/components/cards/AgentCard';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
-import { AgentCardSkeleton } from '@/components/skeletons';
+import { AgentCardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { AppLink } from '@/lib/app-link';
 import { routes } from '@/lib/routes';
 import type { Agent } from '@/types';
@@ -49,14 +49,16 @@ export function AgentsView({
         )}
 
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-x-5 gap-y-15 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <AgentCardSkeleton key={i} />
-            ))}
-          </div>
+          <LoadingOverlay active minHeight="min-h-[480px]">
+            <div className="grid grid-cols-1 gap-x-5 gap-y-15 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <AgentCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : (
           <div
-            className="grid grid-cols-1 gap-x-5 gap-y-15 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-1 gap-x-5 gap-y-15 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300"
             role="list"
             aria-label="Real estate agents"
           >

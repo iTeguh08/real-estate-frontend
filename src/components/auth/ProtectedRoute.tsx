@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { PageLoader } from '@/components/skeletons';
+import {
+  RouteLoadingSpinner,
+  resolveTransitionKind,
+  transitionKindHasSpinner,
+  TransitionBody,
+} from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import { handoffBootstrapLoader } from '@/lib/bootstrap-loader';
 import { routes } from '@/lib/routes';
@@ -20,7 +25,13 @@ export function ProtectedRoute() {
   }, [isLoading]);
 
   if (isLoading) {
-    return <PageLoader variant="route" />;
+    const kind = resolveTransitionKind(`${location.pathname}${location.search}`);
+    return (
+      <>
+        {transitionKindHasSpinner(kind) ? <RouteLoadingSpinner /> : null}
+        <TransitionBody kind={kind} />
+      </>
+    );
   }
 
   if (!isAuthenticated) {

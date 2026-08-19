@@ -1,20 +1,22 @@
 import { useParams } from 'react-router-dom';
 import { usePropertyDetailQuery } from '@/hooks/queries';
+import { LoadingOverlay, PropertyDetailSkeleton } from '@/components/skeletons';
 import {
   PropertyShowcaseNotFound,
-  PropertyShowcaseSkeleton,
   PropertyShowcaseView,
 } from '@/components/property/PropertyShowcaseView';
 
 export function PropertyDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: property, isLoading, isError } = usePropertyDetailQuery(slug);
+  const { data: property, isPending, isError } = usePropertyDetailQuery(slug);
 
-  if (isLoading) {
+  if (isPending) {
     return (
-      <main id="main-content">
-        <PropertyShowcaseSkeleton />
-      </main>
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <main id="main-content">
+          <PropertyDetailSkeleton />
+        </main>
+      </LoadingOverlay>
     );
   }
 

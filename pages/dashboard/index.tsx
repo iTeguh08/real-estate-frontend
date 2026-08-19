@@ -1,3 +1,5 @@
-import DashboardRoute from '../../src/pages/dashboard/index';
+import DashboardRouteImpl from '../../src/pages/dashboard/index';
 
-export default DashboardRoute;
+export default function DashboardRoute() {
+  return <DashboardRouteImpl />;
+}

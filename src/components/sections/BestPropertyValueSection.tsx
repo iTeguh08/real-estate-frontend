@@ -1,12 +1,17 @@
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { AppLink } from '@/lib/app-link';
 import { BestValuePropertyCard } from '@/components/cards/BestValuePropertyCard';
-import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 import { useBestValuePropertiesQuery } from '@/hooks/queries';
-import { BestValueCardSkeleton } from '@/components/skeletons';
+import { BestValueCardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import type { PropertyWithAgent } from '@/types';
+
+const PropertyDetailDialog = dynamic(
+  () => import('@/components/cards/PropertyDetailDialog').then((m) => m.PropertyDetailDialog),
+  { ssr: false },
+);
 
 interface BestPropertyValueSectionProps {
   properties?: PropertyWithAgent[];
@@ -15,8 +20,9 @@ interface BestPropertyValueSectionProps {
 export function BestPropertyValueSection({
   properties: propertiesProp,
 }: BestPropertyValueSectionProps) {
-  const { data: fetchedProperties = [], isLoading, error } = useBestValuePropertiesQuery();
+  const { data: fetchedProperties = [], isPending, error } = useBestValuePropertiesQuery();
   const properties = propertiesProp ?? fetchedProperties;
+  const showSkeleton = isPending && !propertiesProp;
   const [selectedProperty, setSelectedProperty] = useState<PropertyWithAgent | null>(null);
 
   return (
@@ -59,15 +65,17 @@ export function BestPropertyValueSection({
           </p>
         )}
 
-        {isLoading && !propertiesProp ? (
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <BestValueCardSkeleton key={i} />
-            ))}
-          </div>
+        {showSkeleton ? (
+          <LoadingOverlay active minHeight="min-h-[400px]">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 animate-in fade-in duration-300">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <BestValueCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : (
           <div
-            className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2"
+            className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-2 animate-in fade-in duration-300"
             role="list"
             aria-label="Best property value listings"
           >

@@ -1,7 +1,7 @@
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { AppLink } from '@/lib/app-link';
 import { PropertyCard } from '@/components/cards/PropertyCard';
-import { PropertyDetailDialog } from '@/components/cards/PropertyDetailDialog';
 import { ListingSortSelect } from '@/components/search/ListingSortSelect';
 import { SearchIntentBanner } from '@/components/search/SearchIntentBanner';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
@@ -12,8 +12,14 @@ import { useSiteConfig } from '@/hooks/useSiteConfig';
 import { useTheme } from '@/hooks/useTheme';
 import { usePropertySearchQuery } from '@/hooks/queries';
 import { useListingFilters } from '@/hooks/useListingFilters';
-import { PropertyCardSkeleton } from '@/components/skeletons';
+import { useQuerySkeletonState } from '@/hooks/useQuerySkeletonState';
+import { PropertyCardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import type { Property } from '@/types';
+
+const PropertyDetailDialog = dynamic(
+  () => import('@/components/cards/PropertyDetailDialog').then((m) => m.PropertyDetailDialog),
+  { ssr: false },
+);
 
 interface FeaturedPropertiesProps {
   properties?: Property[];
@@ -27,16 +33,18 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
   const brand = siteConfig?.brand ?? 'Homzen';
   const {
     data: searchResult,
-    isLoading,
+    isPending,
     isFetching,
+    isPlaceholderData,
     error: queryError,
   } = usePropertySearchQuery(filters);
+  const showSkeletonGrid = useQuerySkeletonState({ isPending, isFetching, isPlaceholderData });
   const properties = propertiesProp ?? searchResult?.items ?? [];
   const total = searchResult?.total ?? properties.length;
   const page = searchResult?.page ?? filters.page;
   const lastPage = searchResult?.lastPage ?? 1;
-  const showResultCount = !isLoading && total > 0;
-  const isRefining = isFetching && !isLoading;
+  const showResultCount = !showSkeletonGrid && total > 0;
+  const isRefining = isFetching && !showSkeletonGrid;
 
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
@@ -99,12 +107,14 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
           </p>
         )}
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <PropertyCardSkeleton key={i} />
-            ))}
-          </div>
+        {showSkeletonGrid ? (
+          <LoadingOverlay active minHeight="min-h-[420px]">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in duration-300">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <PropertyCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : properties.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-hz border border-hz-border bg-hz-sunken px-6 py-16 text-center">
             <p className="font-poppins text-lg font-semibold text-hz-dark">
@@ -127,7 +137,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
           </div>
         ) : (
           <div
-            className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in duration-300"
             role="list"
             aria-label="Featured property listings"
           >
@@ -149,7 +159,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
           </div>
         )}
 
-        {lastPage > 1 && !isLoading && properties.length > 0 && (
+        {lastPage > 1 && !showSkeletonGrid && properties.length > 0 && (
           <nav
             className="mt-8 flex flex-wrap items-center justify-center gap-3"
             aria-label="Listings pagination"

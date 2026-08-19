@@ -2,16 +2,10 @@ import Head from 'next/head';
 import { useQueryClient } from '@tanstack/react-query';
 import { BlogView } from '@/modules/blog/views/BlogView';
 import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
-import { ARTICLES } from '@/data/articles';
-import { SITE_CONFIG } from '@/data/site-config';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { queryKeys } from '@/lib/query-keys';
 import { routes } from '@/lib/routes';
-import { jsonSafe, withSsgFallback } from '@/lib/ssg';
-import { getArticles } from '@/services/articles.service';
 import type { Article } from '@/types';
-
-const REVALIDATE_SECONDS = 60;
 
 interface BlogPageProps {
   articles: Article[];
@@ -46,20 +40,4 @@ export default function BlogPage({ articles, brand }: BlogPageProps) {
       <BlogView articles={articles} brand={brand} />
     </>
   );
-}
-
-export async function getStaticProps() {
-  const articles = await withSsgFallback(
-    'blogArticles',
-    () => getArticles('blog'),
-    ARTICLES.filter((item) => item.category === 'blog')
-  );
-
-  return {
-    props: jsonSafe({
-      articles,
-      brand: SITE_CONFIG.brand,
-    } satisfies BlogPageProps),
-    revalidate: REVALIDATE_SECONDS,
-  };
 }

@@ -1,6 +1,6 @@
+import dynamic from 'next/dynamic';
 import { useCallback, useState } from 'react';
 import { PropertyGalleryGrid } from '@/components/property/PropertyGalleryGrid';
-import { PropertyInquiryDialogs } from '@/components/property/PropertyInquiryDialogs';
 import { PropertyRelatedSection } from '@/components/property/PropertyRelatedSection';
 import { PropertySpecsSection } from '@/components/property/PropertySpecsSection';
 import { PropertyVillaCtaBanner } from '@/components/property/PropertyVillaCtaBanner';
@@ -13,6 +13,11 @@ import {
 import { useRelatedPropertiesQuery } from '@/hooks/queries';
 import { formatPropertyLocation } from '@/lib/format-property';
 import type { PropertyDetail } from '@/types';
+
+const PropertyInquiryDialogs = dynamic(
+  () => import('@/components/property/PropertyInquiryDialogs').then((m) => m.PropertyInquiryDialogs),
+  { ssr: false },
+);
 
 export interface PropertyShowcaseVillaViewProps {
   property: PropertyDetail;

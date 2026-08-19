@@ -1,6 +1,6 @@
 import { ArticleCard } from '@/components/cards/ArticleCard';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
-import { ArticleCardSkeleton } from '@/components/skeletons';
+import { ArticleCardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { AppLink } from '@/lib/app-link';
 import { useAppSearchParams } from '@/lib/app-router';
 import { routes } from '@/lib/routes';
@@ -70,11 +70,13 @@ export function BlogView({
             Unable to load blog articles. Please try again later.
           </p>
         ) : isLoading ? (
-          <div className="grid grid-cols-1 gap-x-6 gap-y-18 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <ArticleCardSkeleton key={i} />
-            ))}
-          </div>
+          <LoadingOverlay active minHeight="min-h-[480px]">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-18 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <ArticleCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : articles.length === 0 ? (
           <div className="rounded-hz border border-hz-border bg-hz-sunken px-6 py-16 text-center">
             <p className="font-poppins text-lg font-semibold text-hz-dark">
@@ -87,7 +89,7 @@ export function BlogView({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-x-6 gap-y-18 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-18 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
             {articles.map((article) => (
               <ArticleCard key={article.id} article={article} />
             ))}

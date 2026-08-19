@@ -7,7 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   // `next-env.d.ts` is generated and rewritten by `next dev`/`next build`.
-  globalIgnores(['dist', '.next', '.next-alt', 'next-env.d.ts']),
+  globalIgnores(['dist', '.next', '.next-alt', '.next-css-fix', '.next-*', 'next-env.d.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -20,27 +20,12 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
-  // shadcn-generated primitives export CVA helpers alongside components — suppress fast-refresh
-  // rule for the ui/ folder since these files are not hand-authored.
+  // Root Next route files export data-fetching alongside the page wrapper. Imported
+  // view modules under `src/pages/` must stay component-only for Fast Refresh.
+  // Server loaders live in `src/lib/route-data/` and are dynamically imported from
+  // thin wrappers in root `pages/`.
   {
-    files: ['src/components/ui/**/*.{ts,tsx}'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
-    },
-  },
-  // Next route files legitimately export data-fetching functions next to the page
-  // component; Fast Refresh handles those. Keep the rule on so any *other* extra
-  // export (helper/const) still fails lint — mixed exports force a full reload.
-  {
-    files: [
-      'pages/**/*.{ts,tsx}',
-      'src/pages/_app.tsx',
-      'src/pages/index.tsx',
-      'src/pages/login.tsx',
-      'src/pages/register.tsx',
-      'src/pages/submit-property.tsx',
-      'src/pages/{agents,blog,dashboard,listings,properties}/**/*.{ts,tsx}',
-    ],
+    files: ['pages/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': [
         'error',
@@ -53,6 +38,16 @@ export default defineConfig([
             'config',
             'reportWebVitals',
           ],
+        },
+      ],
+      // Root `pages/` must define the default export inline — `export default Imported`
+      // breaks Fast Refresh (see pages/_app.tsx comment).
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ExportDefaultDeclaration[declaration.type="Identifier"]',
+          message:
+            'Do not re-export a default binding. Wrap the imported page in a local function component.',
         },
       ],
     },

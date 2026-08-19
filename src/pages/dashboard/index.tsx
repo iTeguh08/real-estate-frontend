@@ -1,13 +1,20 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { RequireAuth } from '@/components/auth/RequireAuth';
-import { PageLoader } from '@/components/skeletons';
+import { DashboardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { routes } from '@/lib/routes';
 
 const DashboardPage = dynamic(
   () => import('@/pages/DashboardPage').then((m) => ({ default: m.DashboardPage })),
-  { ssr: false, loading: () => <PageLoader variant="route" /> }
+  {
+    ssr: false,
+    loading: () => (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <DashboardSkeleton />
+      </LoadingOverlay>
+    ),
+  },
 );
 
 export default function DashboardRoute() {

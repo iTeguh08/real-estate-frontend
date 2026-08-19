@@ -1,11 +1,33 @@
 import { useEffect, type ReactNode } from 'react';
-import { PageLoader } from '@/components/skeletons';
+import { DashboardSkeleton, EditListingSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppLocation, useAppNavigate } from '@/lib/app-router';
 import { routes } from '@/lib/routes';
 
+function defaultAuthFallback(pathname: string) {
+  if (pathname === routes.submitProperty) {
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <EditListingSkeleton />
+      </LoadingOverlay>
+    );
+  }
+
+  return (
+    <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+      <DashboardSkeleton />
+    </LoadingOverlay>
+  );
+}
+
 /** Client-side auth gate for Next Pages Router (replaces react-router ProtectedRoute). */
-export function RequireAuth({ children }: { children: ReactNode }) {
+export function RequireAuth({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useAppNavigate();
   const location = useAppLocation();
@@ -21,7 +43,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   }, [isAuthenticated, isLoading, location.pathname, location.search, navigate]);
 
   if (isLoading || !isAuthenticated) {
-    return <PageLoader variant="route" />;
+    return <>{fallback ?? defaultAuthFallback(location.pathname)}</>;
   }
 
   return <>{children}</>;

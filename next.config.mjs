@@ -5,8 +5,13 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  devIndicators: false,
   reactStrictMode: true,
   outputFileTracingRoot: projectRoot,
+  // Tree-shake barrel icon packages so dev page chunks stay small enough for Fast Refresh.
+  experimental: {
+    optimizePackageImports: ['@phosphor-icons/react', 'lucide-react'],
+  },
   // Do not set `basePath` or a relative `assetPrefix` ('.' / './'): nested routes
   // would request `/properties/_next/static/css` instead of `/_next/static/css`.
   // A parallel dev server must not write into the same build dir as the primary
@@ -28,8 +33,12 @@ const nextConfig = {
           '**/.git/**',
           '**/node_modules/**',
           '**/.next/**',
+          '**/.next-*/**',
+          '**/dist/**',
+          '**/coverage/**',
           '**/graphify-out/**',
           '**/.cursor/**',
+          'next-env.d.ts',
         ],
       };
     }
@@ -42,7 +51,6 @@ const nextConfig = {
       { source: '/graphql', destination: `${backend}/graphql` },
       { source: '/api/:path*', destination: `${backend}/api/:path*` },
       { source: '/newsletter/:path*', destination: `${backend}/newsletter/:path*` },
-      { source: '/contact', destination: `${backend}/contact` },
       { source: '/wishlist/:path*', destination: `${backend}/wishlist/:path*` },
       { source: '/compare/:path*', destination: `${backend}/compare/:path*` },
       { source: '/security/:path*', destination: `${backend}/security/:path*` },

@@ -1,4 +1,4 @@
-import { DashboardSkeleton } from '@/components/skeletons';
+import { DashboardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import { AppLink } from '@/lib/app-link';
 import { isAgentUser } from '@/lib/auth-roles';
@@ -9,7 +9,11 @@ export function DashboardPage() {
   const isAgent = isAgentUser(user);
 
   if (isLoading) {
-    return <DashboardSkeleton />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <DashboardSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   if (!user) {

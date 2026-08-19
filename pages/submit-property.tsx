@@ -1,3 +1,5 @@
-import SubmitPropertyRoute from '../src/pages/submit-property';
+import SubmitPropertyRouteImpl from '../src/pages/submit-property';
 
-export default SubmitPropertyRoute;
+export default function SubmitPropertyRoute() {
+  return <SubmitPropertyRouteImpl />;
+}

@@ -56,6 +56,12 @@
     /* ── Homzen border radius ────────────────────────────── */
     --radius-hz: 4px;
 
+    /* ── Layer stack (loaders, header, overlays) ─────────── */
+    --z-index-route: 110;
+    --z-index-header: 100;
+    --z-index-overlay: 280;
+    --z-index-loader: 300;
+
     /* ── Luxury Brand Palette ────────────────────────────── */
     --color-luxury-dark: var(--luxury-dark);
     --color-luxury-cream: var(--luxury-cream);
@@ -487,7 +493,7 @@ html {
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    background-color: color-mix(in oklch, var(--hz-line) 38%, var(--hz-sunken));
+    background-color: color-mix(in oklch, var(--hz-line) 52%, var(--hz-sunken));
     background-image: linear-gradient(
       115deg,
       color-mix(in oklch, var(--hz-sunken) 88%, var(--hz-line)) 0%,

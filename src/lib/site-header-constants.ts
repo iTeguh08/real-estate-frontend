@@ -1,0 +1,2 @@
+export const HEADER_SCROLL_BUFFER = 12;
+export const DEFAULT_HEADER_HEIGHT = 76;

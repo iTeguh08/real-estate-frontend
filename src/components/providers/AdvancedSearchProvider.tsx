@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { AdvancedSearchContext } from '@/hooks/useAdvancedSearch';
+import { AdvancedSearchContext } from '@/context/advanced-search-context';
 
 /**
  * Isolated from ListingFilters so opening/closing the sheet does not

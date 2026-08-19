@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeft, Loader2, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { CompareTableSkeleton } from '@/components/skeletons';
+import { CompareTableSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
 import { queryKeys } from '@/lib/query-keys';
@@ -127,7 +127,9 @@ export function ComparePage() {
         </div>
 
         {isLoading ? (
-          <CompareTableSkeleton />
+          <LoadingOverlay active minHeight="min-h-[320px]">
+            <CompareTableSkeleton />
+          </LoadingOverlay>
         ) : (
           <div ref={scrollRef} className="overflow-x-auto scroll-smooth border border-hz-border bg-hz-elevated">
             <table className="w-max min-w-full border-collapse font-poppins text-sm table-fixed">

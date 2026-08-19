@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { ArrowLeft } from 'lucide-react';
-import { AgentProfileSkeleton, PropertyCardSkeleton } from '@/components/skeletons';
+import { AgentProfileSkeleton, LoadingOverlay, PropertyCardSkeleton } from '@/components/skeletons';
 import { useAgentQuery, usePropertySearchQuery } from '@/hooks/queries';
 import { AppLink } from '@/lib/app-link';
 import { routes } from '@/lib/routes';
@@ -21,7 +21,11 @@ export function AgentProfilePage() {
   });
 
   if (isLoading || !router.isReady) {
-    return <AgentProfileSkeleton />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <AgentProfileSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   if (isError || !agent) {
@@ -46,13 +50,13 @@ export function AgentProfilePage() {
     return (
       <>
         <AgentProfileView agent={agent} listings={[]} listingsTotal={0} />
-        <div className="section-container max-w-5xl pb-16">
+        <LoadingOverlay active minHeight="min-h-[320px]" className="section-container max-w-5xl pb-16">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <PropertyCardSkeleton key={index} />
             ))}
           </div>
-        </div>
+        </LoadingOverlay>
       </>
     );
   }

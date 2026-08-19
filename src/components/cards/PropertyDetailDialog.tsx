@@ -14,8 +14,8 @@ import {
   ImageLightboxOverlay,
   ImageLightboxPanel,
   LightboxCloseButton,
-  preloadLightboxCover,
 } from '@/components/ui/image-lightbox';
+import { preloadLightboxCover } from '@/lib/lightbox-preload';
 import { MediaImage } from '@/components/ui/media-image';
 import { formatCount, formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import { productMediumUrl } from '@/lib/image-url';

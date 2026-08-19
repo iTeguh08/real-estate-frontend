@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { AuthContext, type AuthContextValue } from '@/hooks/useAuth';
+import { AuthContext, type AuthContextValue } from '@/context/auth-context';
 import {
   fetchCurrentUser,
   loginMember,

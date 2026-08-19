@@ -47,6 +47,9 @@ export function useAppNavigate() {
       const joiner = href.includes('?') ? '&' : '?';
       href = `${href}${joiner}from=${encodeURIComponent(opts.state.from)}`;
     }
+    if (href.startsWith('/') && !href.startsWith('/#')) {
+      void router.prefetch(href);
+    }
     const method = opts?.replace ? router.replace : router.push;
     void method(href);
   };
@@ -74,4 +77,15 @@ export function useAppSearchParams(): [
   );
 
   return [params, setSearchParams];
+}
+
+export function useAppParams(): Record<string, string | undefined> {
+  const router = useRouter();
+  return useMemo(() => {
+    const out: Record<string, string | undefined> = {};
+    for (const [key, value] of Object.entries(router.query)) {
+      out[key] = Array.isArray(value) ? value[0] : value;
+    }
+    return out;
+  }, [router.query]);
 }

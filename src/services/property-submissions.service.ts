@@ -113,6 +113,88 @@ export function reviewStatusLabel(status: SubmissionReviewStatus): string {
   }
 }
 
+export async function resubmitPropertyListing(
+  id: number | string,
+  data: PropertySubmissionData
+): Promise<PropertySubmissionResult> {
+  if (isMockDataEnabled()) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const idx = MOCK_SUBMISSIONS.findIndex((item) => String(item.id) === String(id));
+    const existing = idx >= 0 ? MOCK_SUBMISSIONS[idx] : null;
+    const submission: MyPropertySubmission = {
+      id: Number(id),
+      title: data.title,
+      type: data.type,
+      status: data.status,
+      location:
+        [data.street, data.city].filter(Boolean).join(', ') +
+        (data.country_code ? ` (${data.country_code})` : ''),
+      street: data.street,
+      city: data.city,
+      country_code: data.country_code,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      price: data.price,
+      review_status: 'pending',
+      review_notes: null,
+      created_at: existing?.created_at ?? new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    if (idx >= 0) {
+      MOCK_SUBMISSIONS[idx] = submission;
+    } else {
+      MOCK_SUBMISSIONS.unshift(submission);
+    }
+    return {
+      message: `Thanks! "${data.title || 'Your property'}" has been resubmitted for review.`,
+      submission,
+    };
+  }
+
+  const { turnstileToken, attachment, ...fields } = data;
+  const spamSafe = await withGuestSpamFields(
+    Object.fromEntries(
+      Object.entries(fields).filter(([, value]) => {
+        if (value === undefined || value === null || value === '') return false;
+        if (typeof value === 'number' && Number.isNaN(value)) return false;
+        return true;
+      })
+    ),
+    turnstileToken ?? ''
+  );
+
+  const path = `${submitPath()}/${id}`;
+
+  if (attachment) {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(spamSafe)) {
+      formData.append(key, String(value));
+    }
+    formData.append('attachment', attachment);
+
+    const response = await apiFetch<PropertySubmissionResponse>(path, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    return {
+      message: response.message,
+      submission: response.submission ?? null,
+    };
+  }
+
+  const response = await apiFetch<PropertySubmissionResponse>(path, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(spamSafe),
+  });
+
+  return {
+    message: response.message,
+    submission: response.submission ?? null,
+  };
+}
+
 export async function submitPropertyListing(
   data: PropertySubmissionData
 ): Promise<PropertySubmissionResult> {

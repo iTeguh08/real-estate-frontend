@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Eye, Trash2, X } from 'lucide-react';
-import { MyListingRowSkeleton, DashboardSkeleton } from '@/components/skeletons';
+import { AppLink } from '@/lib/app-link';
+import { DashboardSkeleton, LoadingOverlay, MyListingRowSkeleton } from '@/components/skeletons';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useCancelPropertySubmissionMutation,
@@ -103,7 +103,11 @@ export function MyListingsPage() {
   }
 
   if (authLoading) {
-    return <DashboardSkeleton />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <DashboardSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   if (!user || !isAgent) {
@@ -116,12 +120,12 @@ export function MyListingsPage() {
         <p className="mx-auto mt-4 max-w-md font-poppins text-sm text-hz-muted">
           This area is for agent accounts. Member accounts can still use wishlist and compare.
         </p>
-        <Link
+        <AppLink
           to={routes.dashboard}
           className="mt-8 inline-block rounded-hz border border-hz-border px-6 py-2.5 font-poppins text-sm font-medium text-hz-dark no-underline hover:border-hz-primary hover:text-hz-primary"
         >
           Back to dashboard
-        </Link>
+        </AppLink>
       </main>
     );
   }
@@ -129,13 +133,13 @@ export function MyListingsPage() {
   return (
     <main id="main-content" className="bg-hz-elevated py-10 md:py-16">
       <div className="section-container">
-        <Link
+        <AppLink
           to={routes.dashboard}
           className="mb-6 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors hover:text-hz-primary"
         >
           <ArrowLeft size={16} />
           Back to dashboard
-        </Link>
+        </AppLink>
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -149,20 +153,22 @@ export function MyListingsPage() {
               Track submissions awaiting approval, then edit and publish approved drafts.
             </p>
           </div>
-          <Link
+          <AppLink
             to={routes.submitProperty}
             className="rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white no-underline hover:bg-hz-primary-hover"
           >
             Submit property
-          </Link>
+          </AppLink>
         </div>
 
         {isLoading ? (
-          <div className="mt-10 space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <MyListingRowSkeleton key={i} />
-            ))}
-          </div>
+          <LoadingOverlay active minHeight="min-h-[320px]" className="mt-10">
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <MyListingRowSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : isError ? (
           <div className="mt-10 rounded-hz border border-red-200 bg-red-50 p-6">
             <p className="font-poppins text-sm font-medium text-red-700">
@@ -183,12 +189,12 @@ export function MyListingsPage() {
               Submit a property while logged in — it will show here as waiting for approval until an
               admin reviews it.
             </p>
-            <Link
+            <AppLink
               to={routes.submitProperty}
               className="mt-6 inline-block rounded-hz bg-hz-primary px-5 py-2.5 font-poppins text-sm font-semibold text-white no-underline hover:bg-hz-primary-hover"
             >
               Submit a property
-            </Link>
+            </AppLink>
           </div>
         ) : (
           <ul className="mt-10 space-y-3">
@@ -246,7 +252,7 @@ export function MyListingsPage() {
 
                     <div className="flex flex-wrap gap-2">
                       {listing.publish_status === 'published' ? (
-                        <Link
+                        <AppLink
                           to={routes.property(listing.slug)}
                           target="_blank"
                           rel="noreferrer"
@@ -254,16 +260,16 @@ export function MyListingsPage() {
                         >
                           <ExternalLink size={14} />
                           See in public
-                        </Link>
+                        </AppLink>
                       ) : null}
 
-                      <Link
+                      <AppLink
                         to={routes.myPropertyDetail(listing.id)}
                         className="inline-flex items-center gap-1.5 rounded-hz bg-hz-primary px-3 py-2 font-poppins text-xs font-semibold text-white no-underline hover:bg-hz-primary-hover"
                       >
                         <Eye size={14} />
                         View
-                      </Link>
+                      </AppLink>
 
                       <button
                         type="button"
@@ -340,7 +346,14 @@ function SubmissionRow({
             <X size={14} />
             {cancelling ? 'Cancelling…' : 'Cancel'}
           </button>
-        ) : null}
+        ) : (
+          <AppLink
+            href={`${routes.submitProperty}?resubmit=${submission.id}`}
+            className="inline-flex items-center gap-1.5 rounded-hz bg-hz-primary px-3 py-2 font-poppins text-xs font-semibold text-white no-underline hover:bg-hz-primary-hover"
+          >
+            Submit again
+          </AppLink>
+        )}
       </div>
     </li>
   );

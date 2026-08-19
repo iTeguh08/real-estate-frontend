@@ -54,6 +54,10 @@ export async function getFeaturedProperties(): Promise<Property[]> {
     query { featuredProperties { ${PROPERTY_FIELDS} } }
   `);
 
+  if (!data) {
+    return FEATURED_PROPERTIES;
+  }
+
   return mergePropertiesWithFallback(data.featuredProperties);
 }
 
@@ -213,6 +217,11 @@ export async function searchProperties(intent: ListingFilters): Promise<Property
     Object.keys(filters).length > 0 ? { filters } : {},
   );
 
+  if (!data) {
+    const filtered = filterPropertiesLocally(ALL_PROPERTIES, intent);
+    return paginateLocally(filtered, page, perPage);
+  }
+
   return {
     ...data.properties,
     items: mergePropertiesWithFallback(data.properties.items),
@@ -228,6 +237,11 @@ export async function getPropertyTypeCounts(): Promise<PropertyTypeCount[]> {
   const data = await graphqlFetch<{ propertyTypeCounts: PropertyTypeCount[] }>(`
     query { propertyTypeCounts { type count } }
   `);
+
+  if (!data) {
+    const { PROPERTY_TYPE_ITEMS } = await import('@/data/property-types');
+    return PROPERTY_TYPE_ITEMS;
+  }
 
   return data.propertyTypeCounts;
 }
@@ -246,6 +260,10 @@ export async function getBestValueProperties(): Promise<PropertyWithAgent[]> {
     }
   `);
 
+  if (!data) {
+    return BEST_VALUE_PROPERTIES;
+  }
+
   return data.bestValueProperties.map(mergePropertyWithAgentFallback);
 }
 
@@ -260,6 +278,10 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
     }
   `, { slug });
 
+  if (!data) {
+    return ALL_PROPERTIES.find((p) => p.slug === slug) ?? null;
+  }
+
   return data.property ? mergePropertyWithFallback(data.property) : null;
 }
 
@@ -273,6 +295,10 @@ export async function getPropertyById(id: string): Promise<Property | null> {
       propertyById(id: $id) { ${PROPERTY_FIELDS} }
     }
   `, { id });
+
+  if (!data) {
+    return ALL_PROPERTIES.find((p) => p.id === id) ?? null;
+  }
 
   return data.propertyById ? mergePropertyWithFallback(data.propertyById) : null;
 }
@@ -289,6 +315,11 @@ export async function getPropertyDetailBySlug(slug: string): Promise<PropertyDet
     }
   `, { slug });
 
+  if (!data) {
+    const property = ALL_PROPERTIES.find((p) => p.slug === slug);
+    return property ? enrichPropertyDetail(property) : null;
+  }
+
   return data.property ? mergePropertyDetailWithFallback(data.property) : null;
 }
 
@@ -303,6 +334,11 @@ export async function getPropertyDetailById(id: string): Promise<PropertyDetail 
       propertyById(id: $id) { ${PROPERTY_DETAIL_FIELDS} }
     }
   `, { id });
+
+  if (!data) {
+    const property = ALL_PROPERTIES.find((p) => p.id === id);
+    return property ? enrichPropertyDetail(property) : null;
+  }
 
   return data.propertyById ? mergePropertyDetailWithFallback(data.propertyById) : null;
 }

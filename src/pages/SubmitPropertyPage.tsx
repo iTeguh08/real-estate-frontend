@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Blueprint,
   Briefcase,
@@ -24,10 +24,13 @@ import { LocationPickerDynamic as LocationPicker } from '@/components/forms/Loca
 import type { LocationValue } from '@/components/forms/location-value';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
+import { TURNSTILE_MISSING_MESSAGE, useTurnstileGate } from '@/hooks/useTurnstileGate';
 import {
   useCancelPropertySubmissionMutation,
+  useResubmitPropertySubmissionMutation,
   useSubmitPropertyMutation,
 } from '@/hooks/mutations';
+import { useMyPropertySubmissionsQuery } from '@/hooks/queries';
 import { AppLink } from '@/lib/app-link';
 import { useAppSearchParams } from '@/lib/app-router';
 import { isAgentUser } from '@/lib/auth-roles';
@@ -356,8 +359,11 @@ function FileDropzone({
 export function SubmitPropertyPage() {
   const [searchParams] = useAppSearchParams();
   const linkedSlug = (searchParams.get('property') || searchParams.get('property_slug') || '').trim();
+  const resubmitParam = (searchParams.get('resubmit') || '').trim();
+  const resubmitId = resubmitParam ? Number(resubmitParam) : null;
   const { user } = useAuth();
   const isAgent = isAgentUser(user);
+  const { data: inboxSubmissions = [] } = useMyPropertySubmissionsQuery(isAgent);
 
   const [mode, setMode] = useState<PageMode>('compose');
   const [step, setStep] = useState<WizardStep>(0);
@@ -371,25 +377,54 @@ export function SubmitPropertyPage() {
   const [notice, setNotice] = useState('');
   const [submitError, setSubmitError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [turnstileToken, setTurnstileToken] = useState('');
+  const {
+    turnstileToken,
+    onTurnstileToken,
+    resetTurnstileToken,
+    turnstileRequired,
+    assertTurnstileReady,
+  } = useTurnstileGate();
   const [submissionId, setSubmissionId] = useState<number | null>(null);
   const [mapOpen, setMapOpen] = useState(true);
   const [stepHint, setStepHint] = useState('');
   // Values as submitted, kept in state so the success view can render them while
   // the form fields themselves are being cleared.
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
-  const onTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
 
   const submitMutation = useSubmitPropertyMutation();
+  const resubmitMutation = useResubmitPropertySubmissionMutation();
   const cancelMutation = useCancelPropertySubmissionMutation();
+  const activeResubmitId =
+    resubmitId !== null && Number.isFinite(resubmitId) ? resubmitId : null;
   const readOnly = mode === 'view';
   const canEditFields = mode === 'compose';
-  const busy = submitMutation.isPending || cancelMutation.isPending;
+  const busy = submitMutation.isPending || resubmitMutation.isPending || cancelMutation.isPending;
+  const finalSubmitDisabled = busy || (turnstileRequired && !turnstileToken);
 
   const attachmentPreview = useMemo(() => {
     if (!attachment || !attachment.type.startsWith('image/')) return null;
     return URL.createObjectURL(attachment);
   }, [attachment]);
+
+  useEffect(() => {
+    if (!activeResubmitId || readOnly) return;
+
+    const existing = inboxSubmissions.find((item) => item.id === activeResubmitId);
+    if (!existing || existing.review_status !== 'rejected') return;
+
+    setTitle(existing.title);
+    setType(existing.type as PropertyType);
+    setStatus(existing.status as PropertyStatus);
+    setLocation({
+      street: existing.street ?? '',
+      city: existing.city ?? '',
+      countryCode: existing.country_code ?? 'ID',
+      latitude: existing.latitude ?? null,
+      longitude: existing.longitude ?? null,
+    });
+    setPrice(String(existing.price));
+    setSubmissionId(existing.id);
+  }, [activeResubmitId, inboxSubmissions, readOnly]);
 
   useEffect(() => {
     return () => {
@@ -436,7 +471,7 @@ export function SubmitPropertyPage() {
     setNotice('');
     setSubmitError('');
     setFieldErrors({});
-    setTurnstileToken('');
+    resetTurnstileToken();
     setStep(0);
     setStepHint('');
     setSnapshot(null);
@@ -445,61 +480,88 @@ export function SubmitPropertyPage() {
     setMode('compose');
   };
 
+  const handleSubmitError = (error: unknown) => {
+    setNotice('');
+    const errors = getApiFieldErrors(error);
+    setFieldErrors(errors);
+    setSubmitError(apiErrorMessage(error, 'Something went wrong. Please try again.'));
+    if (errors.title || errors.type || errors.status || errors.price) setStep(0);
+    else if (
+      errors.street ||
+      errors.city ||
+      errors.country_code ||
+      errors.latitude ||
+      errors.longitude
+    ) {
+      setStep(1);
+    } else {
+      setStep(2);
+    }
+  };
+
   const sendSubmission = () => {
     setSubmitError('');
     setFieldErrors({});
     setNotice('');
 
-    submitMutation.mutate(
-      {
-        title,
-        type,
-        status,
-        street: location.street.trim(),
-        city: location.city.trim(),
-        country_code: location.countryCode,
-        location: composeLocation(location),
-        latitude: location.latitude,
-        longitude: location.longitude,
-        price: price.trim() === '' ? Number.NaN : Number(price),
-        property_slug: linkedSlug || undefined,
-        attachment,
-        turnstileToken,
-      },
-      {
-        onSuccess: (result) => {
-          persistSnapshot();
-          setNotice(result.message || 'Submitted successfully.');
-          setSubmissionId(result.submission?.id ?? null);
-          setAttachment(null);
-          setTurnstileToken('');
-          setFieldErrors({});
-          const fileInput = document.getElementById(
-            PROPERTY_FORM.attachment.id
-          ) as HTMLInputElement | null;
-          if (fileInput) fileInput.value = '';
-          setMode('view');
-        },
-        onError: (error) => {
-          setNotice('');
-          const errors = getApiFieldErrors(error);
-          setFieldErrors(errors);
-          setSubmitError(apiErrorMessage(error, 'Something went wrong. Please try again.'));
-          if (errors.title || errors.type || errors.status || errors.price) setStep(0);
-          else if (
-            errors.street ||
-            errors.city ||
-            errors.country_code ||
-            errors.latitude ||
-            errors.longitude
-          ) {
-            setStep(1);
-          } else {
-            setStep(2);
+    if (!assertTurnstileReady()) {
+      setSubmitError(TURNSTILE_MISSING_MESSAGE);
+      return;
+    }
+
+    const payload = {
+      title,
+      type,
+      status,
+      street: location.street.trim(),
+      city: location.city.trim(),
+      country_code: location.countryCode,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      price: price.trim() === '' ? Number.NaN : Number(price),
+      property_slug: linkedSlug || undefined,
+      attachment,
+      turnstileToken,
+    };
+
+    const mutation = activeResubmitId
+      ? resubmitMutation.mutate(
+          { id: activeResubmitId, data: payload },
+          {
+            onSuccess: (result) => {
+              persistSnapshot();
+              setNotice(result.message || 'Resubmitted successfully.');
+              setSubmissionId(result.submission?.id ?? activeResubmitId);
+              setAttachment(null);
+              resetTurnstileToken();
+              setFieldErrors({});
+              const fileInput = document.getElementById(
+                PROPERTY_FORM.attachment.id
+              ) as HTMLInputElement | null;
+              if (fileInput) fileInput.value = '';
+              setMode('view');
+            },
+            onError: handleSubmitError,
           }
-        },
-      }
-    );
+        )
+      : submitMutation.mutate(payload, {
+          onSuccess: (result) => {
+            persistSnapshot();
+            setNotice(result.message || 'Submitted successfully.');
+            setSubmissionId(result.submission?.id ?? null);
+            setAttachment(null);
+            resetTurnstileToken();
+            setFieldErrors({});
+            const fileInput = document.getElementById(
+              PROPERTY_FORM.attachment.id
+            ) as HTMLInputElement | null;
+            if (fileInput) fileInput.value = '';
+            setMode('view');
+          },
+          onError: handleSubmitError,
+        });
+
+    void mutation;
   };
 
   const handleCancelSubmission = () => {
@@ -1082,7 +1144,7 @@ export function SubmitPropertyPage() {
                   ) : (
                     <button
                       type="submit"
-                      disabled={busy}
+                      disabled={finalSubmitDisabled}
                       className={cn(
                         'inline-flex w-full items-center justify-center rounded-lg bg-hz-primary px-6 py-3 sm:min-w-45',
                         'font-poppins text-sm font-semibold text-white',

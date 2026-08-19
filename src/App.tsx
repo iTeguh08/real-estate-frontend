@@ -1,8 +1,13 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
-import { PageLoader } from '@/components/skeletons';
+import {
+  RouteLoadingSpinner,
+  resolveTransitionKind,
+  transitionKindHasSpinner,
+  TransitionBody,
+} from '@/components/skeletons';
 import { ListingFiltersProvider } from '@/components/providers/ListingFiltersProvider';
 import { completeBootstrapLoader, handoffBootstrapLoader } from '@/lib/bootstrap-loader';
 import { HomePage } from '@/pages/HomePage';
@@ -71,11 +76,21 @@ function BootstrapLoaderComplete() {
 }
 
 function RouteFallback() {
+  const location = useLocation();
+
   useEffect(() => {
     requestAnimationFrame(() => requestAnimationFrame(() => handoffBootstrapLoader()));
   }, []);
 
-  return <PageLoader variant="route" />;
+  const kind = resolveTransitionKind(`${location.pathname}${location.search}`);
+  const showSpinner = transitionKindHasSpinner(kind);
+
+  return (
+    <>
+      {showSpinner ? <RouteLoadingSpinner /> : null}
+      <TransitionBody kind={kind} />
+    </>
+  );
 }
 
 export default function App() {

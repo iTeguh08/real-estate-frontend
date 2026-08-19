@@ -1,4 +1,8 @@
-import BlogPage from '../../src/pages/blog/index';
+import type { ComponentProps } from 'react';
+import BlogPageImpl from '../../src/pages/blog/index';
 
-export { getStaticProps } from '../../src/pages/blog/index';
-export default BlogPage;
+export { getStaticProps } from '@/lib/route-data/blog-index';
+
+export default function BlogPage(props: ComponentProps<typeof BlogPageImpl>) {
+  return <BlogPageImpl {...props} />;
+}

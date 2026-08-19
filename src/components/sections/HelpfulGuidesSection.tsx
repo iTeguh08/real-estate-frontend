@@ -1,7 +1,7 @@
 import { AppLink } from '@/lib/app-link';
 import { ArrowRight } from 'lucide-react';
 import { ArticleCard } from '@/components/cards/ArticleCard';
-import { ArticleCardSkeleton } from '@/components/skeletons';
+import { ArticleCardSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { ARTICLE_PREVIEW_COUNT } from '@/data/articles';
 import { SITE_CONFIG } from '@/data/site-config';
 import { useArticlesQuery } from '@/hooks/queries';
@@ -13,8 +13,9 @@ interface HelpfulGuidesSectionProps {
 }
 
 export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSectionProps) {
-  const { data: fetchedArticles = [], isLoading } = useArticlesQuery('news');
+  const { data: fetchedArticles = [], isPending } = useArticlesQuery('news');
   const articles = articlesProp ?? fetchedArticles;
+  const showSkeleton = isPending && !articlesProp;
   const previewArticles = articles.slice(0, ARTICLE_PREVIEW_COUNT);
 
   return (
@@ -47,15 +48,17 @@ export function HelpfulGuidesSection({ articles: articlesProp }: HelpfulGuidesSe
           </AppLink>
         </div>
 
-        {isLoading && !articlesProp ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: ARTICLE_PREVIEW_COUNT }).map((_, i) => (
-              <ArticleCardSkeleton key={i} />
-            ))}
-          </div>
+        {showSkeleton ? (
+          <LoadingOverlay active minHeight="min-h-[400px]">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
+              {Array.from({ length: ARTICLE_PREVIEW_COUNT }).map((_, i) => (
+                <ArticleCardSkeleton key={i} />
+              ))}
+            </div>
+          </LoadingOverlay>
         ) : (
           <div
-            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300"
             role="list"
             aria-label="Latest news articles"
           >

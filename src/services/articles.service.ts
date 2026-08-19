@@ -42,6 +42,14 @@ export async function getArticles(category?: ArticleCategory, tag?: string): Pro
     },
   );
 
+  if (!data) {
+    return ARTICLES.filter((article) => {
+      if (category && article.category !== category) return false;
+      if (tag && !article.tags.includes(tag)) return false;
+      return true;
+    });
+  }
+
   return mergeArticlesWithFallback(data.articles.items);
 }
 
@@ -58,6 +66,10 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     }`,
     { slug },
   );
+
+  if (!data) {
+    return ARTICLES.find((article) => article.slug === slug) ?? null;
+  }
 
   return data.article ? mergeArticleWithFallback(data.article) : null;
 }

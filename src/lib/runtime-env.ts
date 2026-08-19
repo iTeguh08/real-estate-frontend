@@ -12,12 +12,29 @@ function readViteEnv(key: string): string | undefined {
   }
 }
 
+/**
+ * Next inlines only static `process.env.NEXT_PUBLIC_*` identifiers.
+ * `process.env[nextKey]` is empty in the browser bundle, so mock defaulted on.
+ */
+function readNextPublicEnv(nextKey: string): string | undefined {
+  if (typeof process === 'undefined') return undefined;
+  const nextEnv: Record<string, string | undefined> = {
+    NEXT_PUBLIC_USE_MOCK: process.env.NEXT_PUBLIC_USE_MOCK,
+    NEXT_PUBLIC_GRAPHQL_URL: process.env.NEXT_PUBLIC_GRAPHQL_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE,
+    NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+  };
+  const value = nextEnv[nextKey];
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
 function readPublicEnv(nextKey: string, viteKey: string): string | undefined {
-  if (typeof process !== 'undefined') {
-    const fromNext = process.env[nextKey];
-    if (typeof fromNext === 'string' && fromNext.length > 0) return fromNext;
-  }
-  return readViteEnv(viteKey);
+  return readNextPublicEnv(nextKey) ?? readViteEnv(viteKey);
 }
 
 export function getGraphqlUrl(): string {
@@ -25,7 +42,17 @@ export function getGraphqlUrl(): string {
 }
 
 export function getApiBaseUrl(): string {
-  return readPublicEnv('NEXT_PUBLIC_API_URL', 'VITE_API_URL') ?? '';
+  const explicit = readPublicEnv('NEXT_PUBLIC_API_URL', 'VITE_API_URL');
+  if (explicit) return explicit.replace(/\/$/, '');
+  // Next dev serves GET /contact as a page; POST must reach Laravel directly when
+  // no same-origin API proxy is configured (see next.config.mjs rewrites).
+  if (typeof process !== 'undefined') {
+    const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (typeof backend === 'string' && backend.length > 0) {
+      return backend.replace(/\/$/, '');
+    }
+  }
+  return '';
 }
 
 /** Same contract as Vite: mock is on unless the flag is the string `"false"`. */

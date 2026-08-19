@@ -14,7 +14,7 @@ import {
 import type { MediaSlotField } from '@/data/property-media-slots';
 import { subscribeNewsletter } from '@/services/newsletter.service';
 import { submitContactForm } from '@/services/contact.service';
-import { submitPropertyListing, cancelMyPropertySubmission } from '@/services/property-submissions.service';
+import { submitPropertyListing, resubmitPropertyListing, cancelMyPropertySubmission } from '@/services/property-submissions.service';
 import { toggleCompareItem } from '@/services/compare.service';
 import { toggleWishlistItem } from '@/services/wishlist.service';
 
@@ -36,6 +36,19 @@ export function useSubmitPropertyMutation() {
 
   return useMutation({
     mutationFn: submitPropertyListing,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.mySubmissions.list() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.myListings.list() });
+    },
+  });
+}
+
+export function useResubmitPropertySubmissionMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string | number; data: Parameters<typeof resubmitPropertyListing>[1] }) =>
+      resubmitPropertyListing(id, data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.mySubmissions.list() });
       void queryClient.invalidateQueries({ queryKey: queryKeys.myListings.list() });

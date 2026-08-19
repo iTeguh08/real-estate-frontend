@@ -1,12 +1,10 @@
-import { createContext, useContext } from 'react';
+import { useContext } from 'react';
+import {
+  AdvancedSearchContext,
+  type AdvancedSearchContextValue,
+} from '@/context/advanced-search-context';
 
-export interface AdvancedSearchContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-/** Provided by `@/components/providers/AdvancedSearchProvider`. */
-export const AdvancedSearchContext = createContext<AdvancedSearchContextValue | null>(null);
+export type { AdvancedSearchContextValue };
 
 export function useAdvancedSearch(): AdvancedSearchContextValue {
   const ctx = useContext(AdvancedSearchContext);

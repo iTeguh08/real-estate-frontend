@@ -262,6 +262,10 @@ export async function getAboutPage(): Promise<AboutPageContent> {
     }
   `);
 
+  if (!data) {
+    return ABOUT_PAGE_FALLBACK;
+  }
+
   return parseAboutPage(parsePageContent(data.page?.content ?? null));
 }
 
@@ -294,6 +298,10 @@ export async function getContactPage(): Promise<ContactPageContent> {
     }
   `);
 
+  if (!data) {
+    return CONTACT_PAGE_FALLBACK;
+  }
+
   const { kontak } = data;
 
   return {
@@ -325,6 +333,10 @@ export async function getHomepage(): Promise<HomepageContent> {
     }
   `);
 
+  if (!data) {
+    return HOMEPAGE_FALLBACK;
+  }
+
   const parsed = parseHomepage(parsePageContent(data.page?.content ?? null));
   return {
     ...parsed,
@@ -347,6 +359,10 @@ export async function getPrivacyPage(): Promise<PrivacyPageContent> {
       }
     }
   `);
+
+  if (!data) {
+    return PRIVACY_PAGE_FALLBACK;
+  }
 
   return {
     title: data.kebijakanPrivasi.title || PRIVACY_PAGE_FALLBACK.title,

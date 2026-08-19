@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { ArrowRight, Award, Check, Target, Users, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import type { AtmosphereImage } from '@/components/decor/SectionAtmosphere';
-import { CmsPageSkeleton } from '@/components/skeletons';
+import { AboutPageSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useAboutPageQuery } from '@/hooks/queries';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -57,7 +57,11 @@ export function AboutUsPage() {
   const brand = siteConfig?.brand ?? 'Homzen';
 
   if (isLoading || !page) {
-    return <CmsPageSkeleton variant="about" />;
+    return (
+      <LoadingOverlay active minHeight="min-h-[calc(100dvh-var(--header-height,76px))]">
+        <AboutPageSkeleton />
+      </LoadingOverlay>
+    );
   }
 
   const { hero, stats, mission, services, timeline, cta } = page;
@@ -89,7 +93,7 @@ export function AboutUsPage() {
               </h1>
               <p className="mt-5 font-poppins text-sm leading-relaxed text-hz-muted">{hero.description}</p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <Link
+                <AppLink
                   to={routes.contact}
                   className={cn(
                     'inline-flex items-center gap-2 rounded-hz bg-hz-primary px-6 py-3',
@@ -99,8 +103,8 @@ export function AboutUsPage() {
                 >
                   Get in Touch
                   <ArrowRight size={16} strokeWidth={1.75} />
-                </Link>
-                <Link
+                </AppLink>
+                <AppLink
                   to={{ pathname: routes.home, hash: '#listings' }}
                   className={cn(
                     'inline-flex items-center gap-2 rounded-hz bg-hz-sunken px-6 py-3',
@@ -109,7 +113,7 @@ export function AboutUsPage() {
                   )}
                 >
                   Browse Listings
-                </Link>
+                </AppLink>
               </div>
             </div>
 
@@ -330,7 +334,7 @@ export function AboutUsPage() {
           </h2>
           <p className="mx-auto mt-4 max-w-lg font-poppins text-sm leading-relaxed text-hz-footer-fg/70">{cta.description}</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link
+            <AppLink
               to={routes.contact}
               className={cn(
                 'inline-flex items-center gap-2 rounded-hz bg-hz-primary px-6 py-3',
@@ -340,8 +344,8 @@ export function AboutUsPage() {
             >
               Contact Us
               <ArrowRight size={16} strokeWidth={1.75} />
-            </Link>
-            <Link
+            </AppLink>
+            <AppLink
               to={routes.agents}
               className={cn(
                 'inline-flex items-center gap-2 rounded-hz border border-hz-footer-fg/25 px-6 py-3',
@@ -350,7 +354,7 @@ export function AboutUsPage() {
               )}
             >
               Meet Our Agents
-            </Link>
+            </AppLink>
           </div>
         </div>
       </section>

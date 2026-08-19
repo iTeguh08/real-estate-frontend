@@ -15,7 +15,7 @@ export function PageLoader({ className }: PageLoaderProps) {
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-hz-page',
+        'fixed inset-0 z-loader flex items-center justify-center bg-hz-page',
         className
       )}
       role="status"
