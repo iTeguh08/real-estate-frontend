@@ -23,6 +23,10 @@ public/bg/_original/
 dist/bg/_original/
 *:Zone.Identifier
 
+# Agent skills — local only, never ship
+.cursor/skills/ui-ux-pro-max/
+.agents/skills/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
