@@ -37,16 +37,35 @@ function readPublicEnv(nextKey: string, viteKey: string): string | undefined {
   return readNextPublicEnv(nextKey) ?? readViteEnv(viteKey);
 }
 
+/** SSR/Node cannot fetch relative URLs; prefix with internal Apache/Laravel origin. */
+function resolveServerAbsolute(url: string): string {
+  if (typeof window !== 'undefined' || !url.startsWith('/')) return url;
+  const origin = (
+    (typeof process !== 'undefined' && process.env.INTERNAL_BACKEND_ORIGIN) ||
+    'http://127.0.0.1'
+  ).replace(/\/$/, '');
+  return `${origin}${url}`;
+}
+
 export function getGraphqlUrl(): string {
-  return readPublicEnv('NEXT_PUBLIC_GRAPHQL_URL', 'VITE_GRAPHQL_URL') ?? 'http://localhost:8080/graphql';
+  const url =
+    readPublicEnv('NEXT_PUBLIC_GRAPHQL_URL', 'VITE_GRAPHQL_URL') ??
+    'http://localhost:8080/graphql';
+  return resolveServerAbsolute(url);
 }
 
 export function getApiBaseUrl(): string {
   const explicit = readPublicEnv('NEXT_PUBLIC_API_URL', 'VITE_API_URL');
-  if (explicit) return explicit.replace(/\/$/, '');
-  // Next dev serves GET /contact as a page; POST must reach Laravel directly when
-  // no same-origin API proxy is configured (see next.config.mjs rewrites).
+  if (explicit) return resolveServerAbsolute(explicit.replace(/\/$/, ''));
+  // Browser: same-origin (Apache exclusions / Next rewrites). Never use
+  // NEXT_PUBLIC_BACKEND_URL here — it is often 127.0.0.1 for server rewrites.
+  if (typeof window !== 'undefined') return '';
+  // Server: internal origin for SSR fetches when no public API URL is set.
   if (typeof process !== 'undefined') {
+    const internal = process.env.INTERNAL_BACKEND_ORIGIN;
+    if (typeof internal === 'string' && internal.length > 0) {
+      return internal.replace(/\/$/, '');
+    }
     const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (typeof backend === 'string' && backend.length > 0) {
       return backend.replace(/\/$/, '');

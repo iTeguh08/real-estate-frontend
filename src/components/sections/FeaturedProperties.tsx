@@ -141,7 +141,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
             role="list"
             aria-label="Featured property listings"
           >
-            {properties.map((property, index) => (
+            {properties.map((property) => (
               <div key={property.id} role="listitem" className="h-full">
                 <PropertyCard
                   property={property}
@@ -150,9 +150,7 @@ export function FeaturedProperties({ properties: propertiesProp }: FeaturedPrope
                   uniformHeight
                   onSelect={setSelectedProperty}
                   className="rounded-hz"
-                  imageLoadPriority={
-                    index === 0 ? 'high' : index < 8 ? 'low' : 'auto'
-                  }
+                  imageLoadPriority="auto"
                 />
               </div>
             ))}

@@ -1,5 +1,6 @@
 import { TestimonialCard } from '@/components/cards/TestimonialCard';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { DotCarouselSlide, DotCarouselTrack } from '@/components/ui/DotCarouselTrack';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { TESTIMONIALS } from '@/data/testimonials';
@@ -39,11 +40,6 @@ export function WhatPeopleSaySection({
     testimonials.length
   );
 
-  const visibleTestimonials = [
-    testimonials[activeIndex],
-    testimonials[(activeIndex + 1) % testimonials.length],
-  ];
-
   return (
     <section
       id="testimonials"
@@ -73,22 +69,34 @@ export function WhatPeopleSaySection({
       </div>
 
       <div className="section-container relative z-20">
-        <div
-          className="-mt-28 touch-pan-y md:-mt-40"
-          {...swipeHandlers}
+        <DotCarouselTrack
+          activeIndex={activeIndex}
+          swipeHandlers={swipeHandlers}
+          className="-mt-28 md:-mt-40"
         >
-          <div
-            className="grid grid-cols-1 gap-5 sm:grid-cols-2"
-            role="list"
-            aria-label="Client testimonials"
-          >
-            {visibleTestimonials.map((testimonial) => (
-              <div key={testimonial.id} role="listitem" className="h-full">
-                <TestimonialCard testimonial={testimonial} />
-              </div>
-            ))}
-          </div>
-        </div>
+          {testimonials.map((start, slideIndex) => {
+            const pair = [
+              start,
+              testimonials[(slideIndex + 1) % testimonials.length],
+            ];
+            return (
+              <DotCarouselSlide key={start.id}>
+                <div
+                  className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+                  role="list"
+                  aria-label="Client testimonials"
+                  aria-hidden={slideIndex !== activeIndex}
+                >
+                  {pair.map((testimonial) => (
+                    <div key={`${start.id}-${testimonial.id}`} role="listitem" className="h-full">
+                      <TestimonialCard testimonial={testimonial} />
+                    </div>
+                  ))}
+                </div>
+              </DotCarouselSlide>
+            );
+          })}
+        </DotCarouselTrack>
 
         <CarouselControls
           count={testimonials.length}

@@ -3,6 +3,7 @@ import { AppLink } from '@/lib/app-link';
 import { ArrowRight } from 'lucide-react';
 import { AgentCard } from '@/components/cards/AgentCard';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { DotCarouselSlide, DotCarouselTrack } from '@/components/ui/DotCarouselTrack';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
 import { useAgentsQuery } from '@/hooks/queries';
@@ -71,8 +72,6 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
     setActiveIndex(0);
   }, [agentsPerSlide, setActiveIndex]);
 
-  const visibleAgents = agentSlides[activeIndex] ?? [];
-
   return (
     <section
       id="agents"
@@ -127,7 +126,7 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
 
         {showSkeleton ? (
           <LoadingOverlay active minHeight="min-h-[360px]">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 animate-in fade-in duration-300">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <AgentCardSkeleton key={i} />
               ))}
@@ -135,20 +134,24 @@ export function MeetOurAgentsSection({ agents: agentsProp }: MeetOurAgentsSectio
           </LoadingOverlay>
         ) : (
           <>
-            <div
-              className="touch-pan-y animate-in fade-in duration-300"
+            <DotCarouselTrack
+              activeIndex={activeIndex}
+              swipeHandlers={swipeHandlers}
               role="list"
               aria-label="Real estate agents"
-              {...swipeHandlers}
             >
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {visibleAgents.map((agent) => (
-                  <div key={agent.id} role="listitem" className="h-full">
-                    <AgentCard agent={agent} />
+              {agentSlides.map((slideAgents, slideIndex) => (
+                <DotCarouselSlide key={slideIndex} aria-hidden={slideIndex !== activeIndex}>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {slideAgents.map((agent) => (
+                      <div key={agent.id} role="listitem" className="h-full">
+                        <AgentCard agent={agent} />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </DotCarouselSlide>
+              ))}
+            </DotCarouselTrack>
 
             <CarouselControls
               count={agentSlides.length}

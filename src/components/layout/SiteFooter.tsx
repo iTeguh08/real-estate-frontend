@@ -5,8 +5,8 @@ import {
   MapPin,
   Phone,
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { AppLink } from '@/lib/app-link';
-import { NewsletterForm } from '@/components/layout/NewsletterForm';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { SITE_CONFIG } from '@/data/site-config';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,6 +15,15 @@ import { useTheme } from '@/hooks/useTheme';
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import type { SiteConfig } from '@/services/site.service';
+
+/** Zod + RHF newsletter — defer so it stays out of the shared _app chunk. */
+const NewsletterForm = dynamic(
+  () =>
+    import('@/components/layout/NewsletterForm').then((m) => ({
+      default: m.NewsletterForm,
+    })),
+  { ssr: false },
+);
 
 type SocialIconProps = { className?: string };
 

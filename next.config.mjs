@@ -49,7 +49,11 @@ const nextConfig = {
   },
   // Root `pages/` is the Next router. Vite SPA views stay in `src/pages/*Page.tsx`.
   async rewrites() {
-    const backend = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8080';
+    const backend = (
+      process.env.INTERNAL_BACKEND_ORIGIN ??
+      process.env.NEXT_PUBLIC_BACKEND_URL ??
+      'http://localhost:8080'
+    ).replace(/\/$/, '');
     return [
       { source: '/graphql', destination: `${backend}/graphql` },
       { source: '/api/:path*', destination: `${backend}/api/:path*` },

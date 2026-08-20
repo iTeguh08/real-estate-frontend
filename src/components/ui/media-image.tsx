@@ -160,7 +160,8 @@ export function MediaImage({
 
   const revealed = imageReady && minElapsed;
   const showSkeleton = !noSkeleton && !revealed && !loadFailed;
-  const fadeInReveal = true;
+  // LCP/priority images must not start at opacity:0 — PSI ignores invisible paint.
+  const fadeInReveal = fetchPriority !== 'high' && loading !== 'eager';
   const showPlaceholder = loadFailed || (!activeSrc && !showSkeleton);
 
   useEffect(() => {

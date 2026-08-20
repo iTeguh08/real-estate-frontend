@@ -3,11 +3,9 @@
 @source not "../.next";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* Latin-only — skip Devanagari/latin-ext subsets Homzen UI does not need. */
+/* Latin-only — 400 + 600 cover body/medium/semibold; skip 500/700 files. */
 @import "@fontsource/poppins/latin-400.css";
-@import "@fontsource/poppins/latin-500.css";
 @import "@fontsource/poppins/latin-600.css";
-@import "@fontsource/poppins/latin-700.css";
 
 @theme inline {
     /* ── Responsive breakpoints & container tokens ─────── */
@@ -25,6 +23,9 @@
     --font-display: 'Poppins', sans-serif;
     --font-sans: 'Poppins', sans-serif;
     --font-poppins: 'Poppins', sans-serif;
+    --font-weight-medium: 600;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 600;
 
     /* ── Homzen semantic surfaces ───────────────────────── */
     --color-hz-primary: var(--hz-primary);

@@ -5,6 +5,7 @@ import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
 import type { HomepageContent } from '@/data/cms-fallbacks';
 import { queryKeys } from '@/lib/query-keys';
 import { listingFiltersQueryVars } from '@/lib/listing-filter-params';
+import { productLargeUrl } from '@/lib/image-url';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { routes } from '@/lib/routes';
 import type { SiteConfig } from '@/services/site.service';
@@ -72,7 +73,12 @@ export default function HomePage({
     `${siteConfig.brand} — ${homepage.hero.headline.replace(/\n/g, ' ')}`;
   const description = homepage.seo?.metaDescription || homepage.hero.subheadline;
   const ogImage = absoluteUrl(homepage.seo?.ogImage || homepage.hero.backgroundImage);
-  const canonical = homepage.seo?.canonicalUrl || absoluteUrl(routes.home) || routes.home;
+  const siteCanonical = absoluteUrl(routes.home) || routes.home;
+  const cmsCanonical = homepage.seo?.canonicalUrl?.trim() || '';
+  const canonical =
+    cmsCanonical && !/localhost|127\.0\.0\.1/i.test(cmsCanonical) ? cmsCanonical : siteCanonical;
+    const lcpImage =
+    productLargeUrl(homepage.hero.backgroundImage) || homepage.hero.backgroundImage || '';
 
   const viewProps: HomeViewProps = {
     homepage,
@@ -90,6 +96,9 @@ export default function HomePage({
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
+        {lcpImage ? (
+          <link rel="preload" as="image" href={lcpImage} fetchPriority="high" />
+        ) : null}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />

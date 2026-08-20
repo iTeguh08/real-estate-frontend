@@ -1,14 +1,22 @@
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { AppShell } from '@/components/layout/AppShell';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ListingFiltersProvider } from '@/components/providers/ListingFiltersProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import { ThemedToaster } from '@/components/layout/ThemedToaster';
 import { queryClientOptions } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
+
+const ThemedToaster = dynamic(
+  () =>
+    import('@/components/layout/ThemedToaster').then((m) => ({
+      default: m.ThemedToaster,
+    })),
+  { ssr: false },
+);
 
 function RouteProgressBar() {
   const router = useRouter();

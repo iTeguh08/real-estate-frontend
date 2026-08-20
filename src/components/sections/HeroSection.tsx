@@ -1,11 +1,10 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Search, LocateFixed, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { MediaImage } from '@/components/ui/media-image';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
-import { withCoverBox } from '@/lib/image-url';
-import { preloadImage } from '@/lib/preload-image';
+import { productLargeUrl } from '@/lib/image-url';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useHomepageQuery } from '@/hooks/queries';
@@ -31,14 +30,10 @@ export function HeroSection() {
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
-  const heroMediaUrl = hero?.backgroundImage ?? FALLBACK_HERO_IMAGE;
-  const heroPreloadSrc = withCoverBox(heroMediaUrl, 640, 551, { maxEdge: 1440 });
+  const heroMediaUrl =
+    productLargeUrl(hero?.backgroundImage) || hero?.backgroundImage || FALLBACK_HERO_IMAGE;
   const { filters, applySearch } = useListingFilters();
   const { setOpen: setAdvancedSearchOpen } = useAdvancedSearch();
-
-  useEffect(() => {
-    return preloadImage(heroPreloadSrc);
-  }, [heroPreloadSrc]);
 
   // A cleared status keeps whichever tab the visitor picked, matching the old sync.
   const tabFromFilters: HeroTab | null =

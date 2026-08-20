@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteBrandingEffect } from '@/components/layout/SiteBrandingEffect';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { ScrollToHash } from '@/components/layout/ScrollToHash';
-import { AdvancedSearchSheet } from '@/components/search/AdvancedSearchSheet';
-import { CompareBar } from '@/components/compare/CompareBar';
 import { useCompareBarVisible } from '@/hooks/useCompareBarVisible';
 import { AdvancedSearchProvider } from '@/components/providers/AdvancedSearchProvider';
 import {
@@ -12,6 +11,22 @@ import {
   SiteHeaderSpacer,
 } from '@/components/providers/SiteHeaderProvider';
 import { cn } from '@/lib/utils';
+
+/** Sheet/compare chrome — keep out of the homepage critical JS path. */
+const AdvancedSearchSheet = dynamic(
+  () =>
+    import('@/components/search/AdvancedSearchSheet').then((m) => ({
+      default: m.AdvancedSearchSheet,
+    })),
+  { ssr: false },
+);
+const CompareBar = dynamic(
+  () =>
+    import('@/components/compare/CompareBar').then((m) => ({
+      default: m.CompareBar,
+    })),
+  { ssr: false },
+);
 
 export function AppShell({ children }: { children: ReactNode }) {
   const showCompareBar = useCompareBarVisible();

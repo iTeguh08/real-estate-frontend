@@ -52,7 +52,7 @@ export function PropertyVillaCtaBanner({
           </div>
 
           <div className="relative flex flex-col justify-center overflow-hidden bg-hz-footer px-8 py-14 md:px-14 md:py-16">
-            <SectionAtmosphere tone="dark" intensity="default" variant="edge" side="right" image="interior-dark" className="max-md:hidden" />
+            <SectionAtmosphere tone="dark" intensity="quiet" variant="edge" side="right" image="interior-dark" photoOpacity={0.2} className="max-md:hidden" />
             <div className="relative z-10">
             <p className="font-poppins text-[11px] font-semibold uppercase tracking-[0.28em] text-hz-footer-fg/65">
               Ready to visit?

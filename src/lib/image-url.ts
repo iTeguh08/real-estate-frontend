@@ -79,18 +79,9 @@ function toStaticStorageUrl(url: string): string {
 
 type ProductVariant = 'thumb' | 'medium' | 'large';
 
-function isAbsoluteStorageUrl(url: string): boolean {
-  try {
-    const u = new URL(url);
-    return (u.protocol === 'http:' || u.protocol === 'https:') && u.pathname.includes('/storage/');
-  } catch {
-    return false;
-  }
-}
-
 /**
  * Pick a static backend variant for /storage/ product URLs.
- * Card grids should use `thumb`; detail heroes use `medium` / `large`.
+ * thumb (~450) | medium (~800) | large (~2000). Always rewrite — API may hand any sibling.
  */
 export function productVariantUrl(url: string, variant: ProductVariant): string {
   if (!url) return url;
@@ -121,34 +112,34 @@ export function productVariantUrl(url: string, variant: ProductVariant): string 
   }
 }
 
-/** Listing / card cover — thumb when rewriting mock paths; trust API absolute /storage/ URLs. */
+/** Listing / card / hero strip — ~450px. */
 export function productThumbUrl(url: string | null | undefined): string {
   if (!url) return '';
-  if (isAbsoluteStorageUrl(url)) return toStaticStorageUrl(url);
   return productVariantUrl(url, 'thumb');
 }
 
-/** Mid-size section media (~800px max edge). */
+/** Mid-size gallery / dialog media — ~800px. */
 export function productMediumUrl(url: string | null | undefined): string {
   if (!url) return '';
-  if (isAbsoluteStorageUrl(url)) {
-    const staticUrl = toStaticStorageUrl(url);
-    // API fallback may already be large/medium — don't rewrite to missing sibling variants.
-    if (!/\.thumb\.webp/i.test(staticUrl)) return staticUrl;
-  }
   return productVariantUrl(url, 'medium');
 }
 
-/** Gallery bento tile — thumb for ~240px slots; wider/taller frames use original/large. */
+/** Detail hero / lightbox — ~2000px. */
+export function productLargeUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  return productVariantUrl(url, 'large');
+}
+
+/** Gallery bento tile — thumb for tiny slots; medium for the rest (never large/original). */
 export function galleryTileMediaUrl(
   url: string | null | undefined,
   coverEstimate: { width: number; height: number },
-  originalUrl?: string | null,
+  _originalUrl?: string | null,
 ): string {
   if (!url) return '';
+  void _originalUrl;
   const displayEdge = Math.max(coverEstimate.width, coverEstimate.height);
   if (displayEdge <= 260) return productThumbUrl(url);
-  if (originalUrl) return toStaticStorageUrl(originalUrl);
   return productMediumUrl(url);
 }
 
@@ -337,14 +328,14 @@ export function lightboxMediaUrl(
   return resizableMediaBase(originalUrl || previewUrl);
 }
 
-/** Lightbox uses large/static URL + CSS object-cover (no on-the-fly). */
+/** Lightbox uses large static URL + CSS object-cover (no on-the-fly). */
 export function lightboxCoverUrl(
   previewUrl: string,
   originalUrl: string | null | undefined,
   size: 'modal' | 'gallery' = 'modal',
 ): string {
   void size;
-  return lightboxMediaUrl(previewUrl, originalUrl);
+  return productLargeUrl(originalUrl || previewUrl);
 }
 
 /** Preview URL for property cover — card grids use thumb variant. */
@@ -353,8 +344,8 @@ export function propertyPreviewUrl(
   displayWidth = GRID_CARD_PREVIEW_WIDTH,
 ): string {
   if (displayWidth <= 480) return productThumbUrl(property.imageUrl);
-  if (displayWidth <= 1200) return productVariantUrl(property.imageUrl, 'medium');
-  return productVariantUrl(property.imageUrl, 'large');
+  if (displayWidth <= 1200) return productMediumUrl(property.imageUrl);
+  return productLargeUrl(property.imageUrl);
 }
 
 /**

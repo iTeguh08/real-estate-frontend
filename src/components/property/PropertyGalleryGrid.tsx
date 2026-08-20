@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { DotCarouselSlide, DotCarouselTrack } from '@/components/ui/DotCarouselTrack';
 import { ImageLightboxPanel, LightboxCloseButton } from '@/components/ui/image-lightbox';
 import { MediaImage } from '@/components/ui/media-image';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
@@ -271,22 +272,21 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
             </p>
           </div>
 
-          <div className="touch-pan-y overflow-hidden md:hidden" {...mobileCarousel.swipeHandlers}>
-            <div
-              className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-              style={{ transform: `translateX(-${mobileCarousel.activeIndex * 100}%)` }}
-            >
-              {mobilePages.map((pageImages, pageIndex) => (
-                <div key={pageIndex} className="w-full shrink-0">
-                  <GalleryMobilePage
-                    pageImages={pageImages}
-                    pageOffset={pageIndex * PROPERTY_GALLERY_MOBILE_PAGE_SIZE}
-                    onOpen={setLightboxIndex}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <DotCarouselTrack
+            activeIndex={mobileCarousel.activeIndex}
+            swipeHandlers={mobileCarousel.swipeHandlers}
+            className="md:hidden"
+          >
+            {mobilePages.map((pageImages, pageIndex) => (
+              <DotCarouselSlide key={pageIndex}>
+                <GalleryMobilePage
+                  pageImages={pageImages}
+                  pageOffset={pageIndex * PROPERTY_GALLERY_MOBILE_PAGE_SIZE}
+                  onOpen={setLightboxIndex}
+                />
+              </DotCarouselSlide>
+            ))}
+          </DotCarouselTrack>
 
           {mobilePageCount > 1 ? (
             <CarouselControls
@@ -300,23 +300,22 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
             />
           ) : null}
 
-          <div className="hidden touch-pan-y overflow-hidden md:block" {...desktopCarousel.swipeHandlers}>
-            <div
-              className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-              style={{ transform: `translateX(-${desktopCarousel.activeIndex * 100}%)` }}
-            >
-              {desktopPages.map((pageImages, pageIndex) => (
-                <div key={pageIndex} className="w-full shrink-0">
-                  <GalleryBentoPage
-                    pageImages={pageImages}
-                    pageOffset={pageIndex * PROPERTY_GALLERY_PAGE_SIZE}
-                    onOpen={setLightboxIndex}
-                    reversed={pageIndex % 2 === 1}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <DotCarouselTrack
+            activeIndex={desktopCarousel.activeIndex}
+            swipeHandlers={desktopCarousel.swipeHandlers}
+            className="hidden md:block"
+          >
+            {desktopPages.map((pageImages, pageIndex) => (
+              <DotCarouselSlide key={pageIndex}>
+                <GalleryBentoPage
+                  pageImages={pageImages}
+                  pageOffset={pageIndex * PROPERTY_GALLERY_PAGE_SIZE}
+                  onOpen={setLightboxIndex}
+                  reversed={pageIndex % 2 === 1}
+                />
+              </DotCarouselSlide>
+            ))}
+          </DotCarouselTrack>
 
           {desktopPageCount > 1 ? (
             <CarouselControls

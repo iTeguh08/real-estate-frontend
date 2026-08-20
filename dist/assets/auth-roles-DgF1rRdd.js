@@ -1,1 +1,0 @@
-function e(e){return e?.role===`agent`}export{e as t};

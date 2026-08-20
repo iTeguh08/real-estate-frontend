@@ -1,6 +1,7 @@
 import { AppLink } from '@/lib/app-link';
 import { cn } from '@/lib/utils';
 import { CarouselControls } from '@/components/ui/CarouselControls';
+import { DotCarouselSlide, DotCarouselTrack } from '@/components/ui/DotCarouselTrack';
 import { MediaImage } from '@/components/ui/media-image';
 import { SectionAtmosphere } from '@/components/decor/SectionAtmosphere';
 import { useDotCarousel } from '@/hooks/useDotCarousel';
@@ -197,9 +198,8 @@ export function LocationSection({
   const { activeIndex, setActiveIndex, goPrev, goNext, swipeHandlers } = useDotCarousel(
     locationSlides.length
   );
-  const activeSlide = locationSlides[activeIndex];
 
-  if (!activeSlide) {
+  if (locationSlides.length === 0) {
     return null;
   }
 
@@ -254,23 +254,30 @@ export function LocationSection({
           </h2>
         </div>
 
-        <div
+        <DotCarouselTrack
+          activeIndex={activeIndex}
+          swipeHandlers={swipeHandlers}
           role="list"
           aria-label="Available locations"
-          className="touch-pan-y"
-          {...swipeHandlers}
         >
-          <div className="flex flex-col gap-9">
-            {activeSlide.map((row, index) => (
-              <LocationRow
-                key={row.wide.id}
-                row={row}
-                reverseOrder={index === 1}
-                lightSurface={!isNavy}
-              />
-            ))}
-          </div>
-        </div>
+          {locationSlides.map((slide, slideIndex) => (
+            <DotCarouselSlide
+              key={slide.map((row) => row.wide.id).join('-')}
+              aria-hidden={slideIndex !== activeIndex}
+            >
+              <div className="flex flex-col gap-9">
+                {slide.map((row, index) => (
+                  <LocationRow
+                    key={row.wide.id}
+                    row={row}
+                    reverseOrder={index === 1}
+                    lightSurface={!isNavy}
+                  />
+                ))}
+              </div>
+            </DotCarouselSlide>
+          ))}
+        </DotCarouselTrack>
 
         <CarouselControls
           count={locationSlides.length}

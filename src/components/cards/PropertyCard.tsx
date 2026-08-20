@@ -115,7 +115,7 @@ export function PropertyCard({
           }
           coverMaxWidth={640}
           alt={`${title} — ${locationLabel}`}
-          loading={imageLoadPriority === 'auto' ? 'lazy' : 'eager'}
+          loading={imageLoadPriority === 'high' ? 'eager' : 'lazy'}
           fetchPriority={imageLoadPriority === 'high' ? 'high' : imageLoadPriority === 'low' ? 'low' : undefined}
           decoding="async"
           className="object-cover transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"

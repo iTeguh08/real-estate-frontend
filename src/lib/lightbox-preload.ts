@@ -24,16 +24,22 @@ export function preloadLightboxCover(
 }
 
 export function lightboxFrame(size: LightboxSize) {
+  // Cap width so 16:10 height never exceeds ~85vh (avoids tall phone portrait boxes).
+  const frameClass =
+    size === 'gallery'
+      ? 'aspect-[16/10] h-auto w-[min(96vw,1200px,calc(85vh*1.6))]'
+      : 'aspect-[16/10] h-auto w-[min(96vw,1280px,calc(85vh*1.6))]';
+
   if (size === 'gallery') {
     return {
       boxW: GALLERY_LIGHTBOX_WIDTH,
       boxH: GALLERY_LIGHTBOX_HEIGHT,
-      frameClass: 'h-[min(90vh,780px)] w-[min(96vw,1200px)]',
+      frameClass,
     };
   }
   return {
     boxW: MODAL_LIGHTBOX_WIDTH,
     boxH: MODAL_LIGHTBOX_HEIGHT,
-    frameClass: 'h-[min(90vh,800px)] w-[min(96vw,1280px)]',
+    frameClass,
   };
 }

@@ -8,6 +8,7 @@ import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { VILLA_SECTION_GUTTERS } from '@/lib/property-layout';
+import { productLargeUrl, productThumbUrl } from '@/lib/image-url';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCompare } from '@/hooks/useCompare';
 import type { PropertyDetail } from '@/types';
@@ -18,7 +19,8 @@ export interface PropertyDetailHeroProps {
 }
 
 type ShowcaseThumb = {
-  preview: string;
+  /** Canonical media URL — variants derived at render (thumb strip / large hero). */
+  base: string;
   alt: string;
 };
 
@@ -157,11 +159,11 @@ function HeroActionButtons({
 
 interface ShowcaseThumbGridProps {
   thumbs: ShowcaseThumb[];
-  activePreview: string;
-  onSelect: (preview: string) => void;
+  activeBase: string;
+  onSelect: (base: string) => void;
 }
 
-function ShowcaseThumbGrid({ thumbs, activePreview, onSelect }: ShowcaseThumbGridProps) {
+function ShowcaseThumbGrid({ thumbs, activeBase, onSelect }: ShowcaseThumbGridProps) {
   return (
     <div className="mx-auto max-w-4xl">
       <div
@@ -173,13 +175,13 @@ function ShowcaseThumbGrid({ thumbs, activePreview, onSelect }: ShowcaseThumbGri
         aria-label="Property showcase photos"
       >
         {thumbs.map((thumb, index) => {
-          const isActive = thumb.preview === activePreview;
+          const isActive = thumb.base === activeBase;
           return (
             <button
-              key={thumb.preview}
+              key={thumb.base}
               type="button"
               role="listitem"
-              onClick={() => onSelect(thumb.preview)}
+              onClick={() => onSelect(thumb.base)}
               aria-label={`Show ${thumb.alt}`}
               aria-pressed={isActive}
               aria-current={isActive ? 'true' : undefined}
@@ -190,7 +192,7 @@ function ShowcaseThumbGrid({ thumbs, activePreview, onSelect }: ShowcaseThumbGri
             >
               <span className="relative block aspect-[5/4] overflow-hidden rounded-hz max-md:rounded-xl">
                 <MediaImage
-                  mediaUrl={thumb.preview}
+                  mediaUrl={productThumbUrl(thumb.base)}
                   fitCover
                   coverEstimate={{ width: 220, height: 176 }}
                   coverMaxWidth={480}
@@ -225,16 +227,16 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
   const compared = isCompared(id);
 
   const showcaseThumbs: ShowcaseThumb[] = [
-    { preview: imageUrl, alt: `${title} — cover` },
-    { preview: layout1Media.showcaseOneUrl ?? '', alt: `${title} — showcase 1` },
-    { preview: layout1Media.showcaseTwoUrl ?? '', alt: `${title} — showcase 2` },
-    { preview: layout1Media.showcaseThreeUrl ?? '', alt: `${title} — showcase 3` },
+    { base: imageUrl, alt: `${title} — cover` },
+    { base: layout1Media.showcaseOneUrl ?? '', alt: `${title} — showcase 1` },
+    { base: layout1Media.showcaseTwoUrl ?? '', alt: `${title} — showcase 2` },
+    { base: layout1Media.showcaseThreeUrl ?? '', alt: `${title} — showcase 3` },
   ].filter(
     (thumb, index, list) =>
-      Boolean(thumb.preview) && list.findIndex((t) => t.preview === thumb.preview) === index
+      Boolean(thumb.base) && list.findIndex((t) => t.base === thumb.base) === index
   );
 
-  const [activePreview, setActivePreview] = useState(imageUrl);
+  const [activeBase, setActiveBase] = useState(imageUrl);
 
   const actionButtons = (
     <HeroActionButtons
@@ -251,8 +253,8 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
 
   const heroImage = (
     <MediaImage
-      key={activePreview}
-      mediaUrl={activePreview}
+      key={activeBase}
+      mediaUrl={productLargeUrl(activeBase)}
       fitCover
       coverEstimate={{ width: 1280, height: 720 }}
       coverMaxWidth={1600}
@@ -281,8 +283,8 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
             <div className="relative z-20 -mt-10 pb-4">
               <ShowcaseThumbGrid
                 thumbs={showcaseThumbs}
-                activePreview={activePreview}
-                onSelect={setActivePreview}
+                activeBase={activeBase}
+                onSelect={setActiveBase}
               />
             </div>
           ) : null}
@@ -319,8 +321,8 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
             <div className="relative z-20 -mt-24 pb-8">
               <ShowcaseThumbGrid
                 thumbs={showcaseThumbs}
-                activePreview={activePreview}
-                onSelect={setActivePreview}
+                activeBase={activeBase}
+                onSelect={setActiveBase}
               />
             </div>
           ) : null}

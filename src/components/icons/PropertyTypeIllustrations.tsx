@@ -20,7 +20,7 @@ function iconBase(iconClassName?: string) {
 function IllustrationImage({ src, className, iconClassName }: { src: string } & IllustrationProps) {
   return (
     <div className={cn('flex items-center justify-center', className)} aria-hidden="true">
-      <img src={src} alt="" className={iconBase(iconClassName)} loading="eager" decoding="async" />
+      <img src={src} alt="" className={iconBase(iconClassName)} loading="lazy" decoding="async" />
     </div>
   );
 }

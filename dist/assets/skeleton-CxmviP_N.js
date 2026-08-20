@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime-n5LQ9ujS.js";import{c as t}from"./api-client-CJK7dMGL.js";var n=e();function r({className:e,delayMs:r,style:i,...a}){return(0,n.jsx)(`div`,{"data-slot":`skeleton`,className:t(`hz-skeleton rounded-md`,e),style:r==null?i:{...i,"--hz-shimmer-delay":`${r}ms`},...a})}export{r as t};
