@@ -20,6 +20,13 @@ ssh "$HOST" "pm2 stop '$PM2_APP'"
 echo "==> rsync .next/ → ${HOST}:${REMOTE}/.next/"
 rsync -avz --delete .next/ "${HOST}:${REMOTE}/.next/"
 
+# Favicons live in public/ (not inside .next); keep them in sync without full public/ sync.
+if [[ -f public/favicon.ico || -f public/favicon.svg ]]; then
+  echo "==> rsync favicons → ${HOST}:${REMOTE}/public/"
+  rsync -avz public/favicon.ico public/favicon.svg "${HOST}:${REMOTE}/public/" 2>/dev/null || \
+    rsync -avz public/favicon.* "${HOST}:${REMOTE}/public/"
+fi
+
 echo "==> pm2 start on VPS"
 ssh "$HOST" bash -s -- "$PM2_APP" <<'REMOTE'
 set -euo pipefail

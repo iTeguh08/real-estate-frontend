@@ -13,6 +13,8 @@ export default function Document() {
   return (
     <Html lang="en" data-theme="light">
       <Head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#E07030" />
         <meta
           name="description"

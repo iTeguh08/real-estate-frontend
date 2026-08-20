@@ -3,6 +3,9 @@
 **Site:** https://baliestate.web.id  
 **Update:** 2026-08-21  
 
+**Cursor skill:** `.agents/skills/how-to-deploy/SKILL.md` (`/how-to-deploy`).  
+Agent **hanya kasih command** untuk di-copy — **tidak** menjalankan git commit/push atau `deploy:vps`.
+
 Ada **dua repo**. Deploy-nya **beda**. Jangan campur.
 
 | Repo lokal | Path VPS | Cara publish |
@@ -20,7 +23,7 @@ Simpan kerjaan di remote **sebelum** (atau tepat sebelum) menyentuh VPS.
 **Frontend:** `git push` **bukan** berarti site sudah update. Live = isi `.next/` di VPS setelah `deploy:vps`.  
 **Backend:** `git push` lalu VPS `git pull` = cara publish biasa.
 
-### Pesan commit (manusia atau agent)
+### Pesan commit (manusia; agent hanya usulkan teks)
 
 Jangan pakai pesan generik (`update`, `fix`, `wip`).
 
@@ -36,7 +39,16 @@ Contoh bagus:
 
 Contoh jelek: `update code`, `deploy`, `fix bug`.
 
-**Agent Cursor:** kalau user minta commit / deploy, **wajib** baca status+diff dulu, usulkan pesan dari perubahan itu, lalu `git add` → `commit` → `push` (hanya file relevan; jangan `.env.local` / secrets). Jangan commit tanpa diminta user, kecuali user bilang “commit & deploy”.
+### Aturan agent Cursor (wajib)
+
+Kalau user minta commit / deploy / `@how-to-deploy` / `/how-to-deploy`:
+
+1. Boleh **baca** `git status` / `diff` / `log` (read-only) untuk menyusun pesan commit.  
+2. **Jangan** eksekusi `git add`, `git commit`, `git push`, `npm run deploy:vps`, `build:prod`, `rsync`, atau `ssh` publish.  
+3. **Serahkan** satu blok command siap tempel — user yang jalankan di terminal.  
+4. Setelah itu berhenti; bantu lagi kalau user kirim error.
+
+Jangan commit/deploy “atas nama user” meski user bilang “deploy sekarang”, kecuali mereka mematikan skill ini untuk giliran itu.
 
 ### Perintah git (frontend atau backend)
 
@@ -237,17 +249,17 @@ Browser: View Source homepage — canonical `https://baliestate.web.id…`, **bu
 
 ---
 
-## Checklist agent / operator (frontend)
+## Checklist agent (frontend) — print commands, jangan jalankan
 
 ```text
-[ ] git status + diff + log → tulis pesan commit dari perubahan nyata
-[ ] git add (tanpa secrets) → commit → push
-[ ] npm run deploy:vps   # = build:prod lokal, BUKAN npm run build
-[ ] smoke HTTPS 200 + GraphQL JSON
+[ ] (opsional read-only) status + diff + log → draft pesan commit
+[ ] paste blok: git add → commit → push  (USER menjalankan)
+[ ] paste: npm run deploy:vps            (USER menjalankan; = build:prod lokal)
+[ ] paste smoke curl                     (USER menjalankan)
 ```
 
 ---
 
 ## Ringkas satu kalimat
 
-**Git commit/push dulu (pesan dari diff). Frontend live = `deploy:vps` (`build:prod` lokal). Backend live = push + VPS `git pull`. Jangan `npm run build` biasa untuk production.**
+**Agent kasih command; kamu yang jalankan. Git commit/push dulu (pesan dari diff). Frontend live = `deploy:vps` (`build:prod` lokal). Backend = push + VPS `git pull`. Jangan `npm run build` biasa.**
