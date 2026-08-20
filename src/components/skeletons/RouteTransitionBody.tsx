@@ -38,6 +38,8 @@ export function TransitionBody({ kind }: { kind: TransitionKind }) {
     case 'contact':
       return <ContactPageSkeleton />;
     case 'privacy':
+    case 'terms':
+    case 'cookies':
       return <CmsPageSkeleton className="section-container py-16 md:py-20" />;
     case 'auth':
       return <AuthFormSkeleton />;

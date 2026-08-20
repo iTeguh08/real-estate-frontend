@@ -2,7 +2,14 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { getAgentBySlug, getAgents, getFeaturedAgents } from '@/services/agents.service';
 import { getArticleBySlug, getArticles } from '@/services/articles.service';
-import { getAboutPage, getContactPage, getHomepage, getPrivacyPage } from '@/services/pages.service';
+import {
+  getAboutPage,
+  getContactPage,
+  getCookiePage,
+  getHomepage,
+  getPrivacyPage,
+  getTermsPage,
+} from '@/services/pages.service';
 import {
   getFeaturedProperties,
   getBestValueProperties,
@@ -144,6 +151,20 @@ export function usePrivacyPageQuery() {
   return useQuery({
     queryKey: queryKeys.pages.privacy(),
     queryFn: getPrivacyPage,
+  });
+}
+
+export function useTermsPageQuery() {
+  return useQuery({
+    queryKey: queryKeys.pages.terms(),
+    queryFn: getTermsPage,
+  });
+}
+
+export function useCookiePageQuery() {
+  return useQuery({
+    queryKey: queryKeys.pages.cookies(),
+    queryFn: getCookiePage,
   });
 }
 

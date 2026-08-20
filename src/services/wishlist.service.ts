@@ -34,7 +34,7 @@ export async function getWishlistIds(): Promise<string[]> {
   if (isMockDataEnabled()) {
     return readLocalWishlist();
   }
-  return normalizeIds(await apiFetch<unknown[]>('/wishlist'));
+  return normalizeIds(await apiFetch<unknown[]>('/api/wishlist'));
 }
 
 export async function toggleWishlistItem(propertyId: string): Promise<string[]> {
@@ -50,7 +50,7 @@ export async function toggleWishlistItem(propertyId: string): Promise<string[]> 
     return next;
   }
 
-  return normalizeIds(await apiFetch<unknown[]>(`/wishlist/${id}`, { method: 'POST' }));
+  return normalizeIds(await apiFetch<unknown[]>(`/api/wishlist/${id}`, { method: 'POST' }));
 }
 
 export async function getWishlistProperties(ids: string[]): Promise<Property[]> {
@@ -62,6 +62,6 @@ export async function getWishlistProperties(ids: string[]): Promise<Property[]> 
   }
 
   return apiFetch<Property[]>(
-    `/wishlist/properties?ids=${encodeURIComponent(normalized.join(','))}`
+    `/api/wishlist/properties?ids=${encodeURIComponent(normalized.join(','))}`
   );
 }

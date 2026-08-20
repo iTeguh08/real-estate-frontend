@@ -36,7 +36,7 @@ export async function getCompareIds(): Promise<string[]> {
   if (isMockDataEnabled()) {
     return readLocalCompare();
   }
-  return normalizeIds(await apiFetch<unknown[]>('/compare'));
+  return normalizeIds(await apiFetch<unknown[]>('/api/compare'));
 }
 
 export async function toggleCompareItem(
@@ -63,7 +63,7 @@ export async function toggleCompareItem(
     return { ids: next, limited: false };
   }
 
-  const result = await apiFetch<{ ids: unknown[]; limited: boolean }>(`/compare/${id}`, {
+  const result = await apiFetch<{ ids: unknown[]; limited: boolean }>(`/api/compare/${id}`, {
     method: 'POST',
   });
 
@@ -82,7 +82,7 @@ export async function getCompareProperties(ids: string[]): Promise<Property[]> {
   }
 
   return apiFetch<Property[]>(
-    `/compare/properties?ids=${encodeURIComponent(normalized.join(','))}`
+    `/api/compare/properties?ids=${encodeURIComponent(normalized.join(','))}`
   );
 }
 
@@ -91,5 +91,5 @@ export async function clearCompare(): Promise<string[]> {
     writeLocalCompare([]);
     return [];
   }
-  return normalizeIds(await apiFetch<unknown[]>('/compare', { method: 'DELETE' }));
+  return normalizeIds(await apiFetch<unknown[]>('/api/compare', { method: 'DELETE' }));
 }

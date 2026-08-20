@@ -63,6 +63,12 @@ const ContactUsPage = lazy(() =>
 const PrivacyPolicyPage = lazy(() =>
   import('@/pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage }))
 );
+const TermsOfServicePage = lazy(() =>
+  import('@/pages/TermsOfServicePage').then((m) => ({ default: m.TermsOfServicePage }))
+);
+const CookiePolicyPage = lazy(() =>
+  import('@/pages/CookiePolicyPage').then((m) => ({ default: m.CookiePolicyPage }))
+);
 const NotFoundPage = lazy(() =>
   import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
@@ -122,6 +128,8 @@ export default function App() {
               <Route path="about" element={<AboutUsPage />} />
               <Route path="contact" element={<ContactUsPage />} />
               <Route path="privacy" element={<PrivacyPolicyPage />} />
+              <Route path="terms" element={<TermsOfServicePage />} />
+              <Route path="cookies" element={<CookiePolicyPage />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="compare" element={<ComparePage />} />
                 <Route path="wishlist" element={<WishlistPage />} />

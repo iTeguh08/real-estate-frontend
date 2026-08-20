@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { AppLink } from '@/lib/app-link';
 import { LoadingOverlay, PropertyCardSkeleton } from '@/components/skeletons';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
@@ -27,13 +27,13 @@ export function WishlistPage() {
         <p className="mx-auto mt-4 max-w-md font-poppins text-sm leading-relaxed text-hz-muted">
           Tap the heart icon on any listing to save it here for later.
         </p>
-        <Link
+        <AppLink
           to={routes.listings}
           className="mt-8 inline-flex items-center gap-2 rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white no-underline transition-colors hover:bg-hz-primary-hover"
         >
           <ArrowLeft size={16} />
           Browse Listings
-        </Link>
+        </AppLink>
       </main>
     );
   }
@@ -41,13 +41,13 @@ export function WishlistPage() {
   return (
     <main id="main-content" className="bg-hz-elevated py-10 md:py-16">
       <div className="section-container">
-        <Link
+        <AppLink
           to={routes.listings}
           className="mb-6 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors hover:text-hz-primary"
         >
           <ArrowLeft size={16} />
           Back to listings
-        </Link>
+        </AppLink>
 
         <h1 className="font-poppins text-2xl font-semibold text-hz-dark md:text-3xl">
           Saved Properties

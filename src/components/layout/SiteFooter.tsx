@@ -67,9 +67,9 @@ const COMPANY_LINKS = [
 ] as const;
 
 const LEGAL_LINKS = [
-  { label: 'Terms of Service', href: '#' },
-  { label: 'Privacy Policy', href: '/privacy' },
-  { label: 'Cookie Policy', href: '#' },
+  { label: 'Terms of Service', href: routes.terms },
+  { label: 'Privacy Policy', href: routes.privacy },
+  { label: 'Cookie Policy', href: routes.cookies },
 ] as const;
 
 function buildSocialLinks(footer: SiteConfig['footer']) {

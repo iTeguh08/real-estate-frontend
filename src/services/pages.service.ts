@@ -2,7 +2,9 @@ import {
   ABOUT_PAGE_FALLBACK,
   CONTACT_PAGE_FALLBACK,
   HOMEPAGE_FALLBACK,
+  COOKIE_PAGE_FALLBACK,
   PRIVACY_PAGE_FALLBACK,
+  TERMS_PAGE_FALLBACK,
   type AboutPageContent,
   type CmsSeoMeta,
   type ContactPageContent,
@@ -368,4 +370,14 @@ export async function getPrivacyPage(): Promise<PrivacyPageContent> {
     title: data.kebijakanPrivasi.title || PRIVACY_PAGE_FALLBACK.title,
     copy: data.kebijakanPrivasi.copy || PRIVACY_PAGE_FALLBACK.copy,
   };
+}
+
+/** ponytail: no CMS fields yet — local fallback until GraphQL adds them */
+export async function getTermsPage(): Promise<PrivacyPageContent> {
+  return TERMS_PAGE_FALLBACK;
+}
+
+/** ponytail: no CMS fields yet — local fallback until GraphQL adds them */
+export async function getCookiePage(): Promise<PrivacyPageContent> {
+  return COOKIE_PAGE_FALLBACK;
 }

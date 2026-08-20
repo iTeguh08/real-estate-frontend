@@ -397,6 +397,16 @@ export const PRIVACY_PAGE_FALLBACK: PrivacyPageContent = {
   copy: '<p>Homzen respects your privacy. This policy explains how we collect, use, and protect your personal information when you use our website and services.</p>',
 };
 
+export const TERMS_PAGE_FALLBACK: PrivacyPageContent = {
+  title: 'Terms of Service',
+  copy: '<p>By using Homzen, you agree to these terms. Our listings, tools, and services are provided for legitimate real-estate inquiry and transactions. Misuse, scraping, or unauthorized access is prohibited.</p>',
+};
+
+export const COOKIE_PAGE_FALLBACK: PrivacyPageContent = {
+  title: 'Cookie Policy',
+  copy: '<p>Homzen uses cookies and similar technologies to keep you signed in, remember preferences, and improve site performance. You can control cookies through your browser settings.</p>',
+};
+
 export const SITE_FOOTER_FALLBACK: SiteFooterContent = {
   description:
     'Your trusted partner in luxury real estate — connecting buyers, sellers, and renters with exceptional properties.',

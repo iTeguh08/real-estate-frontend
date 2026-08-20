@@ -29,6 +29,8 @@ export const routes = {
   aboutServices: '/about#services',
   contact: '/contact',
   privacy: '/privacy',
+  terms: '/terms',
+  cookies: '/cookies',
 } as const;
 
 export type AppRoute = (typeof routes)[keyof typeof routes];

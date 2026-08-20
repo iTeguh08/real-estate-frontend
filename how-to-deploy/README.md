@@ -1,16 +1,71 @@
 # Cara deploy setelah ubah kode di lokal
 
 **Site:** https://baliestate.web.id  
-**Update:** 2026-08-20  
+**Update:** 2026-08-21  
 
 Ada **dua repo**. Deploy-nya **beda**. Jangan campur.
 
 | Repo lokal | Path VPS | Cara publish |
 |------------|----------|--------------|
-| `~/WORKS/TEGUH/real-estate-frontend` | `/var/www/real-estate-frontend` | Build lokal → `rsync .next/` → `pm2 restart` |
-| `~/WORKS/TEGUH/real-estate-backend` | `/var/www/real-estate-backend` | `git pull` (+ migrate / cache clear kalau perlu) |
+| `~/WORKS/TEGUH/real-estate-frontend` | `/var/www/real-estate-frontend` | `git` (backup) → **build lokal** → `rsync .next/` → `pm2 restart` |
+| `~/WORKS/TEGUH/real-estate-backend` | `/var/www/real-estate-backend` | `git push` → VPS `git pull` (+ migrate / cache clear kalau perlu) |
 
 Detail panjang frontend: `real-estate-frontend/docs/VPS-NEXT-HANDOFF.md`.
+
+---
+
+## 0. Git dulu (wajib sebelum deploy)
+
+Simpan kerjaan di remote **sebelum** (atau tepat sebelum) menyentuh VPS.  
+**Frontend:** `git push` **bukan** berarti site sudah update. Live = isi `.next/` di VPS setelah `deploy:vps`.  
+**Backend:** `git push` lalu VPS `git pull` = cara publish biasa.
+
+### Pesan commit (manusia atau agent)
+
+Jangan pakai pesan generik (`update`, `fix`, `wip`).
+
+1. `git status` — file apa yang berubah  
+2. `git diff` (+ staged) — isi perubahan  
+3. `git log -5 --oneline` — gaya pesan repo ini  
+4. Tulis **1–2 kalimat fokus “kenapa”**, sesuai diff nyata (bukan tebak-tebakan)
+
+Contoh bagus:
+
+- `fix compare: serve Next page; proxy API under /api/compare`
+- `add legal pages for terms, privacy, and cookies`
+
+Contoh jelek: `update code`, `deploy`, `fix bug`.
+
+**Agent Cursor:** kalau user minta commit / deploy, **wajib** baca status+diff dulu, usulkan pesan dari perubahan itu, lalu `git add` → `commit` → `push` (hanya file relevan; jangan `.env.local` / secrets). Jangan commit tanpa diminta user, kecuali user bilang “commit & deploy”.
+
+### Perintah git (frontend atau backend)
+
+```bash
+cd ~/WORKS/TEGUH/real-estate-frontend   # atau real-estate-backend
+
+git status
+git diff
+git log -5 --oneline
+
+# stage yang relevan saja
+git add -A
+# atau lebih aman: git add path/ke/file …
+
+git commit -m "$(cat <<'EOF'
+Pesan commit singkat dari diff di atas.
+
+EOF
+)"
+
+git push -u origin HEAD
+```
+
+Cek remote / branch:
+
+```bash
+git status -sb
+git remote -v
+```
 
 ---
 
@@ -19,21 +74,32 @@ Detail panjang frontend: `real-estate-frontend/docs/VPS-NEXT-HANDOFF.md`.
 | Perubahan | Deploy apa |
 |-----------|------------|
 | UI / halaman Next / `src/**` frontend | **Frontend** (`deploy:vps`) |
-| `.env.production` / `runtime-env` / `next.config` frontend | **Frontend** (wajib `build:prod`, bukan `next build` biasa) |
+| `.env.production` / `runtime-env` / `next.config` frontend | **Frontend** (wajib `build:prod`, bukan `next build` / `npm run build` biasa) |
 | Laravel / GraphQL / Nova / migration | **Backend** |
 | Env Laravel (`APP_URL`, `FRONTEND_URL`, dll.) | **Backend** `config:clear` + `cache:clear`, lalu sering **rebuild frontend** (SSG bake URL) |
-| Hanya docs / komentar | Tidak perlu deploy production |
+| Hanya docs / komentar | Commit/push boleh; tidak perlu deploy production |
 
 ---
 
 ## 1. Deploy frontend (paling sering)
 
-**Jangan** `npm run build` di VPS (CPU tidak kuat / `sharp`).  
-**Jangan** `next build` lokal yang masih kena `.env.local` (`localhost:8080`) — pakai `build:prod`.
+### Build: lokal dulu — ya. VPS — tidak.
 
-### Satu perintah (disarankan)
+| Perintah | Pakai? |
+|----------|--------|
+| `npm run deploy:vps` | **Ya** (disarankan) — di dalamnya sudah `build:prod` |
+| `npm run build:prod` lalu rsync manual | Ya, kalau tidak pakai script |
+| `npm run build` / `next build` | **Tidak** untuk production — sering bake `.env.local` (`localhost:8080`) |
+| `npm run build` **di VPS** | **Tidak** — CPU / `sharp` tidak kuat |
 
-Di mesin lokal (WSL):
+Urutan aman:
+
+1. Git add → commit (pesan dari diff) → push  
+2. `npm run deploy:vps` (build lokal + rsync + pm2)
+
+### Satu perintah deploy (disarankan)
+
+Di mesin lokal (WSL), **setelah** commit/push (atau setidaknya commit lokal):
 
 ```bash
 cd ~/WORKS/TEGUH/real-estate-frontend
@@ -42,7 +108,7 @@ npm run deploy:vps
 
 Itu menjalankan `scripts/deploy.sh`:
 
-1. `npm run build:prod` (paksa env production)
+1. `npm run build:prod` (paksa env production) — **bukan** `npm run build`
 2. `rsync .next/` → VPS
 3. `pm2 restart baliestate-next`
 4. Smoke `https://baliestate.web.id/`
@@ -88,10 +154,18 @@ Untuk perubahan UI biasa, **cukup** `deploy:vps`.
 ## 2. Deploy backend (Laravel)
 
 ```bash
-# lokal: commit & push dulu (kalau VPS pull dari remote)
+# lokal
 cd ~/WORKS/TEGUH/real-estate-backend
-# git add / commit / push — sesuai workflow kamu
+git status && git diff && git log -5 --oneline
+git add -A
+git commit -m "$(cat <<'EOF'
+Pesan dari diff backend (kenapa, bukan daftar file).
 
+EOF
+)"
+git push -u origin HEAD
+
+# VPS
 ssh root@103.193.179.62
 cd /var/www/real-estate-backend
 git pull
@@ -154,14 +228,26 @@ Browser: View Source homepage — canonical `https://baliestate.web.id…`, **bu
 ## 5. Jangan lakukan
 
 1. Build Next di VPS.
-2. Deploy hasil `next build` yang bake `.env.local`.
+2. Deploy hasil `npm run build` / `next build` yang bake `.env.local`.
 3. Commit / rsync `.env.local` atau secrets.
 4. Menganggap `git push` frontend = site update (live HTML = isi `.next` di VPS).
 5. Mengandalkan Vite `dist/` — sudah tidak dipakai Apache.
 6. Hapus `FRONTEND_URL` di Laravel (fallback canonical jadi `localhost:5173`).
+7. Commit dengan pesan kosong / generik tanpa baca diff.
+
+---
+
+## Checklist agent / operator (frontend)
+
+```text
+[ ] git status + diff + log → tulis pesan commit dari perubahan nyata
+[ ] git add (tanpa secrets) → commit → push
+[ ] npm run deploy:vps   # = build:prod lokal, BUKAN npm run build
+[ ] smoke HTTPS 200 + GraphQL JSON
+```
 
 ---
 
 ## Ringkas satu kalimat
 
-**Ubah frontend → lokal `npm run deploy:vps`. Ubah backend → VPS `git pull` + artisan. Ubah URL/env Laravel → clear cache + sering rebuild frontend.**
+**Git commit/push dulu (pesan dari diff). Frontend live = `deploy:vps` (`build:prod` lokal). Backend live = push + VPS `git pull`. Jangan `npm run build` biasa untuk production.**

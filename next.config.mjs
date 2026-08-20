@@ -56,10 +56,13 @@ const nextConfig = {
     ).replace(/\/$/, '');
     return [
       { source: '/graphql', destination: `${backend}/graphql` },
+      // Map SPA-facing API paths onto Laravel (must not collide with Next pages).
+      { source: '/api/compare', destination: `${backend}/compare` },
+      { source: '/api/compare/:path*', destination: `${backend}/compare/:path*` },
+      { source: '/api/wishlist', destination: `${backend}/wishlist` },
+      { source: '/api/wishlist/:path*', destination: `${backend}/wishlist/:path*` },
       { source: '/api/:path*', destination: `${backend}/api/:path*` },
       { source: '/newsletter/:path*', destination: `${backend}/newsletter/:path*` },
-      { source: '/wishlist/:path*', destination: `${backend}/wishlist/:path*` },
-      { source: '/compare/:path*', destination: `${backend}/compare/:path*` },
       { source: '/security/:path*', destination: `${backend}/security/:path*` },
     ];
   },

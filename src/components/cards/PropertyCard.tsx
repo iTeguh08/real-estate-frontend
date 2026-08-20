@@ -238,7 +238,8 @@ export function PropertyCard({
 
         <div
           className={cn(
-            'flex items-center justify-between gap-3 border-t border-hz-border pt-3',
+            'flex items-center justify-between gap-3 border-hz-border pt-3',
+            isListVariant ? 'border-t-[0.5px]' : 'border-t',
             uniformHeight && 'mt-auto'
           )}
         >

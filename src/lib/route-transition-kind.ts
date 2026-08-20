@@ -10,6 +10,8 @@ export type TransitionKind =
   | 'about'
   | 'contact'
   | 'privacy'
+  | 'terms'
+  | 'cookies'
   | 'agent-profile'
   | 'auth'
   | 'dashboard'
@@ -35,6 +37,8 @@ export function resolveTransitionKind(url: string): TransitionKind {
   if (path === '/about') return 'about';
   if (path === '/contact') return 'contact';
   if (path === '/privacy') return 'privacy';
+  if (path === '/terms') return 'terms';
+  if (path === '/cookies') return 'cookies';
   if (path === '/login' || path === '/register') return 'auth';
   if (path === '/dashboard') return 'dashboard';
   if (path === '/submit-property') return 'submit-property';

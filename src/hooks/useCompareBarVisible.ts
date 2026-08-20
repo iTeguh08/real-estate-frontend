@@ -11,6 +11,8 @@ const HIDDEN_EXACT = new Set<string>([
   routes.register,
   routes.submitProperty,
   routes.privacy,
+  routes.terms,
+  routes.cookies,
 ]);
 
 function isHiddenPath(pathname: string): boolean {

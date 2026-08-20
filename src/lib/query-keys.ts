@@ -32,6 +32,8 @@ export const queryKeys = {
     contact: () => [...queryKeys.pages.all, 'contact'] as const,
     homepage: () => [...queryKeys.pages.all, 'homepage'] as const,
     privacy: () => [...queryKeys.pages.all, 'privacy'] as const,
+    terms: () => [...queryKeys.pages.all, 'terms'] as const,
+    cookies: () => [...queryKeys.pages.all, 'cookies'] as const,
   },
   wishlist: {
     all: () => ['wishlist'] as const,

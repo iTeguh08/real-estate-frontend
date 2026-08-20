@@ -1,11 +1,11 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bed, Bathtub, ArrowsOut } from '@phosphor-icons/react';
 import { ArrowLeft, Loader2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CompareTableSkeleton, LoadingOverlay } from '@/components/skeletons';
 import { MediaImage } from '@/components/ui/media-image';
 import { useCompare } from '@/hooks/useCompare';
+import { AppLink } from '@/lib/app-link';
 import { queryKeys } from '@/lib/query-keys';
 import { formatCount, formatPropertyLocation, formatPropertyPrice } from '@/lib/format-property';
 import { productThumbUrl } from '@/lib/image-url';
@@ -64,13 +64,13 @@ export function ComparePage() {
         <p className="mx-auto mt-4 max-w-md font-poppins text-sm leading-relaxed text-hz-muted">
           Use the compare icon on any listing card to add up to {MAX_COMPARE_ITEMS} properties side by side.
         </p>
-        <Link
+        <AppLink
           to={routes.listings}
           className="mt-8 inline-flex items-center gap-2 rounded-hz bg-hz-primary px-6 py-2.5 font-poppins text-sm font-semibold text-white no-underline transition-colors hover:bg-hz-primary-hover"
         >
           <ArrowLeft size={16} />
           Browse Listings
-        </Link>
+        </AppLink>
       </main>
     );
   }
@@ -80,13 +80,13 @@ export function ComparePage() {
       <div className="section-container">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Link
+            <AppLink
               to={routes.listings}
               className="mb-4 inline-flex items-center gap-2 font-poppins text-sm text-hz-body no-underline transition-colors hover:text-hz-primary"
             >
               <ArrowLeft size={16} />
               Back to listings
-            </Link>
+            </AppLink>
             <h1 className="font-poppins text-2xl font-semibold text-hz-dark md:text-3xl">
               Compare Properties
             </h1>
@@ -119,8 +119,12 @@ export function ComparePage() {
               type="button"
               onClick={() => clearMutation.mutate()}
               disabled={clearMutation.isPending}
-              className="border border-hz-border px-4 py-2 font-poppins text-sm font-medium text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary disabled:opacity-60"
+              aria-busy={clearMutation.isPending}
+              className="inline-flex items-center gap-2 border border-hz-border px-4 py-2 font-poppins text-sm font-medium text-hz-dark transition-colors hover:border-hz-primary hover:text-hz-primary disabled:opacity-60"
             >
+              {clearMutation.isPending ? (
+                <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+              ) : null}
               Clear All
             </button>
           </div>
@@ -172,12 +176,12 @@ export function ComparePage() {
                             className="object-cover"
                           />
                         </div>
-                        <Link
+                        <AppLink
                           to={routes.property(property.slug)}
                           className="font-semibold text-hz-dark no-underline transition-colors hover:text-hz-primary"
                         >
                           {property.title}
-                        </Link>
+                        </AppLink>
                       </div>
                     </th>
                   ))}
