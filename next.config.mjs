@@ -7,6 +7,9 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   devIndicators: false,
   reactStrictMode: true,
+  images: {
+    unoptimized: true,
+  },
   outputFileTracingRoot: projectRoot,
   // Tree-shake barrel icon packages so dev page chunks stay small enough for Fast Refresh.
   experimental: {
