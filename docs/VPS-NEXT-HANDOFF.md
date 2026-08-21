@@ -69,7 +69,9 @@ Composer **not** installed globally on VPS; `vendor/` already present. Install C
 
 **Laravel paths kept on Apache/PHP (do not proxy to Next):**
 
-`index.php`, `/api`, `/graphql`, `/graphiql`, `/nova`, `/nova-api`, `/vendor`, `/storage`, `/newsletter`, `/property-submissions`, `/wishlist`, `/compare`, `/up`, `/security`, `/custom-nova-script`
+`index.php`, `/api`, `/graphql`, `/graphiql`, `/nova`, `/nova-api`, `/vendor`, `/storage`, `/newsletter`, `/property-submissions`, `/up`, `/security`, `/custom-nova-script`
+
+**Do not** keep bare `/wishlist` or `/compare` on Laravel — those are **Next pages**. SPA JSON lives under `/api/wishlist` and `/api/compare` (Laravel `routes/api.php`).
 
 **Modules required:** `proxy`, `proxy_http`, `rewrite`, `php` (`a2enmod`).
 

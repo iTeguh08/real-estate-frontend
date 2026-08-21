@@ -1,4 +1,5 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { useState, type HTMLAttributes, type ReactNode } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { AppLink } from '@/lib/app-link';
 import { MediaImage } from '@/components/ui/media-image';
 import { publicAsset } from '@/lib/public-asset';
@@ -112,34 +113,57 @@ export function FormField({
   inputMode,
 }: FormFieldProps) {
   const errorId = error ? `${id}-error` : undefined;
+  const isPassword = type === 'password';
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const inputType = isPassword ? (passwordVisible ? 'text' : 'password') : type;
 
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="font-poppins text-sm font-medium text-hz-dark">
         {label}
       </label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        required={required}
-        autoComplete={autoComplete}
-        disabled={disabled}
-        readOnly={readOnly}
-        placeholder={placeholder}
-        inputMode={inputMode}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={errorId}
-        className={cn(
-          'h-11 w-full rounded-hz border px-3',
-          'font-poppins text-sm text-hz-dark outline-none transition-colors',
-          'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
-          error ? 'border-hz-primary/70' : 'border-hz-border',
-          disabled || readOnly ? 'cursor-default bg-hz-bg-soft text-hz-dark' : 'bg-hz-elevated'
-        )}
-      />
+      <div className="relative">
+        <input
+          id={id}
+          type={inputType}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+          required={required}
+          autoComplete={autoComplete}
+          disabled={disabled}
+          readOnly={readOnly}
+          placeholder={placeholder}
+          inputMode={inputMode}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
+          className={cn(
+            'h-11 w-full rounded-hz border px-3',
+            isPassword && 'pr-11',
+            'font-poppins text-sm text-hz-dark outline-none transition-colors',
+            'placeholder:text-hz-muted/60 focus:border-hz-primary/60',
+            error ? 'border-hz-primary/70' : 'border-hz-border',
+            disabled || readOnly ? 'cursor-default bg-hz-bg-soft text-hz-dark' : 'bg-hz-elevated'
+          )}
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            tabIndex={-1}
+            disabled={disabled}
+            aria-label={passwordVisible ? 'Hide password' : 'Show password'}
+            aria-pressed={passwordVisible}
+            onClick={() => setPasswordVisible((v) => !v)}
+            className="absolute top-1/2 right-2.5 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-hz-muted transition-colors hover:text-hz-ink disabled:pointer-events-none disabled:opacity-50"
+          >
+            {passwordVisible ? (
+              <EyeOff size={18} strokeWidth={1.75} aria-hidden="true" />
+            ) : (
+              <Eye size={18} strokeWidth={1.75} aria-hidden="true" />
+            )}
+          </button>
+        ) : null}
+      </div>
       {error ? (
         <p id={errorId} className="font-poppins text-xs text-hz-primary" role="alert">
           {error}

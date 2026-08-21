@@ -1,4 +1,12 @@
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +16,19 @@ import {
 } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { lightboxCoverUrl } from '@/lib/image-url';
+import { lightboxCoverUrl, PRODUCT_HERO_NARROW_MEDIA } from '@/lib/image-url';
 import { lightboxFrame, type LightboxSize } from '@/lib/lightbox-preload';
 import { cn } from '@/lib/utils';
+
+function subscribeNarrowViewport(onStoreChange: () => void) {
+  const mq = window.matchMedia(PRODUCT_HERO_NARROW_MEDIA);
+  mq.addEventListener('change', onStoreChange);
+  return () => mq.removeEventListener('change', onStoreChange);
+}
+
+function getNarrowViewport() {
+  return window.matchMedia(PRODUCT_HERO_NARROW_MEDIA).matches;
+}
 
 /** Original maximize close chip — do not restyle. */
 const closeButtonClassName =
@@ -316,16 +334,22 @@ export function ImageLightboxPanel({
   children,
 }: ImageLightboxPanelProps) {
   const { frameClass } = lightboxFrame(size);
+  const isNarrow = useSyncExternalStore(
+    subscribeNarrowViewport,
+    getNarrowViewport,
+    () => true,
+  );
 
   const coverSrc = useMemo(
     () => lightboxCoverUrl(previewUrl, originalUrl, size),
-    [previewUrl, originalUrl, size]
+    // isNarrow forces re-resolve when crossing lg (lightboxCoverUrl reads matchMedia).
+    [previewUrl, originalUrl, size, isNarrow],
   );
 
   return (
     <figure
       className={cn(
-        'relative m-0 shrink-0 overflow-hidden rounded-hz bg-black/40',
+        'relative m-0 shrink-0 overflow-hidden bg-black/40',
         frameClass,
         className
       )}

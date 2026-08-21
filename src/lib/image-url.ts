@@ -334,14 +334,22 @@ export function lightboxMediaUrl(
   return resizableMediaBase(originalUrl || previewUrl);
 }
 
-/** Lightbox uses large static URL + CSS object-cover (no on-the-fly). */
+/**
+ * Lightbox cover URL — medium (~800) on narrow viewports, large (~2000) from lg up.
+ * Matches {@link PRODUCT_HERO_NARROW_MEDIA} / {@link PRODUCT_HERO_LARGE_MEDIA}.
+ */
 export function lightboxCoverUrl(
   previewUrl: string,
   originalUrl: string | null | undefined,
   size: 'modal' | 'gallery' = 'modal',
 ): string {
   void size;
-  return productLargeUrl(originalUrl || previewUrl);
+  const base = originalUrl || previewUrl;
+  if (typeof window === 'undefined') return productMediumUrl(base);
+  if (window.matchMedia(PRODUCT_HERO_NARROW_MEDIA).matches) {
+    return productMediumUrl(base);
+  }
+  return productLargeUrl(base);
 }
 
 /** Preview URL for property cover — card grids use thumb variant. */
