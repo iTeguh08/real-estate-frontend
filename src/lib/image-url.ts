@@ -118,17 +118,23 @@ export function productThumbUrl(url: string | null | undefined): string {
   return productVariantUrl(url, 'thumb');
 }
 
-/** Mid-size gallery / dialog media — ~800px. */
+/** Mid-size gallery / dialog media / narrow viewport hero — ~800px. */
 export function productMediumUrl(url: string | null | undefined): string {
   if (!url) return '';
   return productVariantUrl(url, 'medium');
 }
 
-/** Detail hero / lightbox — ~2000px. */
+/** Wide viewport hero / lightbox — ~2000px. */
 export function productLargeUrl(url: string | null | undefined): string {
   if (!url) return '';
   return productVariantUrl(url, 'large');
 }
+
+/** Tailwind `lg` — phone + narrow iPad stay medium; wide iPad / desktop get large. */
+export const PRODUCT_HERO_LARGE_MEDIA = '(min-width: 1024px)';
+
+/** Inverse of {@link PRODUCT_HERO_LARGE_MEDIA} — for LCP preload on narrow viewports. */
+export const PRODUCT_HERO_NARROW_MEDIA = '(max-width: 1023px)';
 
 /** Gallery bento tile — thumb for tiny slots; medium for the rest (never large/original). */
 export function galleryTileMediaUrl(

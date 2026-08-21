@@ -15,11 +15,8 @@ export default function Document() {
       <Head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#E07030" />
-        <meta
-          name="description"
-          content="Homzen — discover luxury homes, villas, and apartments for sale and rent."
-        />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
       </Head>
       <body className="font-poppins antialiased">

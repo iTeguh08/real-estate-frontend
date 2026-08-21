@@ -4,7 +4,7 @@ import { MediaImage } from '@/components/ui/media-image';
 import { PROPERTY_TYPES } from '@/data/property-types';
 import { cn } from '@/lib/utils';
 import { publicAsset } from '@/lib/public-asset';
-import { productLargeUrl } from '@/lib/image-url';
+import { productLargeUrl, productMediumUrl, PRODUCT_HERO_LARGE_MEDIA } from '@/lib/image-url';
 import { useListingFilters } from '@/hooks/useListingFilters';
 import { useAdvancedSearch } from '@/hooks/useAdvancedSearch';
 import { useHomepageQuery } from '@/hooks/queries';
@@ -30,8 +30,9 @@ export function HeroSection() {
 
   const { data: homepage } = useHomepageQuery();
   const hero = homepage?.hero;
-  const heroMediaUrl =
-    productLargeUrl(hero?.backgroundImage) || hero?.backgroundImage || FALLBACK_HERO_IMAGE;
+  const heroMediumUrl =
+    productMediumUrl(hero?.backgroundImage) || hero?.backgroundImage || FALLBACK_HERO_IMAGE;
+  const heroLargeUrl = productLargeUrl(hero?.backgroundImage) || heroMediumUrl;
   const { filters, applySearch } = useListingFilters();
   const { setOpen: setAdvancedSearchOpen } = useAdvancedSearch();
 
@@ -298,7 +299,12 @@ export function HeroSection() {
       )}
     >
       <MediaImage
-        mediaUrl={heroMediaUrl}
+        mediaUrl={heroMediumUrl}
+        sources={
+          heroLargeUrl !== heroMediumUrl
+            ? [{ media: PRODUCT_HERO_LARGE_MEDIA, srcSet: heroLargeUrl }]
+            : undefined
+        }
         fitCover
         coverEstimate={{ width: 640, height: 551 }}
         coverMaxWidth={1440}

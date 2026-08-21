@@ -8,7 +8,7 @@ import { formatPropertyLocation, formatPropertyPrice, statusLabel } from '@/lib/
 import { routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { VILLA_SECTION_GUTTERS } from '@/lib/property-layout';
-import { productLargeUrl, productThumbUrl } from '@/lib/image-url';
+import { productLargeUrl, productMediumUrl, productThumbUrl, PRODUCT_HERO_LARGE_MEDIA } from '@/lib/image-url';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCompare } from '@/hooks/useCompare';
 import type { PropertyDetail } from '@/types';
@@ -254,7 +254,10 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
   const heroImage = (
     <MediaImage
       key={activeBase}
-      mediaUrl={productLargeUrl(activeBase)}
+      mediaUrl={productMediumUrl(activeBase)}
+      sources={[
+        { media: PRODUCT_HERO_LARGE_MEDIA, srcSet: productLargeUrl(activeBase) },
+      ]}
       fitCover
       coverEstimate={{ width: 1280, height: 720 }}
       coverMaxWidth={1600}

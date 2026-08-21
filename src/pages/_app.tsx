@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AppShell } from '@/components/layout/AppShell';
 import { AuthProvider } from '@/components/providers/AuthProvider';
@@ -79,6 +80,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
       <RouteProgressBar />
       <ThemeProvider>
         <AuthProvider>

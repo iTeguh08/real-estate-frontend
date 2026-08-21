@@ -37,6 +37,11 @@ export interface MediaImageProps extends React.ImgHTMLAttributes<HTMLImageElemen
   coverEstimate?: { width: number; height: number };
   /** @deprecated Unused — variants come from the backend. Kept for call-site compatibility. */
   coverMaxWidth?: number;
+  /**
+   * Optional `<picture>` sources (media + srcSet). Default `mediaUrl`/`src` is the
+   * fallback `<img>` — use for viewport-based variants without downloading both.
+   */
+  sources?: ReadonlyArray<{ media: string; srcSet: string }>;
 }
 
 function resolveMinSkeletonMs(
@@ -74,6 +79,7 @@ export function MediaImage({
   fallbackSrc,
   coverEstimate: _coverEstimate,
   coverMaxWidth: _coverMaxWidth,
+  sources,
   alt = '',
   loading,
   fetchPriority,
@@ -87,6 +93,7 @@ export function MediaImage({
   const primarySrc =
     (mediaUrl && mediaUrl.length > 0 ? mediaUrl : typeof src === 'string' ? src : '') || '';
   const fallbackKey = fallbackSrc?.trim() || '';
+  const sourcesKey = sources?.map((s) => `${s.media}|${s.srcSet}`).join(';') ?? '';
 
   const minSkeletonMs = resolveMinSkeletonMs(noSkeleton, loading, fetchPriority);
 
@@ -97,10 +104,11 @@ export function MediaImage({
   const mountRef = useRef(0);
 
   const activeSrc = usingFallback && fallbackKey ? fallbackKey : primarySrc;
+  const pictureSources = !usingFallback && sources?.length ? sources : undefined;
 
   // A new source means a new reveal cycle. Adjusting the state during render keeps
   // the shimmer from flashing the previous image's "ready" frame first.
-  const revealKey = `${primarySrc}|${fallbackKey}|${minSkeletonMs}`;
+  const revealKey = `${primarySrc}|${fallbackKey}|${sourcesKey}|${minSkeletonMs}`;
   const [renderedRevealKey, setRenderedRevealKey] = useState(revealKey);
   if (renderedRevealKey !== revealKey) {
     setRenderedRevealKey(revealKey);
@@ -170,6 +178,28 @@ export function MediaImage({
     return () => window.clearTimeout(timer);
   }, [noSkeleton, imageReady, activeSrc, loadFailed]);
 
+  const imgClassName = cn(
+    'absolute inset-0 z-[1] block h-full w-full transition-opacity duration-500 ease-out',
+    fitCover && 'object-cover object-center',
+    fadeInReveal ? (revealed ? 'opacity-100' : 'opacity-0') : 'opacity-100',
+    className
+  );
+
+  const img = activeSrc && !loadFailed ? (
+    <img
+      key={activeSrc}
+      ref={bindImgRef}
+      src={activeSrc}
+      alt={alt}
+      loading={loading}
+      fetchPriority={fetchPriority}
+      onLoad={handleLoad}
+      onError={handleError}
+      className={imgClassName}
+      {...props}
+    />
+  ) : null;
+
   return (
     <div className={cn('relative h-full w-full overflow-hidden', wrapperClassName)}>
       {showSkeleton ? (
@@ -180,25 +210,16 @@ export function MediaImage({
         />
       ) : null}
       {showPlaceholder ? <MediaImagePlaceholder alt={alt} /> : null}
-      {activeSrc && !loadFailed ? (
-        <img
-          key={activeSrc}
-          ref={bindImgRef}
-          src={activeSrc}
-          alt={alt}
-          loading={loading}
-          fetchPriority={fetchPriority}
-          onLoad={handleLoad}
-          onError={handleError}
-          className={cn(
-            'absolute inset-0 z-[1] block h-full w-full transition-opacity duration-500 ease-out',
-            fitCover && 'object-cover object-center',
-            fadeInReveal ? (revealed ? 'opacity-100' : 'opacity-0') : 'opacity-100',
-            className
-          )}
-          {...props}
-        />
-      ) : null}
+      {img && pictureSources?.length ? (
+        <picture key={`picture|${activeSrc}|${sourcesKey}`} className="contents">
+          {pictureSources.map((source) => (
+            <source key={`${source.media}|${source.srcSet}`} media={source.media} srcSet={source.srcSet} />
+          ))}
+          {img}
+        </picture>
+      ) : (
+        img
+      )}
     </div>
   );
 }

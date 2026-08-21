@@ -5,7 +5,12 @@ import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
 import type { HomepageContent } from '@/data/cms-fallbacks';
 import { queryKeys } from '@/lib/query-keys';
 import { listingFiltersQueryVars } from '@/lib/listing-filter-params';
-import { productLargeUrl } from '@/lib/image-url';
+import {
+  productLargeUrl,
+  productMediumUrl,
+  PRODUCT_HERO_LARGE_MEDIA,
+  PRODUCT_HERO_NARROW_MEDIA,
+} from '@/lib/image-url';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { routes } from '@/lib/routes';
 import type { SiteConfig } from '@/services/site.service';
@@ -77,8 +82,9 @@ export default function HomePage({
   const cmsCanonical = homepage.seo?.canonicalUrl?.trim() || '';
   const canonical =
     cmsCanonical && !/localhost|127\.0\.0\.1/i.test(cmsCanonical) ? cmsCanonical : siteCanonical;
-    const lcpImage =
-    productLargeUrl(homepage.hero.backgroundImage) || homepage.hero.backgroundImage || '';
+  const lcpMedium =
+    productMediumUrl(homepage.hero.backgroundImage) || homepage.hero.backgroundImage || '';
+  const lcpLarge = productLargeUrl(homepage.hero.backgroundImage) || lcpMedium;
 
   const viewProps: HomeViewProps = {
     homepage,
@@ -96,8 +102,30 @@ export default function HomePage({
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={canonical} />
-        {lcpImage ? (
-          <link rel="preload" as="image" href={lcpImage} fetchPriority="high" />
+        {lcpMedium && lcpLarge !== lcpMedium ? (
+          <>
+            <link
+              rel="preload"
+              as="image"
+              href={lcpMedium}
+              media={PRODUCT_HERO_NARROW_MEDIA}
+              fetchPriority="high"
+            />
+            <link
+              rel="preload"
+              as="image"
+              href={lcpLarge}
+              media={PRODUCT_HERO_LARGE_MEDIA}
+              fetchPriority="high"
+            />
+          </>
+        ) : lcpMedium || lcpLarge ? (
+          <link
+            rel="preload"
+            as="image"
+            href={lcpMedium || lcpLarge}
+            fetchPriority="high"
+          />
         ) : null}
         <meta property="og:type" content="website" />
         <meta property="og:title" content={title} />
