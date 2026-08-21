@@ -13,7 +13,41 @@ Ada **dua repo**. Deploy-nya **beda**. Jangan campur.
 | `~/WORKS/TEGUH/real-estate-frontend` | `/var/www/real-estate-frontend` | `git` (backup) → **build lokal** → `rsync .next/` → `pm2 restart` |
 | `~/WORKS/TEGUH/real-estate-backend` | `/var/www/real-estate-backend` | `git push` → VPS `git pull` (+ migrate / cache clear kalau perlu) |
 
-Detail panjang frontend: `real-estate-frontend/docs/VPS-NEXT-HANDOFF.md`.
+Detail panjang frontend: `docs/VPS-NEXT-HANDOFF.md`.
+
+---
+
+## Kenapa terasa lama — dan kenapa bukan “cukup `git pull`”
+
+Keluhan “perubahan kecil tapi `deploy:vps` lama” **valid** (build + rsync puluhan MB lewat uplink rumah/WSL).  
+Solusi “kayak dulu: SSH + `git pull` saja” untuk **frontend Next** = **salah target**.
+
+| Dulu (Vite) | Sekarang (Next + PM2) |
+|-------------|------------------------|
+| Live ≈ `dist/` yang di-commit | Live ≈ **`.next/`** hasil `build:prod` |
+| `git pull` di VPS cukup | `git pull` hanya sync source; tanpa ganti `.next`, pengunjung tetap lihat build lama |
+
+Yang memakan waktu biasanya:
+
+1. `build:prod` lokal (wajib — SSG/env production)
+2. Upload `.next/` (sering hampir full rebuild; rsync residual tetap besar)
+3. `pm2 stop` → sync → `start` (503 sebentar = normal)
+
+**Backend** tetap model cepat: `git pull` + artisan. Jangan campur mental model itu ke frontend.
+
+**Jangan** “percepat” dengan: build Next di VPS, atau `npm run build` lokal yang bake `.env.local`.
+
+### Deploy lewat GitHub Actions (cloud → VPS)
+
+Setelah secret siap, **push ke `master`/`main` = deploy** (atau manual *workflow_dispatch*).
+
+1. Repo frontend → Settings → Secrets and variables → Actions → New secret:  
+   `VPS_SSH_PRIVATE_KEY` = private key OpenSSH yang bisa SSH ke VPS.
+2. VPS: public key pasangan masuk `/root/.ssh/authorized_keys` (user `root` atau sesuai `DEPLOY_HOST`).
+3. Workflow: `.github/workflows/deploy-vps.yml` (`Deploy VPS`) — `npm test` → `build:prod` → `scripts/deploy.sh` dengan `DEPLOY_SKIP_BUILD=1`.
+4. Optional variables: `DEPLOY_HOST` (default `root@103.193.179.62`), `DEPLOY_PATH`.
+
+Lokal `npm run deploy:vps` tetap fallback. Workflow **Deploy to GitHub Pages** (Vite) ≠ production `baliestate.web.id`.
 
 ---
 

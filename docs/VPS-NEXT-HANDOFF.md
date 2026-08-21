@@ -149,6 +149,7 @@ curl -sI https://www.baliestate.web.id/ | head -5   # 301 → https://baliestate
 ```bash
 cd ~/WORKS/TEGUH/real-estate-frontend
 npm run deploy:vps   # scripts/deploy.sh: build:prod → rsync .next → pm2 restart → smoke
+# Or: push master → GitHub Actions "Deploy VPS" (needs secret VPS_SSH_PRIVATE_KEY)
 ```
 
 Override host/path if needed: `DEPLOY_HOST=user@host DEPLOY_PATH=/var/www/real-estate-frontend npm run deploy:vps`
