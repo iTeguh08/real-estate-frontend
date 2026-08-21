@@ -130,19 +130,19 @@ function LocationRow({
   lightSurface?: boolean;
 }) {
   const wideCard = (
-    <div className="col-span-2" role="listitem">
+    <div className="col-span-2">
       <LocationCard location={row.wide} variant="wide" lightSurface={lightSurface} />
     </div>
   );
 
   const squareCards = row.squares.map((location) => (
-    <div key={location.id} role="listitem">
+    <div key={location.id}>
       <LocationCard location={location} variant="square" lightSurface={lightSurface} />
     </div>
   ));
 
   return (
-    <div className="@container grid grid-cols-2 gap-5 lg:grid-cols-4" role="presentation">
+    <div className="@container grid grid-cols-2 gap-5 lg:grid-cols-4">
       {reverseOrder ? (
         <>
           {squareCards}
@@ -257,26 +257,30 @@ export function LocationSection({
         <DotCarouselTrack
           activeIndex={activeIndex}
           swipeHandlers={swipeHandlers}
-          role="list"
           aria-label="Available locations"
         >
-          {locationSlides.map((slide, slideIndex) => (
-            <DotCarouselSlide
-              key={slide.map((row) => row.wide.id).join('-')}
-              aria-hidden={slideIndex !== activeIndex}
-            >
-              <div className="flex flex-col gap-9">
-                {slide.map((row, index) => (
-                  <LocationRow
-                    key={row.wide.id}
-                    row={row}
-                    reverseOrder={index === 1}
-                    lightSurface={!isNavy}
-                  />
-                ))}
-              </div>
-            </DotCarouselSlide>
-          ))}
+          {locationSlides.map((slide, slideIndex) => {
+            const isActive = slideIndex === activeIndex;
+            return (
+              <DotCarouselSlide
+                key={slide.map((row) => row.wide.id).join('-')}
+                aria-hidden={!isActive}
+                // Hidden slides must not expose focusable AppLinks (PSI / a11y tree).
+                {...(!isActive ? { inert: true } : {})}
+              >
+                <div className="flex flex-col gap-9">
+                  {slide.map((row, index) => (
+                    <LocationRow
+                      key={row.wide.id}
+                      row={row}
+                      reverseOrder={index === 1}
+                      lightSurface={!isNavy}
+                    />
+                  ))}
+                </div>
+              </DotCarouselSlide>
+            );
+          })}
         </DotCarouselTrack>
 
         <CarouselControls

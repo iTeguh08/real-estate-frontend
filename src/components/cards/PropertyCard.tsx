@@ -84,18 +84,6 @@ export function PropertyCard({
       )}
       aria-label={`${title}, ${status}, ${formatPropertyPrice(property)}`}
       onClick={isInteractive ? handleActivate : undefined}
-      onKeyDown={
-        isInteractive
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleActivate();
-              }
-            }
-          : undefined
-      }
-      role={isInteractive ? 'button' : undefined}
-      tabIndex={isInteractive ? 0 : undefined}
     >
       {/* ── Image ── */}
       <div
@@ -248,8 +236,8 @@ export function PropertyCard({
             onClick={stopPropagation}
             className="inline-flex shrink-0 items-center gap-1.5 font-poppins text-[13px] text-hz-body no-underline transition-all duration-200 hover:text-hz-primary hover:underline hover:underline-offset-4 hover:decoration-hz-primary hover:decoration-1"
           >
-            Learn More
-            <ArrowRight size={14} strokeWidth={1.6} />
+            View {title}
+            <ArrowRight size={14} strokeWidth={1.6} aria-hidden="true" />
           </AppLink>
           <p
             className="shrink-0 text-right font-poppins text-sm font-semibold text-hz-dark"
