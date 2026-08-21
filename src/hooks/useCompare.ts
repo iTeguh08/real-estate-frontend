@@ -17,7 +17,7 @@ export function useCompare() {
 
   const { data: compareIds = [] } = useQuery({
     queryKey: queryKeys.compare.all(),
-    queryFn: getCompareIds,
+    queryFn: ({ signal }) => getCompareIds(signal),
     staleTime: Infinity,
     enabled: isAuthenticated,
   });

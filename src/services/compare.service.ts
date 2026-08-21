@@ -32,11 +32,11 @@ function normalizeIds(ids: unknown): string[] {
     .map(String);
 }
 
-export async function getCompareIds(): Promise<string[]> {
+export async function getCompareIds(signal?: AbortSignal): Promise<string[]> {
   if (isMockDataEnabled()) {
     return readLocalCompare();
   }
-  return normalizeIds(await apiFetch<unknown[]>('/api/compare'));
+  return normalizeIds(await apiFetch<unknown[]>('/api/compare', { signal }));
 }
 
 export async function toggleCompareItem(
