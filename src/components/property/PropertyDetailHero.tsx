@@ -251,6 +251,9 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
     />
   );
 
+  const activeAlt =
+    showcaseThumbs.find((thumb) => thumb.base === activeBase)?.alt || `${title} — cover`;
+
   const heroImage = (
     <MediaImage
       key={activeBase}
@@ -261,7 +264,7 @@ export function PropertyDetailHero({ property, onScheduleViewing }: PropertyDeta
       fitCover
       coverEstimate={{ width: 1280, height: 720 }}
       coverMaxWidth={1600}
-      alt=""
+      alt={activeAlt}
       fetchPriority="high"
       decoding="async"
       className="object-cover"

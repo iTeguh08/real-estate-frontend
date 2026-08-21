@@ -6,6 +6,7 @@ import type { ContactPageContent } from '@/data/cms-fallbacks';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { queryKeys } from '@/lib/query-keys';
 import { routes } from '@/lib/routes';
+import { jsonLdScriptContent, localBusinessJsonLd } from '@/lib/seo-json-ld';
 
 interface ContactPageProps {
   page: ContactPageContent;
@@ -35,6 +36,10 @@ export default function ContactRoute({ page, brand }: ContactPageProps) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdScriptContent(localBusinessJsonLd()) }}
+        />
       </Head>
       <ContactUsPage />
     </>

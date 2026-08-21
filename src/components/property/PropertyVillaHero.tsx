@@ -151,7 +151,7 @@ export function PropertyVillaHero({ property, onScheduleViewing }: PropertyVilla
       fitCover
       coverEstimate={{ width: 1280, height: 720 }}
       coverMaxWidth={1600}
-      alt=""
+      alt={`${property.title} — ${formatPropertyLocation(property)}`}
       fetchPriority="high"
       decoding="async"
       className="object-cover object-center"

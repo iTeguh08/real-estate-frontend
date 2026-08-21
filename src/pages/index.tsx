@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { HomeView, type HomeViewProps } from '@/modules/home/views/HomeView';
 import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
 import type { HomepageContent } from '@/data/cms-fallbacks';
+import { HOMEPAGE_FALLBACK } from '@/data/cms-fallbacks';
 import { queryKeys } from '@/lib/query-keys';
 import { listingFiltersQueryVars } from '@/lib/listing-filter-params';
 import {
@@ -13,6 +14,7 @@ import {
 } from '@/lib/image-url';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { routes } from '@/lib/routes';
+import { jsonLdScriptContent, organizationJsonLd } from '@/lib/seo-json-ld';
 import type { SiteConfig } from '@/services/site.service';
 import {
   DEFAULT_LISTING_FILTERS,
@@ -73,10 +75,19 @@ export default function HomePage({
     });
   });
 
-  const title =
+  const defaultTitle =
+    HOMEPAGE_FALLBACK.seo?.metaTitle ||
+    'Homzen — Luxury Villas & Homes for Sale and Rent in Bali';
+  const defaultDescription =
+    HOMEPAGE_FALLBACK.seo?.metaDescription ||
+    'Discover luxury villas, apartments, and homes for sale and rent in Bali with Homzen.';
+  const rawTitle =
     homepage.seo?.metaTitle ||
     `${siteConfig.brand} — ${homepage.hero.headline.replace(/\n/g, ' ')}`;
-  const description = homepage.seo?.metaDescription || homepage.hero.subheadline;
+  const rawDescription = homepage.seo?.metaDescription || homepage.hero.subheadline;
+  const title = rawTitle.trim().length >= 50 ? rawTitle.trim() : defaultTitle;
+  const description =
+    rawDescription.trim().length >= 120 ? rawDescription.trim() : defaultDescription;
   const ogImage = absoluteUrl(homepage.seo?.ogImage || homepage.hero.backgroundImage);
   const siteCanonical = absoluteUrl(routes.home) || routes.home;
   const cmsCanonical = homepage.seo?.canonicalUrl?.trim() || '';
@@ -136,6 +147,10 @@ export default function HomePage({
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdScriptContent(organizationJsonLd()) }}
+        />
       </Head>
       <HomeView {...viewProps} />
     </>

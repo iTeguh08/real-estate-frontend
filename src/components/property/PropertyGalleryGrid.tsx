@@ -51,10 +51,12 @@ function chunkPartialPages(images: PropertyGalleryImage[], size: number) {
 function GalleryMobilePage({
   pageImages,
   pageOffset,
+  title,
   onOpen,
 }: {
   pageImages: PropertyGalleryImage[];
   pageOffset: number;
+  title: string;
   onOpen: (absoluteIndex: number) => void;
 }) {
   const [a, b, c] = pageImages;
@@ -68,6 +70,7 @@ function GalleryMobilePage({
     <div className="grid grid-cols-2 gap-3">
       <GalleryTile
         image={a}
+        title={title}
         onOpen={() => openAt(0)}
         className="col-span-2 aspect-[16/10] h-auto min-h-[140px]"
         coverEstimate={{ width: 720, height: 450 }}
@@ -75,6 +78,7 @@ function GalleryMobilePage({
       {b ? (
         <GalleryTile
           image={b}
+          title={title}
           onOpen={() => openAt(1)}
           className={
             lastPairOnly
@@ -89,6 +93,7 @@ function GalleryMobilePage({
       {c ? (
         <GalleryTile
           image={c}
+          title={title}
           onOpen={() => openAt(2)}
           className="aspect-[4/5] h-auto min-h-[100px]"
           coverEstimate={{ width: 360, height: 450 }}
@@ -100,16 +105,19 @@ function GalleryMobilePage({
 
 function GalleryTile({
   image,
+  title = 'Property',
   onOpen,
   className,
   coverEstimate = { width: 720, height: 500 },
 }: {
   image: PropertyGalleryImage;
+  title?: string;
   onOpen: () => void;
   className?: string;
   /** Soft width hint for Unsplash fallbacks; local product URLs stay static. */
   coverEstimate?: { width: number; height: number };
 }) {
+  const alt = image.alt?.trim() || `${title} — gallery photo`;
   return (
     <button
       type="button"
@@ -119,14 +127,14 @@ function GalleryTile({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hz-primary focus-visible:ring-offset-2',
         className
       )}
-      aria-label={`Open gallery image: ${image.alt}`}
+      aria-label={`Open gallery image: ${alt}`}
     >
       <MediaImage
         mediaUrl={galleryTileMediaUrl(image.url, coverEstimate, image.originalUrl)}
         fitCover
         coverEstimate={coverEstimate}
         coverMaxWidth={1100}
-        alt={image.alt}
+        alt={alt}
         loading="lazy"
         decoding="async"
         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
@@ -140,11 +148,13 @@ function GalleryTile({
 function GalleryBentoPage({
   pageImages,
   pageOffset,
+  title,
   onOpen,
   reversed = false,
 }: {
   pageImages: PropertyGalleryImage[];
   pageOffset: number;
+  title: string;
   onOpen: (absoluteIndex: number) => void;
   reversed?: boolean;
 }) {
@@ -158,6 +168,7 @@ function GalleryBentoPage({
       <div className="grid h-[min(42vw,500px)] grid-cols-12 grid-rows-2 gap-4">
         <GalleryTile
           image={b}
+          title={title}
           onOpen={() => openAt(1)}
           className="col-span-5 col-start-1 row-start-1"
           coverEstimate={{ width: 480, height: 240 }}
@@ -165,12 +176,14 @@ function GalleryBentoPage({
         <div className="col-span-5 col-start-1 row-start-2 grid min-h-0 grid-cols-2 gap-4">
           <GalleryTile
             image={c}
+            title={title}
             onOpen={() => openAt(2)}
             className="min-h-0"
             coverEstimate={{ width: 240, height: 240 }}
           />
           <GalleryTile
             image={d}
+            title={title}
             onOpen={() => openAt(3)}
             className="min-h-0"
             coverEstimate={{ width: 240, height: 240 }}
@@ -178,6 +191,7 @@ function GalleryBentoPage({
         </div>
         <GalleryTile
           image={a}
+          title={title}
           onOpen={() => openAt(0)}
           className="col-span-7 col-start-6 row-span-2 row-start-1"
           coverEstimate={{ width: 720, height: 500 }}
@@ -190,12 +204,14 @@ function GalleryBentoPage({
     <div className="grid h-[min(42vw,500px)] grid-cols-12 grid-rows-2 gap-4">
       <GalleryTile
         image={a}
+        title={title}
         onOpen={() => openAt(0)}
         className="col-span-7 row-span-2"
         coverEstimate={{ width: 720, height: 500 }}
       />
       <GalleryTile
         image={b}
+        title={title}
         onOpen={() => openAt(1)}
         className="col-span-5"
         coverEstimate={{ width: 480, height: 240 }}
@@ -203,12 +219,14 @@ function GalleryBentoPage({
       <div className="col-span-5 grid min-h-0 grid-cols-2 gap-4">
         <GalleryTile
           image={c}
+          title={title}
           onOpen={() => openAt(2)}
           className="min-h-0"
           coverEstimate={{ width: 240, height: 240 }}
         />
         <GalleryTile
           image={d}
+          title={title}
           onOpen={() => openAt(3)}
           className="min-h-0"
           coverEstimate={{ width: 240, height: 240 }}
@@ -233,6 +251,9 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
   const mobileCarousel = useDotCarousel(mobilePageCount);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const selected = lightboxIndex !== null ? images[lightboxIndex] : null;
+  const selectedAlt = selected
+    ? selected.alt?.trim() || `${title} — gallery photo`
+    : '';
 
   if (images.length < PROPERTY_GALLERY_PAGE_SIZE || desktopPageCount === 0) {
     return null;
@@ -282,6 +303,7 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
                 <GalleryMobilePage
                   pageImages={pageImages}
                   pageOffset={pageIndex * PROPERTY_GALLERY_MOBILE_PAGE_SIZE}
+                  title={title}
                   onOpen={setLightboxIndex}
                 />
               </DotCarouselSlide>
@@ -310,6 +332,7 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
                 <GalleryBentoPage
                   pageImages={pageImages}
                   pageOffset={pageIndex * PROPERTY_GALLERY_PAGE_SIZE}
+                  title={title}
                   onOpen={setLightboxIndex}
                   reversed={pageIndex % 2 === 1}
                 />
@@ -344,7 +367,7 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
             overlayClassName="bg-black/70 supports-backdrop-filter:backdrop-blur-sm"
           >
             <DialogHeader className="sr-only">
-              <DialogTitle>{selected.alt}</DialogTitle>
+              <DialogTitle>{selectedAlt}</DialogTitle>
               <DialogDescription>Expanded gallery view for {title}</DialogDescription>
             </DialogHeader>
 
@@ -352,7 +375,7 @@ export function PropertyGalleryGrid({ images, title }: PropertyGalleryGridProps)
               key={selected.id}
               previewUrl={selected.url}
               originalUrl={selected.originalUrl}
-              alt={selected.alt}
+              alt={selectedAlt}
               size="gallery"
             >
               <DialogClose asChild>

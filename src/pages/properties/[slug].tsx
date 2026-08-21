@@ -5,6 +5,7 @@ import { useHydrateQueryCache } from '@/hooks/useHydrateQueryCache';
 import { queryKeys } from '@/lib/query-keys';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { routes } from '@/lib/routes';
+import { jsonLdScriptContent, propertyListingJsonLd } from '@/lib/seo-json-ld';
 import type { Property, PropertyDetail } from '@/types';
 
 interface PropertyDetailPageProps {
@@ -44,6 +45,12 @@ export default function PropertyDetailPage({ property, relatedProperties }: Prop
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLdScriptContent(propertyListingJsonLd(property)),
+          }}
+        />
       </Head>
       <PropertyDetailView property={property} relatedProperties={relatedProperties} />
     </>

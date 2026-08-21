@@ -80,20 +80,24 @@ function parsePageContent(raw: unknown): Record<string, unknown> | null {
 }
 
 function parseSeo(raw: Partial<CmsSeoMeta> | null | undefined, fallback: CmsSeoMeta): CmsSeoMeta {
+  const metaTitle = raw?.metaTitle?.trim() || '';
+  const metaDescription = raw?.metaDescription?.trim() || '';
   return {
-    metaTitle: raw?.metaTitle?.trim() || fallback.metaTitle,
-    metaDescription: raw?.metaDescription?.trim() || fallback.metaDescription,
+    // SEOptimer: title 50–60, description 120–160 — keep CMS only when long enough.
+    metaTitle: metaTitle.length >= 50 ? metaTitle : fallback.metaTitle,
+    metaDescription: metaDescription.length >= 120 ? metaDescription : fallback.metaDescription,
     canonicalUrl: raw?.canonicalUrl?.trim() || fallback.canonicalUrl,
     ogImage: raw?.ogImage?.trim() || fallback.ogImage,
   };
 }
 
 function homepageSeoFallback(content: HomepageContent): CmsSeoMeta {
+  const fromCmsFallback = HOMEPAGE_FALLBACK.seo;
   return {
-    metaTitle: `Homzen — ${content.hero.headline.replace(/\n/g, ' ')}`,
-    metaDescription: content.hero.subheadline,
+    metaTitle: fromCmsFallback?.metaTitle || `Homzen — ${content.hero.headline.replace(/\n/g, ' ')}`,
+    metaDescription: fromCmsFallback?.metaDescription || content.hero.subheadline,
     canonicalUrl: '',
-    ogImage: content.hero.backgroundImage,
+    ogImage: content.hero.backgroundImage || fromCmsFallback?.ogImage || '',
   };
 }
 

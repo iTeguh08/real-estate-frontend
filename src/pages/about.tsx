@@ -6,6 +6,7 @@ import type { AboutPageContent } from '@/data/cms-fallbacks';
 import { absoluteUrl } from '@/lib/runtime-env';
 import { queryKeys } from '@/lib/query-keys';
 import { routes } from '@/lib/routes';
+import { jsonLdScriptContent, localBusinessJsonLd } from '@/lib/seo-json-ld';
 
 interface AboutPageProps {
   page: AboutPageContent;
@@ -35,6 +36,10 @@ export default function AboutRoute({ page, brand }: AboutPageProps) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdScriptContent(localBusinessJsonLd()) }}
+        />
       </Head>
       <AboutUsPage />
     </>

@@ -383,9 +383,9 @@ export const HOMEPAGE_FALLBACK: HomepageContent = {
     ],
   },
   seo: {
-    metaTitle: 'Homzen — Find A Home That Fits Your Dream',
+    metaTitle: 'Homzen — Luxury Villas & Homes for Sale and Rent in Bali',
     metaDescription:
-      'We are a real estate agency that will help you find the best residence for you at an affordable price.',
+      'Discover luxury villas, apartments, and homes for sale and rent in Bali with Homzen. Browse curated listings, meet local agents, and find a property that fits your lifestyle.',
     canonicalUrl: '',
     ogImage:
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1100&auto=format&fit=crop&q=70',
