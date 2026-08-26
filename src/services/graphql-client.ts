@@ -37,35 +37,70 @@ function isNetworkFailure(error: unknown): boolean {
   );
 }
 
+function isRateLimited(error: unknown): boolean {
+  const message = errorText(error);
+  return message.includes('429') || /too many requests/i.test(message);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function graphqlFetchOnce<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+): Promise<T | null> {
+  const res = await fetch(getGraphqlUrl(), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  if (!res.ok) {
+    throw new GraphqlError(`GraphQL request failed: ${res.status} ${res.statusText}`);
+  }
+
+  const json = (await res.json()) as { data?: T; errors?: { message: string }[] };
+
+  if (json.errors?.length) {
+    throw new GraphqlError(json.errors.map((e) => e.message).join(', '));
+  }
+
+  if (!json.data) {
+    throw new GraphqlError('GraphQL response missing data');
+  }
+
+  return json.data;
+}
+
+/** SSG builds can burst past Laravel throttle; back off instead of failing the whole build. */
+const RATE_LIMIT_RETRIES = 5;
+
 export async function graphqlFetch<T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T | null> {
   try {
-    const res = await fetch(getGraphqlUrl(), {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query, variables }),
-    });
-
-    if (!res.ok) {
-      throw new GraphqlError(`GraphQL request failed: ${res.status} ${res.statusText}`);
+    for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
+      try {
+        return await graphqlFetchOnce<T>(query, variables);
+      } catch (error) {
+        if (!isRateLimited(error) || attempt === RATE_LIMIT_RETRIES) {
+          throw error;
+        }
+        const delayMs = 1000 * 2 ** attempt;
+        console.warn('[graphql] 429 rate limited; retrying', {
+          attempt: attempt + 1,
+          delayMs,
+          url: getGraphqlUrl(),
+        });
+        await sleep(delayMs);
+      }
     }
-
-    const json = (await res.json()) as { data?: T; errors?: { message: string }[] };
-
-    if (json.errors?.length) {
-      throw new GraphqlError(json.errors.map((e) => e.message).join(', '));
-    }
-
-    if (!json.data) {
-      throw new GraphqlError('GraphQL response missing data');
-    }
-
-    return json.data;
+    return null;
   } catch (error) {
     if (isNetworkFailure(error)) {
       console.warn('[graphql] network failure; using local fallback', {

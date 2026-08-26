@@ -35,12 +35,20 @@ export const getStaticProps: GetStaticProps<PropertyDetailPageProps> = async (co
     return { notFound: true, revalidate: REVALIDATE_SECONDS };
   }
 
-  const property = await getPropertyDetailBySlug(slug);
+  const property = await withSsgFallback(
+    `property:${slug}`,
+    () => getPropertyDetailBySlug(slug),
+    null,
+  );
   if (!property) {
     return { notFound: true, revalidate: REVALIDATE_SECONDS };
   }
 
-  const relatedProperties = await getRelatedProperties(property);
+  const relatedProperties = await withSsgFallback(
+    `related:${slug}`,
+    () => getRelatedProperties(property),
+    [],
+  );
 
   return {
     props: jsonSafe({ property, relatedProperties }),
