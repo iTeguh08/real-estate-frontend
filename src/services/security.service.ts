@@ -12,6 +12,12 @@ export interface SecurityConfig {
   honeypot: {
     field: string;
   };
+  /** Backend hint — SPA still must gate UI; API enforces auth separately. */
+  authRequired?: {
+    wishlist: boolean;
+    compare: boolean;
+    propertySubmissions: boolean;
+  };
 }
 
 const FALLBACK_CONFIG: SecurityConfig = {
